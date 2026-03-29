@@ -1,0 +1,50 @@
+{
+  "name": "GharShala – Home Learning Environment Mapper",
+  "short_name": "GharShala",
+  "description": "Maps home learning environments and delivers personalized micro-guidance to parents. NEP 2020 aligned offline PWA by Mateen Yousuf.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f1a0f",
+  "theme_color": "#0a1f0a",
+  "orientation": "portrait",
+  "scope": "./",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["education", "productivity", "social"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='36' fill='%230f1a0f'/><text x='96' y='125' text-anchor='middle' font-size='110'>🏠</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='80' fill='%230f1a0f'/><text x='256' y='330' text-anchor='middle' font-size='280'>🏠</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Home Survey",
+      "short_name": "Survey",
+      "description": "Take the home environment survey",
+      "url": "./index.html#survey"
+    },
+    {
+      "name": "Daily Guidance",
+      "short_name": "Guidance",
+      "description": "View today's parent micro-guidance",
+      "url": "./index.html#guidance"
+    },
+    {
+      "name": "Teacher Dashboard",
+      "short_name": "Dashboard",
+      "description": "View class home environment overview",
+      "url": "./index.html#dashboard"
+    }
+  ]
+}

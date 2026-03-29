@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Manual — Learning Level Gap Solver</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0b1d3a; --navy-mid: #112651;
+      --gold: #d4a017; --gold-light: #f4c842;
+      --blue: #1e40af; --blue-light: #3b82f6;
+      --cream: #f5f0e8; --green: #059669;
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: #f8fafc; color: #0f172a; }
+
+    .doc-header {
+      background: linear-gradient(135deg, #0f2744 0%, #1a3a6b 100%);
+      padding: 40px 32px;
+      border-bottom: 4px solid var(--gold);
+    }
+    .header-inner { max-width: 900px; margin: 0 auto; display: flex; gap: 24px; align-items: flex-start; }
+    .author-photo { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--gold); object-fit: cover; object-position: top; flex-shrink: 0; }
+    .doc-eyebrow { font-size: 11px; color: var(--gold-light); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+    .doc-title { font-family: var(--font-display); font-size: clamp(24px,3vw,38px); font-weight: 900; color: white; line-height: 1.15; margin-bottom: 10px; }
+    .doc-subtitle { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 12px; }
+    .author-line { font-size: 13px; color: var(--gold-light); font-weight: 600; }
+
+    .doc-body { max-width: 900px; margin: 0 auto; padding: 48px 32px 80px; }
+
+    /* TOC */
+    .toc { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 28px; margin-bottom: 48px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .toc h3 { font-family: var(--font-display); font-size: 18px; color: var(--navy); margin-bottom: 16px; }
+    .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .toc a { color: var(--blue); font-size: 13px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 6px; padding: 6px 0; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* Sections */
+    .doc-section { margin-bottom: 56px; }
+    .section-num { font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; font-weight: 700; margin-bottom: 6px; }
+    .section-title { font-family: var(--font-display); font-size: 26px; font-weight: 900; color: var(--navy); margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--gold); display: inline-block; }
+    .doc-p { font-size: 15px; color: #334155; line-height: 1.85; margin-bottom: 16px; }
+
+    /* Step cards */
+    .step-card {
+      background: white; border-radius: 12px; padding: 24px;
+      margin-bottom: 16px; border: 1px solid #e2e8f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      display: flex; gap: 16px; align-items: flex-start;
+    }
+    .step-num {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      color: white; font-family: var(--font-mono); font-size: 14px;
+      font-weight: 700; width: 40px; height: 40px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-body h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .step-body p { font-size: 14px; color: #334155; line-height: 1.7; }
+    .step-body .tip { background: #fffbeb; border: 1px solid #fbbf24; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #92400e; margin-top: 10px; }
+
+    /* Tab guide cards */
+    .tab-card {
+      background: white; border-radius: 16px; overflow: hidden;
+      border: 1px solid #e2e8f0; margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .tab-card-header {
+      padding: 16px 20px; font-weight: 700; font-size: 15px;
+      color: white; display: flex; align-items: center; gap: 10px;
+    }
+    .tab-card-header.home    { background: linear-gradient(90deg, #0f2744, #1a3a6b); }
+    .tab-card-header.diag    { background: linear-gradient(90deg, #1a3a6b, #1e40af); }
+    .tab-card-header.learn   { background: linear-gradient(90deg, #065f46, #059669); }
+    .tab-card-header.progress{ background: linear-gradient(90deg, #4c1d95, #7c3aed); }
+    .tab-card-header.teacher { background: linear-gradient(90deg, #7c2d12, #c2410c); }
+    .tab-card-body { padding: 20px; }
+    .tab-card-body p { font-size: 14px; color: #334155; line-height: 1.7; margin-bottom: 12px; }
+    .tab-feature { display: flex; gap: 10px; padding: 10px 0; border-top: 1px solid #f1f5f9; }
+    .tab-feature-icon { font-size: 18px; flex-shrink: 0; width: 28px; }
+    .tab-feature-text { font-size: 13px; color: #334155; line-height: 1.5; }
+    .tab-feature-text strong { color: var(--navy); }
+
+    /* Simulation guide */
+    .sim-steps { background: #f0f9ff; border-radius: 12px; padding: 20px; border: 1px solid #bae6fd; margin: 16px 0; }
+    .sim-steps h4 { font-size: 14px; font-weight: 700; color: #0369a1; margin-bottom: 12px; }
+    .sim-step { display: flex; gap: 10px; margin-bottom: 8px; font-size: 13px; color: #0369a1; align-items: flex-start; }
+    .sim-step-num { background: #0369a1; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    /* Note box */
+    .note-box { background: #f0fdf4; border: 1px solid #86efac; border-radius: 10px; padding: 16px; font-size: 13px; color: #166534; margin: 16px 0; }
+    .warn-box  { background: #fffbeb; border: 1px solid #fbbf24; border-radius: 10px; padding: 16px; font-size: 13px; color: #92400e; margin: 16px 0; }
+
+    /* Setup instructions */
+    .code-block {
+      background: #1e293b; border-radius: 10px; padding: 16px 20px;
+      font-family: var(--font-mono); font-size: 13px; color: #e2e8f0;
+      margin: 12px 0; overflow-x: auto;
+    }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--navy); color: white; font-size: 13px; font-weight: 600;
+      padding: 10px 20px; border-radius: 50px; text-decoration: none;
+      margin-bottom: 32px; transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.85; }
+
+    @media (max-width: 600px) {
+      .doc-body { padding: 32px 20px 60px; }
+      .header-inner { flex-direction: column; }
+      .toc-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="header-inner">
+    <img class="author-photo" src="author.jpg" alt="Mateen Yousuf" />
+    <div class="header-text">
+      <div class="doc-eyebrow">Complete User Manual</div>
+      <h1 class="doc-title">Learning Level Gap Solver<br>— User Manual & Guide</h1>
+      <p class="doc-subtitle">Step-by-step instructions for students, teachers, and administrators on using every feature of the LLG Solver.</p>
+      <div class="author-line">Mateen Yousuf — Teacher, School Education Department, J&K</div>
+    </div>
+  </div>
+</div>
+
+<div class="doc-body">
+  <a class="back-link" href="index.html">← Back to App</a>
+
+  <div class="toc">
+    <h3>📋 Table of Contents</h3>
+    <div class="toc-grid">
+      <div>
+        <a href="#s1">📲 Getting Started & Installation</a>
+        <a href="#s2">🏠 Home Screen Guide</a>
+        <a href="#s3">🔍 Diagnostic Assessment Guide</a>
+        <a href="#s4">📚 Adaptive Learning Guide</a>
+        <a href="#s5">📖 Using Lessons Effectively</a>
+      </div>
+      <div>
+        <a href="#s6">🔬 Simulation & Activity Guide</a>
+        <a href="#s7">📊 Progress Dashboard Guide</a>
+        <a href="#s8">👨‍🏫 Teacher Dashboard Guide</a>
+        <a href="#s9">🗂️ Resource Library Guide</a>
+        <a href="#s10">🛠️ Technical Setup & Hosting</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="doc-section" id="s1">
+    <div class="section-num">Section 01</div>
+    <div class="section-title">Getting Started & Installation</div>
+    <p class="doc-p">The Learning Level Gap Solver is a Progressive Web App (PWA). It works instantly in any browser — no installation required. However, it can also be installed to the home screen for a native app-like experience.</p>
+
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Open in Browser</h4>
+        <p>Open the <code>index.html</code> file in Chrome, Edge, or any modern browser. The app loads immediately — no internet connection required after the first load.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Install as App (Android / Desktop)</h4>
+        <p>After a few seconds, an <strong>Install Banner</strong> will appear at the bottom of the screen. Tap <strong>"Install"</strong> to add the app to your home screen. It will then behave like a native Android app — offline, with its own icon and splash screen.</p>
+        <div class="tip">💡 On desktop Chrome: look for the install icon (⊕) in the address bar. On Android: tap the three-dot menu → "Add to Home Screen".</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Offline Usage</h4>
+        <p>Once opened once with internet (to load fonts), the entire app works fully offline. All progress, quiz scores, and settings are saved automatically to your device using browser storage. <strong>No account or login is needed.</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="doc-section" id="s2">
+    <div class="section-num">Section 02</div>
+    <div class="section-title">Home Screen Guide</div>
+    <p class="doc-p">The Home Screen is the landing page of the app. It introduces the platform and provides direct access to all major features. It is designed per NEP 2020 guidelines as an inviting, non-intimidating entry point for learners of all levels.</p>
+
+    <div class="tab-card">
+      <div class="tab-card-header home">🏠 Home Screen</div>
+      <div class="tab-card-body">
+        <div class="tab-feature"><div class="tab-feature-icon">🎓</div><div class="tab-feature-text"><strong>Brand Header:</strong> Displays the app name, NEP 2020 and NCF 2023 policy badges — establishing trust and policy alignment for teachers and school administrators.</div></div>
+        <div class="tab-feature"><div class="tab-feature-icon">👤</div><div class="tab-feature-text"><strong>Author Section:</strong> Shows the app creator — Mateen Yousuf, Teacher SED J&K — with professional photo, key statistics, and vision statement.</div></div>
+        <div class="tab-feature"><div class="tab-feature-icon">🚀</div><div class="tab-feature-text"><strong>Start Learning Button:</strong> Takes students directly to the Diagnostic Assessment. <em>First-time users should always start here</em>.</div></div>
+        <div class="tab-feature"><div class="tab-feature-icon">👨‍🏫</div><div class="tab-feature-text"><strong>Teacher View Button:</strong> Takes educators directly to the Teacher Dashboard with class analytics.</div></div>
+        <div class="tab-feature"><div class="tab-feature-icon">⬇️</div><div class="tab-feature-text"><strong>Feature Cards Grid:</strong> Six clickable cards linking to all major sections — Diagnostic, Learn, Progress, Teacher, Resources, and Conceptual Background.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="doc-section" id="s3">
+    <div class="section-num">Section 03</div>
+    <div class="section-title">Diagnostic Assessment Guide</div>
+    <p class="doc-p">The Diagnostic Assessment is the most important entry point for new students. It determines the student's learning level — Foundation, Standard, or Advanced — and sets their personalised learning pathway. This process is aligned with the PARAKH assessment framework.</p>
+
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Fill in Student Information</h4>
+        <p>Enter your <strong>Name</strong>, <strong>Class/Grade</strong>, <strong>Subject</strong>, and optionally your school name. All fields (except school) are required. This information is saved locally on your device.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Answer 10 Questions</h4>
+        <p>The assessment contains 10 multiple-choice questions spanning three cognitive levels: foundational, standard, and advanced. Read each question carefully and select your best answer. There is <strong>no time limit</strong> — the assessment is not a race.</p>
+        <div class="tip">💡 Questions progress from easier to harder. Don't be discouraged if later questions are challenging — that's intentional and helps identify your level precisely.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>After Each Answer</h4>
+        <p>Immediately after selecting an answer, the correct answer is highlighted in green. If you chose incorrectly, your selection is shown in red and the correct answer is revealed. This immediate feedback supports active learning.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>View Your Result</h4>
+        <p>After Question 10, your diagnostic score and level placement are displayed. You will see your percentage score, the level you have been placed at, and a brief description of what this means for your learning journey. Tap <strong>"Start [Level] Learning"</strong> to go directly to lessons at your level.</p>
+      </div>
+    </div>
+    <div class="note-box">✅ <strong>You can retake the assessment anytime.</strong> If you feel your level placement does not reflect your actual ability, tap "Retake Assessment." There is no limit on retakes — consistent with NCF 2023's growth-oriented assessment philosophy.</div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="doc-section" id="s4">
+    <div class="section-num">Section 04</div>
+    <div class="section-title">Adaptive Learning Guide</div>
+    <p class="doc-p">The Learn tab is where students spend most of their time. It provides access to all subject topics at your current learning level.</p>
+
+    <div class="tab-card">
+      <div class="tab-card-header learn">📚 Learn Screen</div>
+      <div class="tab-card-body">
+        <div class="tab-feature">
+          <div class="tab-feature-icon">🔘</div>
+          <div class="tab-feature-text">
+            <strong>Level Selector (top):</strong> Three buttons — 🟠 Foundation, 🔵 Standard, 🟣 Advanced. Tap any button to switch to that level's content. Your saved level from the diagnostic is highlighted by default. You can freely switch between levels to explore.
+          </div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">📂</div>
+          <div class="tab-feature-text">
+            <strong>Subject Chips:</strong> Select your subject — Science, Maths, English, or Social Science. The topic grid updates instantly to show topics for the selected subject and level combination.
+          </div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">📋</div>
+          <div class="tab-feature-text">
+            <strong>Topic Cards:</strong> Each card shows the topic name, subject, estimated time, and your level. Completed topics show a ✅ checkmark. Tap any card to open the lesson viewer.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="doc-section" id="s5">
+    <div class="section-num">Section 05</div>
+    <div class="section-title">Using Lessons Effectively</div>
+    <p class="doc-p">When you tap a topic card, the Lesson Viewer opens below the topic grid. Each lesson is structured in a consistent, NCF 2023-aligned format:</p>
+
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h4>Read the Introduction</h4>
+        <p>Every lesson opens with a clear introduction explaining what the topic is about and why it matters. Foundation Level introductions use simple language and visual metaphors. Standard Level uses curriculum terminology. Advanced Level uses research-level vocabulary.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h4>Study the Concept Box</h4>
+        <p>Blue Concept Boxes highlight the <strong>key formula, equation, or concept statement</strong> for the topic. This is the essential takeaway — the single most important thing to remember. For Science, this is often a chemical equation; for Maths, a formula; for Social Science, a key principle.</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h4>Understand the Visual Diagram</h4>
+        <p>Many lessons include a Visual Diagram — a simplified illustration showing the process or relationship being described. Study this carefully; research shows that visual-verbal dual coding significantly improves retention (Mayer's Multimedia Learning Theory).</p>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h4>Answer the Practice Question</h4>
+        <p>Every lesson ends with a Practice Question. Select your answer — feedback appears immediately. If wrong, the correct answer is highlighted. This is not graded; it is purely for self-assessment and reinforcement.</p>
+        <div class="tip">💡 If you get the practice question wrong, re-read the concept box before moving to the next topic. True mastery requires returning to misunderstood points.</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h4>Mark Complete</h4>
+        <p>After reviewing the lesson, tap <strong>"✓ Mark Complete"</strong> to record progress. This updates your dashboard statistics, may unlock achievement badges, and marks the topic card with a ✅ checkmark.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="doc-section" id="s6">
+    <div class="section-num">Section 06</div>
+    <div class="section-title">Simulation & Activity Guide</div>
+    <p class="doc-p">Several topics include simulation-style visual content — especially Science topics at Standard and Advanced levels. These are not full interactive simulations (which require internet), but <strong>guided conceptual diagrams and step-by-step visual walkthroughs</strong> that simulate the process.</p>
+
+    <div class="sim-steps">
+      <h4>How to Use Simulation Content</h4>
+      <div class="sim-step"><div class="sim-step-num">1</div><span>Open the relevant topic (e.g., "Photosynthesis" at Standard Level)</span></div>
+      <div class="sim-step"><div class="sim-step-num">2</div><span>Read the introduction — understand the overall process before examining the diagram</span></div>
+      <div class="sim-step"><div class="sim-step-num">3</div><span>Study the Visual Diagram section — trace the process visually (e.g., CO₂ + H₂O → Glucose + O₂)</span></div>
+      <div class="sim-step"><div class="sim-step-num">4</div><span>Read the Concept Box — connect the visual to the formal scientific/mathematical representation</span></div>
+      <div class="sim-step"><div class="sim-step-num">5</div><span>Apply learning to the Practice Question — this tests whether you can transfer understanding to a novel question</span></div>
+      <div class="sim-step"><div class="sim-step-num">6</div><span>At Advanced Level: re-read the analytical section and consider why different pathways (C3/C4/CAM) exist — this develops scientific reasoning</span></div>
+    </div>
+
+    <div class="warn-box">⚠️ <strong>Simulation Tips for Teachers:</strong> When using the app as a classroom tool, display the diagram section on a projector and ask students to predict the next step before revealing it. This Socratic approach deepens engagement with simulated content.</div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="doc-section" id="s7">
+    <div class="section-num">Section 07</div>
+    <div class="section-title">Progress Dashboard Guide</div>
+
+    <div class="tab-card">
+      <div class="tab-card-header progress">📊 Progress Screen</div>
+      <div class="tab-card-body">
+        <div class="tab-feature">
+          <div class="tab-feature-icon">🏷️</div>
+          <div class="tab-feature-text"><strong>Level Card:</strong> Shows your current learning level (Foundation/Standard/Advanced) and your diagnostic score. Tap "Retake Diagnostic" to update your level.</div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">📈</div>
+          <div class="tab-feature-text"><strong>Statistics Grid:</strong> Four counters — Topics Completed, Average Score, Day Streak, and Quizzes Done. These update automatically as you learn.</div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">📝</div>
+          <div class="tab-feature-text"><strong>Recent Activity:</strong> A feed of your last 5 activities — showing topic name, subject, date, and score. Helps you review what you have covered recently.</div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">🏅</div>
+          <div class="tab-feature-text">
+            <strong>Achievement Badges:</strong> Six badges that unlock based on milestones:
+            <br>🧭 Learning Explorer — Complete your first topic
+            <br>🎓 Concept Master — Score 90%+ in a quiz
+            <br>🧠 Advanced Thinker — Reach Advanced Level
+            <br>🔥 Consistent Learner — 7-day learning streak
+            <br>🏆 Topic Champion — Complete 10 topics
+            <br>🇮🇳 NEP Achiever — Complete topics in all subjects
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box">✅ All progress data is stored on your device using browser storage. It persists across sessions and app restarts. However, clearing browser data or switching devices will reset progress.</div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="doc-section" id="s8">
+    <div class="section-num">Section 08</div>
+    <div class="section-title">Teacher Dashboard Guide</div>
+    <p class="doc-p">The Teacher Dashboard is designed for classroom educators. It provides analytical insights into learning level distribution and tools for targeted intervention — aligned with NCF 2023's vision of the teacher as learning facilitator.</p>
+
+    <div class="tab-card">
+      <div class="tab-card-header teacher">👨‍🏫 Teacher Dashboard</div>
+      <div class="tab-card-body">
+        <div class="tab-feature">
+          <div class="tab-feature-icon">📊</div>
+          <div class="tab-feature-text"><strong>Class Distribution Chart:</strong> A bar chart showing the percentage of students at Foundation, Standard, and Advanced levels. Updated from student diagnostic data. Use this to plan your differentiated instruction sessions.</div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">📋</div>
+          <div class="tab-feature-text"><strong>Student Roster:</strong> A tabular view of all students with their names, level placements, diagnostic scores, and activity status. Tap "Export" to generate a printable roster (simulated in demo; full export in school LMS integration).</div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">⚡</div>
+          <div class="tab-feature-text">
+            <strong>Quick Action Cards:</strong><br>
+            📝 <em>Assign Foundation Task</em> — sends targeted exercises to Foundation Level learners<br>
+            🚀 <em>Challenge Advanced</em> — sends HOTS tasks to Advanced Level students<br>
+            📊 <em>Generate Report</em> — creates a PARAKH-format progress summary<br>
+            🔔 <em>Send Reminder</em> — notifies inactive students
+          </div>
+        </div>
+        <div class="tab-feature">
+          <div class="tab-feature-icon">📜</div>
+          <div class="tab-feature-text"><strong>NEP 2020 Insight Panel:</strong> A contextual reminder of the policy framework the dashboard operates within — helping teachers frame their data in the broader NEP and NCF mandate.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--font-display);font-size:18px;color:var(--navy);margin:24px 0 16px;">Classroom Usage Workflow</h3>
+    <div class="step-card"><div class="step-num">1</div><div class="step-body"><h4>Monday: Review Distribution</h4><p>Open the Teacher Dashboard at the start of the week. Check how many students are at each level. Plan three differentiated activity sets for the coming week's topic.</p></div></div>
+    <div class="step-card"><div class="step-num">2</div><div class="step-body"><h4>During Class: Parallel Learning</h4><p>Direct Foundation students to open the app and work through Foundation Level content. Standard students work through Standard Level. Advanced students tackle the Advanced Level — potentially after completing Standard Level work.</p></div></div>
+    <div class="step-card"><div class="step-num">3</div><div class="step-body"><h4>After Class: Check Roster</h4><p>Review the roster for students marked "Inactive." These are students who have not engaged. Use the "Send Reminder" action or follow up personally.</p></div></div>
+    <div class="step-card"><div class="step-num">4</div><div class="step-body"><h4>Monthly: Generate Report</h4><p>Use the Generate Report function to create a PARAKH-aligned progress summary for school administration or parent meetings. This documents the differentiated instruction approach for official records.</p></div></div>
+  </div>
+
+  <!-- SECTION 9 -->
+  <div class="doc-section" id="s9">
+    <div class="section-num">Section 09</div>
+    <div class="section-title">Resource Library Guide</div>
+    <p class="doc-p">The Resource Library provides supplementary NEP 2020 and NCF 2023 aligned materials. Filter by category to find what you need:</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:16px 0;">
+      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:16px;">
+        <div style="font-size:24px;margin-bottom:8px;">📜</div>
+        <strong style="color:#c2410c;">NCF Documents</strong>
+        <p style="font-size:13px;color:#334155;margin-top:6px;">Official NCF 2023 and NEP 2020 policy documents and summaries. Essential reading for teachers implementing differentiated instruction.</p>
+      </div>
+      <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px;">
+        <div style="font-size:24px;margin-bottom:8px;">📄</div>
+        <strong style="color:#1d4ed8;">Worksheets</strong>
+        <p style="font-size:13px;color:#334155;margin-top:6px;">Printable worksheets for Foundation, Standard, and Advanced levels. Designed for classroom use alongside digital lessons.</p>
+      </div>
+      <div style="background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;padding:16px;">
+        <div style="font-size:24px;margin-bottom:8px;">🔬</div>
+        <strong style="color:#065f46;">Simulations</strong>
+        <p style="font-size:13px;color:#334155;margin-top:6px;">Virtual labs and interactive concept models for Science topics. Perfect for practical understanding without physical lab equipment.</p>
+      </div>
+      <div style="background:#fdf4ff;border:1px solid #e9d5ff;border-radius:12px;padding:16px;">
+        <div style="font-size:24px;margin-bottom:8px;">📹</div>
+        <strong style="color:#6d28d9;">Videos</strong>
+        <p style="font-size:13px;color:#334155;margin-top:6px;">Instructional videos for teachers and students. Includes PARAKH assessment guides and differentiated instruction tutorials.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 10 -->
+  <div class="doc-section" id="s10">
+    <div class="section-num">Section 10</div>
+    <div class="section-title">Technical Setup & Hosting</div>
+
+    <h3 style="font-size:17px;font-weight:700;color:var(--navy);margin-bottom:16px;">📁 File Structure</h3>
+    <div class="code-block">
+llg-app/
+├── index.html              ← Main application (all-in-one)
+├── manifest.json           ← PWA configuration
+├── service-worker.js       ← Offline caching
+├── author.jpg              ← Author photo
+├── conceptual-background.html ← This theory document
+└── user-manual.html        ← This manual
+    </div>
+
+    <h3 style="font-size:17px;font-weight:700;color:var(--navy);margin:24px 0 16px;">🌐 Running Locally</h3>
+    <div class="step-card"><div class="step-num">1</div><div class="step-body"><h4>Simple Method — Open Directly</h4><p>Double-click <code>index.html</code> to open in browser. Note: Service Worker may not work in this mode, but the app itself functions fully.</p></div></div>
+    <div class="step-card"><div class="step-num">2</div><div class="step-body"><h4>Recommended — VS Code Live Server</h4><p>Install VS Code → Install the "Live Server" extension → Right-click <code>index.html</code> → "Open with Live Server". This enables full PWA features including Service Worker and offline mode.</p></div></div>
+
+    <h3 style="font-size:17px;font-weight:700;color:var(--navy);margin:24px 0 16px;">🚀 Free Hosting Options</h3>
+    <div class="step-card"><div class="step-num">A</div><div class="step-body"><h4>GitHub Pages (Recommended)</h4><p>1. Create a free GitHub account → Create a new repository → Upload all files → Go to Settings → Pages → Deploy from main branch. Your app will be live at <code>https://yourusername.github.io/repo-name</code>.</p></div></div>
+    <div class="step-card"><div class="step-num">B</div><div class="step-body"><h4>Netlify (Easiest)</h4><p>Go to netlify.com → Drag and drop your entire project folder onto the deploy zone. App is live within 30 seconds with a free URL. Netlify automatically handles HTTPS and PWA features.</p></div></div>
+    <div class="step-card"><div class="step-num">C</div><div class="step-body"><h4>Cloudflare Pages</h4><p>Free, fast, global CDN hosting. Connect your GitHub repository and Cloudflare automatically deploys on every update.</p></div></div>
+
+    <h3 style="font-size:17px;font-weight:700;color:var(--navy);margin:24px 0 16px;">📱 Converting to Android APK</h3>
+    <div class="step-card"><div class="step-num">1</div><div class="step-body"><h4>Using PWABuilder (Easiest)</h4><p>Go to <code>pwabuilder.com</code> → Enter your hosted app URL → Click "Start" → Select Android → Download the APK package. This creates a Trusted Web Activity (TWA) wrapper — the same technology used by major apps.</p></div></div>
+    <div class="step-card"><div class="step-num">2</div><div class="step-body"><h4>Upload to Google Play Store</h4><p>1. Create a Google Play Console account ($25 one-time fee) → Create new app → Upload your APK/AAB → Complete store listing with screenshots, description, category → Submit for review. Review typically takes 3–7 days for educational apps.</p></div></div>
+
+    <div class="note-box">✅ <strong>For school deployment:</strong> The simplest method is to host on GitHub Pages for free, share the URL with students, and have them add to home screen. No APK, no Play Store, no cost. Works identically to a native app.</div>
+  </div>
+
+  <div style="text-align:center;padding:32px;border-top:1px solid #e2e8f0;margin-top:40px;">
+    <p style="font-size:13px;color:#94a3b8;">Learning Level Gap Solver · User Manual · Mateen Yousuf, Teacher — SED J&K</p>
+    <p style="font-size:12px;color:#cbd5e1;margin-top:6px;">Aligned with NEP 2020 · NCF 2023 · PARAKH · NCERT</p>
+    <a class="back-link" href="index.html" style="margin-top:16px;display:inline-flex;">← Return to App</a>
+  </div>
+</div>
+
+</body>
+</html>

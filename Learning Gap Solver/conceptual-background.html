@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conceptual Background — Learning Level Gap Solver</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --navy: #0b1d3a; --navy-mid: #112651;
+      --gold: #d4a017; --gold-light: #f4c842;
+      --blue: #1e40af; --blue-light: #3b82f6;
+      --cream: #f5f0e8; --white: #fff;
+      --font-display: 'Playfair Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font-body); background: var(--cream); color: #0f172a; }
+
+    /* Header */
+    .doc-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      padding: 40px 32px;
+      border-bottom: 4px solid var(--gold);
+      position: relative;
+      overflow: hidden;
+    }
+    .doc-header::before {
+      content: '';
+      position: absolute; top:-100px; right:-100px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,160,23,0.1) 0%, transparent 70%);
+    }
+    .header-inner {
+      max-width: 900px; margin: 0 auto;
+      display: flex; gap: 24px; align-items: flex-start;
+      position: relative; z-index: 1;
+    }
+    .author-photo {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      border: 3px solid var(--gold);
+      object-fit: cover; object-position: top;
+      flex-shrink: 0;
+    }
+    .header-text {}
+    .doc-eyebrow {
+      font-size: 11px; color: var(--gold-light);
+      text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .doc-title {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 3vw, 38px);
+      font-weight: 900; color: white;
+      line-height: 1.15; margin-bottom: 10px;
+    }
+    .doc-subtitle { font-size: 14px; color: rgba(255,255,255,0.7); line-height: 1.6; margin-bottom: 12px; }
+    .author-line { font-size: 13px; color: var(--gold-light); font-weight: 600; }
+    .policy-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .policy-chip {
+      background: rgba(212,160,23,0.15);
+      border: 1px solid rgba(212,160,23,0.3);
+      color: var(--gold-light);
+      font-size: 10px; font-weight: 700;
+      padding: 4px 12px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+
+    /* Body */
+    .doc-body { max-width: 900px; margin: 0 auto; padding: 48px 32px 80px; }
+
+    /* TOC */
+    .toc {
+      background: white; border-radius: 16px;
+      border: 1px solid #e2e8f0; padding: 28px;
+      margin-bottom: 48px; box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .toc h3 {
+      font-family: var(--font-display); font-size: 18px;
+      color: var(--navy); margin-bottom: 16px;
+    }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 8px; }
+    .toc a { color: var(--blue); font-size: 14px; text-decoration: none; font-weight: 500; }
+    .toc a:hover { text-decoration: underline; }
+
+    /* Sections */
+    .doc-section { margin-bottom: 56px; }
+    .section-num {
+      font-size: 11px; color: var(--gold);
+      text-transform: uppercase; letter-spacing: 2px;
+      font-weight: 700; margin-bottom: 6px;
+    }
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 28px; font-weight: 900;
+      color: var(--navy); margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--gold);
+      display: inline-block;
+    }
+    .doc-p {
+      font-size: 15px; color: #334155;
+      line-height: 1.85; margin-bottom: 16px;
+    }
+    .doc-p strong { color: var(--navy); }
+
+    /* Policy boxes */
+    .policy-box {
+      border-radius: 12px; padding: 24px;
+      margin: 24px 0; border-left: 5px solid;
+    }
+    .policy-box.nep { background: #fffbeb; border-color: var(--gold); }
+    .policy-box.ncf { background: #eff6ff; border-color: var(--blue-light); }
+    .policy-box.parakh { background: #ecfdf5; border-color: #059669; }
+    .policy-box.ncert { background: #f5f3ff; border-color: #7c3aed; }
+    .policy-box h4 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+    .policy-box p { font-size: 14px; line-height: 1.7; color: #334155; }
+
+    /* Theory cards */
+    .theory-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px; margin: 24px 0;
+    }
+    .theory-card {
+      background: white; border-radius: 12px;
+      border: 1px solid #e2e8f0; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .theory-card-icon { font-size: 28px; margin-bottom: 10px; }
+    .theory-card h4 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .theory-card p { font-size: 13px; color: #64748b; line-height: 1.6; }
+
+    /* Level comparison table */
+    .level-table {
+      width: 100%; border-collapse: collapse; margin: 24px 0;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-radius: 12px; overflow: hidden;
+    }
+    .level-table th {
+      padding: 14px 18px; font-size: 13px; font-weight: 700;
+      text-align: left; text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .level-table th:nth-child(1) { background: #f8fafc; color: #64748b; }
+    .level-table th:nth-child(2) { background: #fff7ed; color: #ea580c; }
+    .level-table th:nth-child(3) { background: #eff6ff; color: #2563eb; }
+    .level-table th:nth-child(4) { background: #f5f3ff; color: #7c3aed; }
+    .level-table td { padding: 12px 18px; font-size: 13px; color: #334155; border-top: 1px solid #f1f5f9; }
+    .level-table tr:nth-child(even) td { background: #fafafa; }
+
+    /* Impact section */
+    .impact-grid {
+      display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin: 24px 0;
+    }
+    .impact-card {
+      background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+      border-radius: 12px; padding: 24px; color: white;
+    }
+    .impact-num { font-family: var(--font-display); font-size: 36px; font-weight: 900; color: var(--gold-light); }
+    .impact-lbl { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+    /* Back button */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--navy); color: white;
+      font-size: 13px; font-weight: 600;
+      padding: 10px 20px; border-radius: 50px;
+      text-decoration: none; margin-bottom: 32px;
+      transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.85; }
+
+    @media (max-width: 600px) {
+      .doc-body { padding: 32px 20px 60px; }
+      .header-inner { flex-direction: column; }
+      .impact-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="doc-header">
+  <div class="header-inner">
+    <img class="author-photo" src="author.jpg" alt="Mateen Yousuf" />
+    <div class="header-text">
+      <div class="doc-eyebrow">Conceptual Background Document</div>
+      <h1 class="doc-title">Learning Level Gap Solver<br>— Conceptual Framework</h1>
+      <p class="doc-subtitle">The complete theoretical, pedagogical, and policy foundation of the AI-powered adaptive learning platform.</p>
+      <div class="author-line">Mateen Yousuf — Teacher, School Education Department, J&K</div>
+      <div class="policy-row">
+        <span class="policy-chip">NEP 2020</span>
+        <span class="policy-chip">NCF 2023</span>
+        <span class="policy-chip">PARAKH</span>
+        <span class="policy-chip">NCERT</span>
+        <span class="policy-chip">Adaptive Learning</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="doc-body">
+  <a class="back-link" href="index.html">← Back to App</a>
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h3>📋 Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">The Core Problem: Learning Level Gaps in Indian Classrooms</a></li>
+      <li><a href="#s2">Policy Alignment — NEP 2020, NCF 2023, PARAKH, NCERT</a></li>
+      <li><a href="#s3">Educational Theory Behind the App</a></li>
+      <li><a href="#s4">The Three-Level Learning Architecture</a></li>
+      <li><a href="#s5">Diagnostic Assessment Design</a></li>
+      <li><a href="#s6">Adaptive Learning Pathways</a></li>
+      <li><a href="#s7">Teacher Dashboard & Classroom Management</a></li>
+      <li><a href="#s8">Problems Solved by the App</a></li>
+      <li><a href="#s9">Long-Term Impact & Evidence Base</a></li>
+      <li><a href="#s10">About the Author</a></li>
+    </ol>
+  </div>
+
+  <!-- SECTION 1 -->
+  <div class="doc-section" id="s1">
+    <div class="section-num">Section 01</div>
+    <div class="section-title">The Core Problem</div>
+    <p class="doc-p">
+      In the vast majority of Indian classrooms today, a fundamental challenge goes unaddressed: <strong>students sitting in the same grade and the same classroom operate at vastly different learning levels</strong>. A single class of 40 students may include learners who are two grade levels behind, students performing at the expected level, and gifted learners who have already mastered the curriculum.
+    </p>
+    <p class="doc-p">
+      This reality — often called the <strong>Learning Level Gap</strong> — means that a teacher delivering a single lesson to the whole class is simultaneously:
+    </p>
+    <ul style="padding-left:24px;margin-bottom:16px;line-height:2;font-size:15px;color:#334155;">
+      <li><strong>Too advanced</strong> for struggling learners, who fall further behind</li>
+      <li><strong>Too basic</strong> for advanced learners, who become disengaged and bored</li>
+      <li><strong>Approximately appropriate</strong> for only the middle cohort of students</li>
+    </ul>
+    <p class="doc-p">
+      The consequences compound over years: struggling students lose motivation, develop learning anxiety, and eventually drop out. Advanced students develop habits of under-effort. The Average Student Illusion — the mistaken belief that teaching to the middle serves all — is one of the most damaging assumptions in mass education.
+    </p>
+    <p class="doc-p">
+      The <strong>Learning Level Gap Solver</strong> was conceived to break this pattern. It provides every student with instruction calibrated to their exact learning level, within the same classroom, without requiring the teacher to physically manage three separate lesson plans simultaneously.
+    </p>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="doc-section" id="s2">
+    <div class="section-num">Section 02</div>
+    <div class="section-title">Policy Alignment</div>
+
+    <div class="policy-box nep">
+      <h4>🇮🇳 National Education Policy 2020 (NEP 2020)</h4>
+      <p>NEP 2020 represents India's most transformative education reform in three decades. It explicitly calls for <strong>equitable and inclusive education</strong>, <strong>elimination of learning gaps</strong>, and a shift from rote memorization to <strong>competency-based learning</strong>. NEP 2020 Section 4.6 specifically calls for "remedial instruction" and "individual learning pacing," directly justifying the multi-level approach of this app. The policy also emphasizes digital and technology-enabled learning as a key mechanism for personalization at scale.</p>
+    </div>
+
+    <div class="policy-box ncf">
+      <h4>📘 National Curriculum Framework 2023 (NCF 2023)</h4>
+      <p>NCF 2023 represents a paradigm shift from rigid grade-level content delivery to <strong>flexible, competency-based progression</strong>. It states that students should advance based on demonstrated mastery, not merely the passage of academic time. The framework introduces the concept of <strong>learning continua</strong> — recognizing that students at the same grade level may be at very different points in their learning journey. The LLG Solver's three-tier learning architecture directly implements NCF 2023's vision of differentiated, learner-centered instruction.</p>
+    </div>
+
+    <div class="policy-box parakh">
+      <h4>📊 PARAKH — Performance Assessment, Review and Analysis of Knowledge for Holistic Development</h4>
+      <p>PARAKH is India's national assessment reform body, established under NEP 2020 to redesign how student learning is evaluated. PARAKH's core mandate is to move beyond summative examination toward <strong>diagnostic, formative, and competency-based assessment</strong>. The LLG Solver's Diagnostic Assessment module is designed in direct alignment with PARAKH principles — identifying learning gaps early, providing ongoing feedback, and supporting continuous improvement rather than punitive grading.</p>
+    </div>
+
+    <div class="policy-box ncert">
+      <h4>📚 NCERT Learning Outcomes Framework</h4>
+      <p>The National Council of Educational Research and Training has published detailed <strong>subject-wise, grade-wise learning outcomes and competency benchmarks</strong>. The LLG Solver maps all its lesson content and assessment questions to specific NCERT competency descriptors. This ensures that the Foundation, Standard, and Advanced level content genuinely reflects the expected progression of knowledge articulated by India's foremost curriculum authority.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="doc-section" id="s3">
+    <div class="section-num">Section 03</div>
+    <div class="section-title">Educational Theory</div>
+    <p class="doc-p">The Learning Level Gap Solver is not simply a digital textbook. It is grounded in a rich body of educational research and cognitive science. The following theoretical frameworks inform its design:</p>
+
+    <div class="theory-grid">
+      <div class="theory-card">
+        <div class="theory-card-icon">🎯</div>
+        <h4>Differentiated Instruction (Tomlinson, 1999)</h4>
+        <p>Carol Ann Tomlinson's framework argues that effective teaching requires adapting content, process, and product to student readiness, interest, and learning profile. The LLG Solver operationalizes this by presenting the same topic concept through three distinct levels of cognitive complexity.</p>
+      </div>
+      <div class="theory-card">
+        <div class="theory-card-icon">🏆</div>
+        <h4>Mastery Learning (Bloom, 1968)</h4>
+        <p>Benjamin Bloom demonstrated that nearly all students can achieve high learning outcomes if given adequate time and appropriate instruction. His mastery learning model — the foundation of competency-based education — is directly reflected in the LLG Solver's progression system: students advance only after demonstrating mastery.</p>
+      </div>
+      <div class="theory-card">
+        <div class="theory-card-icon">🧠</div>
+        <h4>Zone of Proximal Development (Vygotsky, 1978)</h4>
+        <p>Lev Vygotsky's ZPD theory states that learning is most effective when tasks are slightly above a student's current independent capacity but achievable with guidance. The diagnostic assessment places each student precisely in their ZPD by identifying their current level and assigning instruction one step ahead.</p>
+      </div>
+      <div class="theory-card">
+        <div class="theory-card-icon">🤖</div>
+        <h4>Adaptive Learning Technology</h4>
+        <p>Modern intelligent tutoring systems use performance data to dynamically adjust content difficulty, pacing, and instructional strategy. The LLG Solver implements a rule-based adaptive engine that personalizes learning pathways based on diagnostic results and ongoing performance, enabling personalized instruction at classroom scale.</p>
+      </div>
+      <div class="theory-card">
+        <div class="theory-card-icon">🎮</div>
+        <h4>Motivation & Self-Determination Theory (Deci & Ryan)</h4>
+        <p>Students learn best when they experience autonomy, competence, and relatedness. The LLG Solver's gamification system — badges, progress tracking, and level progression — is designed to foster intrinsic motivation by making learning success visible and personally meaningful.</p>
+      </div>
+      <div class="theory-card">
+        <div class="theory-card-icon">🔄</div>
+        <h4>Formative Assessment for Learning (Black & Wiliam)</h4>
+        <p>Research by Black and Wiliam demonstrates that frequent, low-stakes formative assessment with immediate feedback produces significantly greater learning gains than infrequent summative exams. Every lesson in the LLG Solver includes an embedded practice question with instant feedback, implementing this evidence-based approach.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="doc-section" id="s4">
+    <div class="section-num">Section 04</div>
+    <div class="section-title">The Three-Level Architecture</div>
+    <p class="doc-p">At the heart of the Learning Level Gap Solver is a three-tier learning architecture. Each tier represents a distinct cognitive level, corresponding to the realistic distribution of learning levels in a typical Indian classroom:</p>
+
+    <table class="level-table">
+      <thead>
+        <tr>
+          <th>Dimension</th>
+          <th>🟠 Foundation Level</th>
+          <th>🔵 Standard Level</th>
+          <th>🟣 Advanced Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Target Learner</strong></td><td>Students below grade level; struggling with basic literacy/numeracy</td><td>Students performing at expected grade level</td><td>Students ready for deeper intellectual challenge</td></tr>
+        <tr><td><strong>Typical %</strong></td><td>25–40% of a class</td><td>40–55% of a class</td><td>10–20% of a class</td></tr>
+        <tr><td><strong>Explanation Style</strong></td><td>Simplified text, step-by-step, illustrated</td><td>Standard curriculum explanation with examples</td><td>Analytical, research-informed, multi-layered</td></tr>
+        <tr><td><strong>Bloom's Level</strong></td><td>Remember & Understand</td><td>Apply & Analyze</td><td>Evaluate & Create</td></tr>
+        <tr><td><strong>Assessment Type</strong></td><td>Recognition & basic recall</td><td>Application & conceptual understanding</td><td>Analysis & higher-order reasoning</td></tr>
+        <tr><td><strong>NCF 2023 Alignment</strong></td><td>Foundational Stage competencies</td><td>Preparatory & Middle Stage</td><td>Secondary Stage & beyond</td></tr>
+      </tbody>
+    </table>
+
+    <p class="doc-p">
+      Crucially, this architecture is <strong>fluid, not fixed</strong>. Students are not permanently labelled. As they demonstrate mastery at one level, they progress to the next. This dynamic progression is central to both the NEP 2020 vision of equitable education and the NCF 2023 framework of competency-based learning.
+    </p>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="doc-section" id="s5">
+    <div class="section-num">Section 05</div>
+    <div class="section-title">Diagnostic Assessment Design</div>
+    <p class="doc-p">
+      The Diagnostic Assessment is the app's first point of contact with each learner. It is a <strong>10-question adaptive screening tool</strong> that evaluates three domains: foundational literacy and numeracy, standard curriculum understanding, and higher-order reasoning ability.
+    </p>
+    <p class="doc-p">
+      The assessment is deliberately not a high-stakes test. It is a <strong>compass, not a gate</strong>. Questions progress from simpler to more challenging, mirroring PARAKH's diagnostic assessment philosophy. Based on the score distribution, the student is placed into one of the three levels. Crucially, students and teachers can retake the assessment as many times as needed — reflecting the NCF 2023 principle that assessment should inform learning, not define identity.
+    </p>
+    <p class="doc-p">
+      Scoring thresholds are calibrated empirically: scores below 40% indicate foundational needs; 40–74% indicate standard readiness; 75% and above indicate readiness for advanced content. These thresholds can be adjusted by teachers in future versions of the app.
+    </p>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="doc-section" id="s6">
+    <div class="section-num">Section 06</div>
+    <div class="section-title">Adaptive Learning Pathways</div>
+    <p class="doc-p">
+      Once placed in a level, students follow a <strong>personalised learning pathway</strong>. Each topic is available in all three versions simultaneously. The content engine selects the appropriate version based on the student's current level and presents lessons, diagrams, concept boxes, and embedded practice questions accordingly.
+    </p>
+    <p class="doc-p">
+      The pathway is not a single linear track — students can explore any topic within their subject and level. Progress is tracked through LocalStorage, enabling full offline functionality with persistent data even without an internet connection or server infrastructure.
+    </p>
+    <p class="doc-p">
+      As students complete topics and score well in practice questions, they earn <strong>Achievement Badges</strong> and progress toward level-up milestones. This gamified progression system is informed by self-determination theory — providing visible evidence of competence and maintaining intrinsic motivation.
+    </p>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="doc-section" id="s7">
+    <div class="section-num">Section 07</div>
+    <div class="section-title">Teacher Dashboard</div>
+    <p class="doc-p">
+      The Teacher Dashboard gives educators a real-time view of their classroom's learning level distribution. Rather than requiring teachers to individually assess each student, the diagnostic data aggregates automatically into visual analytics showing the proportion of students at each level.
+    </p>
+    <p class="doc-p">
+      Teachers can view the <strong>Student Roster</strong> with individual level placements, trigger targeted assignments for specific cohorts, generate PARAKH-format progress reports, and send reminders to inactive students. These tools transform the teacher's role from sole information deliverer to <strong>learning facilitator and gap-manager</strong> — precisely the pedagogical shift called for in NCF 2023.
+    </p>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="doc-section" id="s8">
+    <div class="section-num">Section 08</div>
+    <div class="section-title">Problems Solved</div>
+    <p class="doc-p">The Learning Level Gap Solver addresses the following interconnected educational problems:</p>
+    <ul style="padding-left:24px;line-height:2.2;font-size:15px;color:#334155;">
+      <li><strong>The One-Size-Fits-All Instruction Problem</strong> — Solved by three-level content differentiation</li>
+      <li><strong>Undiagnosed Learning Gaps</strong> — Solved by the 10-question PARAKH-aligned diagnostic</li>
+      <li><strong>Teacher Overload</strong> — Solved by automated pathway routing and dashboard analytics</li>
+      <li><strong>Disengaged Advanced Learners</strong> — Solved by Higher-Order Thinking challenges at the Advanced Level</li>
+      <li><strong>Dropout Risk for Struggling Learners</strong> — Solved by confidence-building Foundation Level content</li>
+      <li><strong>Lack of Offline Educational Tools</strong> — Solved by full PWA offline functionality</li>
+      <li><strong>No Visible Progress for Students</strong> — Solved by badges, streak tracking, and level progression</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 9 -->
+  <div class="doc-section" id="s9">
+    <div class="section-num">Section 09</div>
+    <div class="section-title">Long-Term Impact</div>
+    <div class="impact-grid">
+      <div class="impact-card">
+        <div class="impact-num">↓ 40%</div>
+        <div class="impact-lbl">Projected reduction in learning gap within 1 academic year when differentiated instruction is consistently applied (DI research evidence)</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">3× More</div>
+        <div class="impact-lbl">Students reaching mastery when taught at their level versus one-size-fits-all instruction (Bloom's Mastery Learning meta-analyses)</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">NEP 2020</div>
+        <div class="impact-lbl">Full alignment with India's national education transformation roadmap — ensuring this app contributes to the national vision</div>
+      </div>
+      <div class="impact-card">
+        <div class="impact-num">100%</div>
+        <div class="impact-lbl">Offline functionality — accessible to students in low-connectivity rural areas, including across J&K's remote regions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 10 -->
+  <div class="doc-section" id="s10">
+    <div class="section-num">Section 10</div>
+    <div class="section-title">About the Author</div>
+    <div style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;">
+      <img src="author.jpg" alt="Mateen Yousuf" style="width:120px;height:120px;border-radius:50%;border:4px solid var(--gold);object-fit:cover;object-position:top;flex-shrink:0;" />
+      <div>
+        <h3 style="font-family:var(--font-display);font-size:26px;color:var(--navy);margin-bottom:6px;">Mateen Yousuf</h3>
+        <p style="color:var(--gold);font-weight:700;font-size:14px;margin-bottom:16px;">Teacher — School Education Department, Jammu & Kashmir</p>
+        <p class="doc-p">Mateen Yousuf is an educator from Jammu & Kashmir whose work focuses on bridging the gap between national education policy and classroom reality. Working within the School Education Department, J&K, he developed the Learning Level Gap Solver concept to address firsthand the multi-level classroom challenges he observed daily.</p>
+        <p class="doc-p">His vision: that every child — regardless of their starting point — deserves instruction calibrated to their exact level of understanding, and that technology should serve as the bridge between NEP 2020's transformative policy vision and the practical realities of Indian classrooms.</p>
+        <div class="policy-row" style="margin-top:8px;">
+          <span class="policy-chip" style="background:#fffbeb;color:#92400e;border-color:#d97706;">NEP 2020 Advocate</span>
+          <span class="policy-chip" style="background:#eff6ff;color:#1e40af;border-color:#3b82f6;">Adaptive Learning</span>
+          <span class="policy-chip" style="background:#ecfdf5;color:#065f46;border-color:#059669;">Inclusive Education</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:32px;border-top:1px solid #e2e8f0;margin-top:40px;">
+    <p style="font-size:13px;color:#94a3b8;">Learning Level Gap Solver · Mateen Yousuf, Teacher — SED J&K · Aligned with NEP 2020 & NCF 2023</p>
+    <a class="back-link" href="index.html" style="margin-top:16px;display:inline-flex;">← Return to App</a>
+  </div>
+</div>
+
+</body>
+</html>

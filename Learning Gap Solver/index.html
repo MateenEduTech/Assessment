@@ -1,0 +1,2628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a8a" />
+  <meta name="description" content="AI-powered Learning Level Gap Solver — NEP 2020 & NCF 2023 aligned adaptive learning platform" />
+  <title>Learning Level Gap Solver</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="author.jpg" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       CSS VARIABLES & RESET
+    ============================================================ */
+    :root {
+      --navy:       #0b1d3a;
+      --navy-mid:   #112651;
+      --blue:       #1e40af;
+      --blue-light: #3b82f6;
+      --gold:       #d4a017;
+      --gold-light: #f4c842;
+      --cream:      #f5f0e8;
+      --white:      #ffffff;
+      --text-dark:  #0f172a;
+      --text-mid:   #334155;
+      --text-light: #94a3b8;
+      --green:      #059669;
+      --orange:     #ea580c;
+      --purple:     #7c3aed;
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', sans-serif;
+      --font-mono:    'DM Mono', monospace;
+
+      --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-md: 0 8px 32px rgba(0,0,0,0.14);
+      --shadow-lg: 0 20px 60px rgba(0,0,0,0.2);
+      --radius:    16px;
+      --radius-sm: 10px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--text-dark);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ============================================================
+       SCREEN SYSTEM — show/hide pages
+    ============================================================ */
+    .screen { display: none; min-height: 100vh; }
+    .screen.active { display: block; }
+
+    /* ============================================================
+       LANDING PAGE
+    ============================================================ */
+    #screen-landing {
+      background: linear-gradient(160deg, var(--navy) 0%, var(--navy-mid) 50%, #1a3460 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative background patterns */
+    #screen-landing::before {
+      content: '';
+      position: absolute;
+      top: -200px; right: -200px;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,160,23,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #screen-landing::after {
+      content: '';
+      position: absolute;
+      bottom: -100px; left: -100px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .landing-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      position: relative; z-index: 2;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .brand-text {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+    }
+    .brand-text span {
+      display: block;
+      font-family: var(--font-body);
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .policy-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .policy-badge {
+      background: rgba(212,160,23,0.15);
+      border: 1px solid rgba(212,160,23,0.4);
+      color: var(--gold-light);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    /* Hero section */
+    .landing-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 60px 32px 40px;
+      position: relative; z-index: 2;
+    }
+
+    .hero-content {}
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--gold-light);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      width: 32px; height: 1px;
+      background: var(--gold-light);
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 900;
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .hero-title .accent {
+      color: var(--gold-light);
+      display: block;
+    }
+
+    .hero-tagline {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      border-left: 3px solid var(--gold);
+      padding-left: 12px;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 14px 28px;
+      border-radius: 50px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(212,160,23,0.4);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(212,160,23,0.5);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 14px 28px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.2);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.14); }
+
+    /* Author card */
+    .author-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 32px;
+      backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .author-photo-wrap {
+      width: 120px; height: 120px;
+      margin: 0 auto 16px;
+      border-radius: 50%;
+      border: 4px solid var(--gold);
+      overflow: hidden;
+      box-shadow: 0 0 0 6px rgba(212,160,23,0.15);
+    }
+    .author-photo-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      object-position: top;
+    }
+    .author-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+    }
+    .author-role {
+      font-size: 12px;
+      color: var(--gold-light);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .author-quote {
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+      font-style: italic;
+      line-height: 1.6;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 16px;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .stat-box {
+      background: rgba(212,160,23,0.1);
+      border: 1px solid rgba(212,160,23,0.2);
+      border-radius: 10px;
+      padding: 12px 8px;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--gold-light);
+      display: block;
+    }
+    .stat-lbl {
+      font-size: 9px;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Features strip */
+    .features-strip {
+      background: rgba(255,255,255,0.04);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding: 32px;
+      position: relative; z-index: 2;
+    }
+    .features-strip h3 {
+      text-align: center;
+      font-family: var(--font-display);
+      color: white;
+      margin-bottom: 24px;
+      font-size: 18px;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius-sm);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+    .feature-card:hover {
+      transform: translateY(-4px);
+      background: rgba(255,255,255,0.1);
+    }
+    .feature-icon { font-size: 28px; margin-bottom: 8px; display: block; }
+    .feature-name { font-size: 13px; font-weight: 600; color: white; }
+    .feature-desc { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+    /* Navigation bottom bar */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--navy);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      z-index: 100;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.3);
+    }
+    .nav-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.45);
+      font-size: 10px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      padding: 10px 4px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+    .nav-btn .nav-icon { font-size: 20px; }
+    .nav-btn.active, .nav-btn:hover { color: var(--gold-light); }
+
+    /* ============================================================
+       DIAGNOSTIC PAGE
+    ============================================================ */
+    #screen-diagnostic {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      padding-bottom: 80px;
+    }
+
+    .page-header {
+      background: linear-gradient(90deg, var(--navy) 0%, var(--navy-mid) 100%);
+      padding: 20px 24px 24px;
+      border-bottom: 1px solid rgba(212,160,23,0.2);
+    }
+    .page-header-inner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .back-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: white;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .page-title {
+      font-family: var(--font-display);
+      color: white;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    .page-subtitle { font-size: 12px; color: var(--gold-light); margin-top: 2px; }
+
+    .diag-container {
+      max-width: 700px;
+      margin: 32px auto;
+      padding: 0 20px;
+    }
+
+    .diag-intro {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(59,130,246,0.3);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 28px;
+      display: flex;
+      gap: 16px;
+    }
+    .diag-intro-icon { font-size: 32px; flex-shrink: 0; }
+    .diag-intro h3 { color: white; font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .diag-intro p { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+
+    .student-form {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-input, .form-select {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: white;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--blue-light); }
+    .form-select option { background: var(--navy); }
+
+    /* Quiz styles */
+    .quiz-section { }
+    .quiz-progress {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .quiz-progress-text { font-size: 13px; color: rgba(255,255,255,0.6); }
+    .progress-bar-wrap {
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-light), var(--gold));
+      border-radius: 2px;
+      transition: width 0.5s ease;
+    }
+
+    .quiz-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 16px;
+      animation: fadeSlide 0.4s ease;
+    }
+    @keyframes fadeSlide {
+      from { opacity:0; transform: translateX(20px); }
+      to   { opacity:1; transform: translateX(0); }
+    }
+
+    .quiz-q-num {
+      font-size: 11px;
+      color: var(--gold-light);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      font-family: var(--font-mono);
+    }
+    .quiz-question {
+      font-size: 16px;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .quiz-option {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: rgba(255,255,255,0.85);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .quiz-option:hover { background: rgba(59,130,246,0.15); border-color: rgba(59,130,246,0.4); }
+    .quiz-option.selected { background: rgba(59,130,246,0.2); border-color: var(--blue-light); }
+    .quiz-option.correct { background: rgba(5,150,105,0.2); border-color: var(--green); }
+    .quiz-option.wrong { background: rgba(239,68,68,0.2); border-color: #ef4444; }
+    .option-letter {
+      width: 28px; height: 28px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .btn-full {
+      width: 100%;
+      background: linear-gradient(135deg, var(--blue), var(--blue-light));
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      font-family: var(--font-body);
+    }
+    .btn-full:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-full:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--navy);
+    }
+
+    /* Result card */
+    .result-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      animation: fadeSlide 0.5s ease;
+    }
+    .result-level-badge {
+      width: 100px; height: 100px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+    }
+    .result-level-badge.foundation { background: rgba(234,88,12,0.2); border: 3px solid #ea580c; }
+    .result-level-badge.standard   { background: rgba(37,99,235,0.2);  border: 3px solid #2563eb; }
+    .result-level-badge.advanced   { background: rgba(124,58,237,0.2); border: 3px solid #7c3aed; }
+
+    .result-title {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 8px;
+    }
+    .result-subtitle { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
+    .result-score {
+      font-family: var(--font-mono);
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .result-score-lbl { font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+
+    /* ============================================================
+       LEARN PAGE
+    ============================================================ */
+    #screen-learn {
+      background: var(--cream);
+      padding-bottom: 80px;
+    }
+
+    .learn-header {
+      background: linear-gradient(90deg, var(--navy) 0%, var(--navy-mid) 100%);
+      padding: 20px 24px 20px;
+      border-bottom: 3px solid var(--gold);
+    }
+    .learn-header-inner { max-width: 900px; margin: 0 auto; }
+    .level-selector {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .level-tab {
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.65);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .level-tab.active-foundation {
+      background: rgba(234,88,12,0.25);
+      border-color: #ea580c;
+      color: #fb923c;
+    }
+    .level-tab.active-standard {
+      background: rgba(37,99,235,0.25);
+      border-color: #2563eb;
+      color: #60a5fa;
+    }
+    .level-tab.active-advanced {
+      background: rgba(124,58,237,0.25);
+      border-color: #7c3aed;
+      color: #a78bfa;
+    }
+
+    .learn-body { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+
+    .subject-select-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .subject-chip {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-mid);
+      transition: all 0.2s;
+    }
+    .subject-chip.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: white;
+    }
+
+    .topic-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .topic-card {
+      background: white;
+      border-radius: var(--radius);
+      border: 2px solid #f1f5f9;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      box-shadow: var(--shadow-sm);
+    }
+    .topic-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--blue-light);
+    }
+    .topic-card-top {
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+    }
+    .topic-card-body { padding: 16px; }
+    .topic-card-name { font-weight: 700; font-size: 15px; color: var(--text-dark); margin-bottom: 4px; }
+    .topic-card-sub { font-size: 12px; color: var(--text-light); }
+    .topic-card-level {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .level-foundation .topic-card-level { background: #fff7ed; color: #ea580c; }
+    .level-standard   .topic-card-level { background: #eff6ff; color: #2563eb; }
+    .level-advanced   .topic-card-level { background: #f5f3ff; color: #7c3aed; }
+
+    /* Lesson viewer */
+    .lesson-viewer {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      display: none;
+    }
+    .lesson-viewer.open { display: block; animation: fadeSlide 0.3s ease; }
+
+    .lesson-top {
+      padding: 24px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .lesson-breadcrumb {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+    }
+    .lesson-title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+    .lesson-meta { font-size: 12px; color: var(--text-light); }
+
+    .lesson-content-area { padding: 24px; }
+    .lesson-section { margin-bottom: 28px; }
+    .lesson-section h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lesson-section p {
+      font-size: 14px;
+      color: var(--text-mid);
+      line-height: 1.8;
+    }
+
+    .concept-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--blue-light);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 12px 0;
+    }
+    .concept-box p { font-size: 14px; color: #1e3a8a; line-height: 1.7; }
+
+    .visual-diagram {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      margin: 16px 0;
+      border: 1px solid #bae6fd;
+    }
+    .diagram-art { font-size: 60px; margin-bottom: 12px; }
+    .diagram-caption { font-size: 13px; color: #0369a1; font-weight: 600; }
+
+    .practice-wrap {
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .practice-q {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 12px;
+    }
+    .practice-options { display: flex; flex-direction: column; gap: 8px; }
+    .practice-opt {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-mid);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .practice-opt:hover { border-color: var(--blue-light); color: var(--blue); }
+    .practice-opt.correct-ans { border-color: var(--green); background: #ecfdf5; color: #065f46; }
+    .practice-opt.wrong-ans   { border-color: #ef4444;    background: #fef2f2; color: #991b1b; }
+    .feedback-msg {
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: none;
+    }
+    .feedback-msg.show { display: block; }
+    .feedback-msg.ok { background: #ecfdf5; color: #065f46; }
+    .feedback-msg.no { background: #fef2f2; color: #991b1b; }
+
+    /* ============================================================
+       DASHBOARD PAGE
+    ============================================================ */
+    #screen-dashboard {
+      background: #f8fafc;
+      padding-bottom: 80px;
+    }
+
+    .dash-header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+      padding: 24px 24px 32px;
+      color: white;
+    }
+    .dash-greeting {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .dash-sub { font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 20px; }
+
+    .dash-level-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: var(--radius);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .dash-level-icon { font-size: 36px; }
+    .dash-level-info {}
+    .dash-level-label { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; }
+    .dash-level-name { font-size: 20px; font-weight: 700; color: white; }
+    .dash-level-score { font-size: 13px; color: var(--gold-light); }
+
+    .dash-body { max-width: 800px; margin: 0 auto; padding: 24px 20px; }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #f1f5f9;
+    }
+    .stat-card-icon { font-size: 24px; margin-bottom: 8px; }
+    .stat-card-num {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-dark);
+      line-height: 1;
+    }
+    .stat-card-lbl { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+    .recent-list { background: white; border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; margin-bottom: 28px; }
+    .recent-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .recent-item:last-child { border-bottom: none; }
+    .recent-emoji { font-size: 22px; }
+    .recent-info { flex: 1; }
+    .recent-name { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+    .recent-meta { font-size: 11px; color: var(--text-light); }
+    .recent-score {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .recent-score.good { color: var(--green); }
+    .recent-score.avg  { color: var(--gold); }
+    .recent-score.low  { color: var(--orange); }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .badge-item {
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 16px 12px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid #f1f5f9;
+    }
+    .badge-item.earned { border-color: var(--gold); background: #fffbeb; }
+    .badge-emoji { font-size: 28px; margin-bottom: 6px; }
+    .badge-name { font-size: 11px; font-weight: 700; color: var(--text-dark); }
+    .badge-cond { font-size: 10px; color: var(--text-light); margin-top: 2px; }
+    .badge-item.locked { opacity: 0.4; filter: grayscale(1); }
+
+    /* ============================================================
+       TEACHER DASHBOARD PAGE
+    ============================================================ */
+    #screen-teacher {
+      background: #f0f4f8;
+      padding-bottom: 80px;
+    }
+
+    .teacher-header {
+      background: linear-gradient(135deg, #0f2744 0%, #1a3a6b 100%);
+      padding: 24px;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .class-distribution {
+      background: white;
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 20px;
+    }
+    .dist-bars { display: flex; gap: 12px; align-items: flex-end; height: 120px; margin: 20px 0 12px; }
+    .dist-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .dist-bar {
+      width: 100%;
+      border-radius: 6px 6px 0 0;
+      position: relative;
+      transition: height 1s ease;
+    }
+    .dist-bar.foundation { background: linear-gradient(180deg, #fb923c, #ea580c); }
+    .dist-bar.standard   { background: linear-gradient(180deg, #60a5fa, #2563eb); }
+    .dist-bar.advanced   { background: linear-gradient(180deg, #a78bfa, #7c3aed); }
+    .dist-bar-val {
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+    .dist-bar-lbl { font-size: 11px; color: var(--text-light); font-weight: 600; text-align: center; }
+
+    .student-roster {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .roster-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      font-weight: 700;
+      color: var(--text-dark);
+      font-size: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .roster-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 12px 20px;
+      border-bottom: 1px solid #f8fafc;
+      align-items: center;
+      font-size: 13px;
+    }
+    .roster-row.header-row { background: #f8fafc; font-weight: 700; font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+    .level-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .pill-foundation { background: #fff7ed; color: #ea580c; }
+    .pill-standard   { background: #eff6ff; color: #2563eb; }
+    .pill-advanced   { background: #f5f3ff; color: #7c3aed; }
+
+    .teacher-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .action-card {
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .action-card:hover { border-color: var(--blue-light); transform: translateY(-2px); }
+    .action-card-icon { font-size: 28px; margin-bottom: 8px; }
+    .action-card-title { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+    .action-card-desc { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+    /* ============================================================
+       RESOURCES PAGE
+    ============================================================ */
+    #screen-resources {
+      background: var(--cream);
+      padding-bottom: 80px;
+    }
+
+    .resource-categories {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 16px 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .resource-cat {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-mid);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .resource-cat.active { background: var(--navy); color: white; border-color: var(--navy); }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      padding: 0 20px 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .resource-card {
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      border: 1px solid #f1f5f9;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .resource-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+    .resource-card-img {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+    .resource-card-body { padding: 16px; }
+    .resource-card-type {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--blue);
+      margin-bottom: 6px;
+    }
+    .resource-card-title { font-weight: 700; font-size: 14px; color: var(--text-dark); margin-bottom: 4px; }
+    .resource-card-desc { font-size: 12px; color: var(--text-light); line-height: 1.5; }
+    .resource-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-top: 1px solid #f1f5f9;
+    }
+    .resource-tag { font-size: 10px; color: var(--text-light); }
+    .resource-btn {
+      background: var(--navy);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* ============================================================
+       INSTALL BANNER
+    ============================================================ */
+    .install-banner {
+      position: fixed;
+      bottom: 70px;
+      left: 16px; right: 16px;
+      background: linear-gradient(135deg, var(--navy), #1a3460);
+      border: 1px solid rgba(212,160,23,0.4);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-lg);
+      z-index: 200;
+      display: none;
+    }
+    .install-banner.show { display: flex; animation: slideUp 0.4s ease; }
+    @keyframes slideUp { from { transform: translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    .install-text { flex: 1; }
+    .install-text strong { color: white; font-size: 14px; }
+    .install-text p { font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+    .install-actions { display: flex; gap: 8px; }
+    .install-yes {
+      background: var(--gold);
+      color: var(--navy);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+    }
+    .install-no {
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      font-size: 12px;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.15);
+      cursor: pointer;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      top: 20px; left: 50%; transform: translateX(-50%) translateY(-80px);
+      background: var(--navy);
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 50px;
+      box-shadow: var(--shadow-md);
+      z-index: 500;
+      transition: transform 0.3s ease;
+      border: 1px solid rgba(212,160,23,0.3);
+      white-space: nowrap;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .landing-hero { grid-template-columns: 1fr; gap: 32px; }
+      .author-card { display: none; }
+      .landing-hero { padding: 40px 20px 24px; }
+      .form-row { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+      .badge-grid { grid-template-columns: repeat(3,1fr); }
+      .teacher-actions { grid-template-columns: 1fr; }
+      .roster-row { grid-template-columns: 2fr 1fr 1fr; }
+      .roster-row > *:last-child { display: none; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     TOAST NOTIFICATION
+============================================================ -->
+<div class="toast" id="toast">✓ Saved!</div>
+
+<!-- ============================================================
+     INSTALL BANNER (PWA)
+============================================================ -->
+<div class="install-banner" id="installBanner">
+  <span style="font-size:28px">📲</span>
+  <div class="install-text">
+    <strong>Install as App</strong>
+    <p>Add to home screen for offline access</p>
+  </div>
+  <div class="install-actions">
+    <button class="install-yes" onclick="installApp()">Install</button>
+    <button class="install-no" onclick="dismissInstall()">Later</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 1: LANDING
+============================================================ -->
+<div class="screen active" id="screen-landing">
+
+  <div class="landing-header">
+    <div class="brand-badge">
+      <div class="brand-icon">🎓</div>
+      <div class="brand-text">
+        LLG Solver
+        <span>Adaptive Learning Platform</span>
+      </div>
+    </div>
+    <div class="policy-badges">
+      <span class="policy-badge">NEP 2020</span>
+      <span class="policy-badge">NCF 2023</span>
+      <span class="policy-badge">PARAKH</span>
+    </div>
+  </div>
+
+  <div class="landing-hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">AI-Powered Education</div>
+      <h1 class="hero-title">
+        Learning Level
+        <span class="accent">Gap Solver</span>
+      </h1>
+      <p class="hero-tagline">One Classroom. Every Level Supported.</p>
+      <p class="hero-desc">
+        An adaptive learning platform aligned with <strong style="color:var(--gold-light)">NEP 2020</strong>
+        and <strong style="color:var(--gold-light)">NCF 2023</strong> that helps teachers manage multiple
+        learning levels within the same classroom — ensuring no student is left behind.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-primary" onclick="showScreen('diagnostic')">
+          🚀 Start Learning
+        </button>
+        <button class="btn-secondary" onclick="showScreen('teacher')">
+          👨‍🏫 Teacher View
+        </button>
+      </div>
+    </div>
+
+    <div class="author-card">
+      <div class="author-photo-wrap">
+        <img src="author.jpg" alt="Mateen Yousuf" loading="eager" />
+      </div>
+      <div class="author-name">Mateen Yousuf</div>
+      <div class="author-role">Teacher — School Education Department, J&K</div>
+      <p class="author-quote">
+        "Every child learns differently. Our classrooms must adapt — not the child."
+      </p>
+      <div class="stat-row">
+        <div class="stat-box">
+          <span class="stat-num">3</span>
+          <span class="stat-lbl">Learning Levels</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">40+</span>
+          <span class="stat-lbl">Topics</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-num">100%</span>
+          <span class="stat-lbl">Offline</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="features-strip">
+    <h3>Core Features</h3>
+    <div class="features-grid">
+      <div class="feature-card" onclick="showScreen('diagnostic')">
+        <span class="feature-icon">🔍</span>
+        <div class="feature-name">Diagnostic Assessment</div>
+        <div class="feature-desc">Find your learning level instantly</div>
+      </div>
+      <div class="feature-card" onclick="showScreen('learn')">
+        <span class="feature-icon">📚</span>
+        <div class="feature-name">Adaptive Lessons</div>
+        <div class="feature-desc">Foundation · Standard · Advanced</div>
+      </div>
+      <div class="feature-card" onclick="showScreen('dashboard')">
+        <span class="feature-icon">📊</span>
+        <div class="feature-name">Progress Tracking</div>
+        <div class="feature-desc">Badges, scores, mastery charts</div>
+      </div>
+      <div class="feature-card" onclick="showScreen('teacher')">
+        <span class="feature-icon">👨‍🏫</span>
+        <div class="feature-name">Teacher Dashboard</div>
+        <div class="feature-desc">Class-wide learning insights</div>
+      </div>
+      <div class="feature-card" onclick="showScreen('resources')">
+        <span class="feature-icon">🗂️</span>
+        <div class="feature-name">Resources Library</div>
+        <div class="feature-desc">NCF-aligned materials</div>
+      </div>
+      <div class="feature-card" onclick="openConceptBg()">
+        <span class="feature-icon">📖</span>
+        <div class="feature-name">Conceptual Background</div>
+        <div class="feature-desc">Theory & policy alignment</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav for landing -->
+  <div style="height: 60px;"></div>
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="showScreen('landing')"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" onclick="showScreen('diagnostic')"><span class="nav-icon">🔍</span>Diagnose</button>
+    <button class="nav-btn" onclick="showScreen('learn')"><span class="nav-icon">📚</span>Learn</button>
+    <button class="nav-btn" onclick="showScreen('dashboard')"><span class="nav-icon">📊</span>Progress</button>
+    <button class="nav-btn" onclick="showScreen('teacher')"><span class="nav-icon">👨‍🏫</span>Teacher</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 2: DIAGNOSTIC ASSESSMENT
+============================================================ -->
+<div class="screen" id="screen-diagnostic">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <button class="back-btn" onclick="showScreen('landing')">←</button>
+      <div>
+        <div class="page-title">Diagnostic Assessment</div>
+        <div class="page-subtitle">NEP 2020 · Competency-Based · PARAKH Aligned</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="diag-container">
+
+    <!-- Step 1: Student info form -->
+    <div id="diag-step-form">
+      <div class="diag-intro">
+        <div class="diag-intro-icon">🎯</div>
+        <div>
+          <h3>Find Your Learning Level</h3>
+          <p>This short assessment follows the <strong>NCF 2023</strong> competency framework and
+          will place you in the right learning pathway — Foundation, Standard, or Advanced.
+          Takes about 5 minutes.</p>
+        </div>
+      </div>
+
+      <div class="student-form">
+        <h3 style="color:white; margin-bottom:20px; font-family:var(--font-display);">Student Information</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Student Name</label>
+            <input class="form-input" type="text" id="stu-name" placeholder="Enter your name" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Class / Grade</label>
+            <select class="form-select" id="stu-class">
+              <option value="">Select Grade</option>
+              <option>Class 6</option><option>Class 7</option><option>Class 8</option>
+              <option>Class 9</option><option>Class 10</option><option>Class 11</option><option>Class 12</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <select class="form-select" id="stu-subject">
+              <option value="">Select Subject</option>
+              <option>Science</option><option>Mathematics</option><option>English</option>
+              <option>Social Science</option><option>Hindi</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">School</label>
+            <input class="form-input" type="text" id="stu-school" placeholder="School name (optional)" />
+          </div>
+        </div>
+        <button class="btn-full btn-gold" onclick="startDiagnostic()" style="margin-top:8px;">
+          Begin Assessment →
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Quiz -->
+    <div id="diag-step-quiz" style="display:none;">
+      <div class="quiz-progress">
+        <span class="quiz-progress-text" id="quiz-progress-text">Question 1 of 10</span>
+        <span style="font-size:13px; color:rgba(255,255,255,0.5);" id="quiz-category-text">Foundational Literacy</span>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="quiz-bar" style="width:10%"></div>
+      </div>
+      <div id="quiz-card-container"></div>
+      <button class="btn-full" id="quiz-next-btn" onclick="nextQuestion()" disabled style="margin-top:16px;">
+        Next Question →
+      </button>
+    </div>
+
+    <!-- Step 3: Result -->
+    <div id="diag-step-result" style="display:none;"></div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="showScreen('landing')"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn active" onclick="showScreen('diagnostic')"><span class="nav-icon">🔍</span>Diagnose</button>
+    <button class="nav-btn" onclick="showScreen('learn')"><span class="nav-icon">📚</span>Learn</button>
+    <button class="nav-btn" onclick="showScreen('dashboard')"><span class="nav-icon">📊</span>Progress</button>
+    <button class="nav-btn" onclick="showScreen('teacher')"><span class="nav-icon">👨‍🏫</span>Teacher</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 3: LEARN
+============================================================ -->
+<div class="screen" id="screen-learn">
+  <div class="learn-header">
+    <div class="learn-header-inner">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+          <div class="page-title" style="color:white; font-family:var(--font-display);">Adaptive Learning</div>
+          <div style="font-size:12px; color:var(--gold-light); margin-top:2px;">NCF 2023 · Competency-Based Pathways</div>
+        </div>
+        <img src="author.jpg" alt="Mateen Yousuf" style="width:40px;height:40px;border-radius:50%;border:2px solid var(--gold);object-fit:cover;object-position:top;" />
+      </div>
+      <div class="level-selector">
+        <button class="level-tab active-foundation" id="tab-foundation" onclick="setLevel('foundation')">🟠 Foundation</button>
+        <button class="level-tab" id="tab-standard" onclick="setLevel('standard')">🔵 Standard</button>
+        <button class="level-tab" id="tab-advanced" onclick="setLevel('advanced')">🟣 Advanced</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="learn-body">
+    <div class="subject-select-row" id="subject-row">
+      <button class="subject-chip active" onclick="setSubject(this,'Science')">🔬 Science</button>
+      <button class="subject-chip" onclick="setSubject(this,'Maths')">➗ Maths</button>
+      <button class="subject-chip" onclick="setSubject(this,'English')">📝 English</button>
+      <button class="subject-chip" onclick="setSubject(this,'Social')">🌍 Social Science</button>
+    </div>
+
+    <!-- Topic Grid -->
+    <div class="topic-grid" id="topic-grid"></div>
+
+    <!-- Lesson Viewer (hidden until topic selected) -->
+    <div class="lesson-viewer" id="lesson-viewer">
+      <div class="lesson-top">
+        <div class="lesson-breadcrumb" id="lesson-breadcrumb">Science · Foundation Level</div>
+        <div class="lesson-title" id="lesson-title">Photosynthesis</div>
+        <div class="lesson-meta" id="lesson-meta">⏱ ~10 min · 🎯 Beginner friendly</div>
+        <div style="margin-top:12px;">
+          <button onclick="closeLessonViewer()" style="background:#f1f5f9;border:none;padding:8px 16px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:600;">← Back to Topics</button>
+          <button onclick="markComplete()" style="background:var(--green);color:white;border:none;padding:8px 16px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:600;margin-left:8px;">✓ Mark Complete</button>
+        </div>
+      </div>
+      <div class="lesson-content-area" id="lesson-content"></div>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="showScreen('landing')"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" onclick="showScreen('diagnostic')"><span class="nav-icon">🔍</span>Diagnose</button>
+    <button class="nav-btn active" onclick="showScreen('learn')"><span class="nav-icon">📚</span>Learn</button>
+    <button class="nav-btn" onclick="showScreen('dashboard')"><span class="nav-icon">📊</span>Progress</button>
+    <button class="nav-btn" onclick="showScreen('teacher')"><span class="nav-icon">👨‍🏫</span>Teacher</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 4: STUDENT DASHBOARD
+============================================================ -->
+<div class="screen" id="screen-dashboard">
+  <div class="dash-header">
+    <div style="max-width:800px; margin:0 auto;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div>
+          <div class="dash-greeting" id="dash-greeting">Welcome back! 👋</div>
+          <div class="dash-sub" id="dash-sub">Your personalized NEP 2020 learning journey</div>
+        </div>
+        <img src="author.jpg" alt="Mateen Yousuf" style="width:48px;height:48px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;object-position:top;" />
+      </div>
+      <div class="dash-level-card" id="dash-level-card">
+        <div class="dash-level-icon" id="dash-level-icon">🔵</div>
+        <div class="dash-level-info">
+          <div class="dash-level-label">Current Learning Level</div>
+          <div class="dash-level-name" id="dash-level-name">Standard Level</div>
+          <div class="dash-level-score" id="dash-level-score">Take the diagnostic to set your level</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <div class="section-title">📈 Your Statistics</div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-icon">✅</div>
+        <div class="stat-card-num" id="stat-completed">0</div>
+        <div class="stat-card-lbl">Topics Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">🏆</div>
+        <div class="stat-card-num" id="stat-score">0%</div>
+        <div class="stat-card-lbl">Average Score</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">🔥</div>
+        <div class="stat-card-num" id="stat-streak">0</div>
+        <div class="stat-card-lbl">Day Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">🎯</div>
+        <div class="stat-card-num" id="stat-quizzes">0</div>
+        <div class="stat-card-lbl">Quizzes Done</div>
+      </div>
+    </div>
+
+    <div class="section-title">📝 Recent Activity</div>
+    <div class="recent-list" id="recent-list">
+      <div style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">
+        No activity yet. Start learning to see your progress here!
+      </div>
+    </div>
+
+    <div class="section-title">🏅 Achievement Badges</div>
+    <div class="badge-grid">
+      <div class="badge-item" id="badge-explorer">
+        <div class="badge-emoji">🧭</div>
+        <div class="badge-name">Learning Explorer</div>
+        <div class="badge-cond">Complete first topic</div>
+      </div>
+      <div class="badge-item locked" id="badge-master">
+        <div class="badge-emoji">🎓</div>
+        <div class="badge-name">Concept Master</div>
+        <div class="badge-cond">Score 90%+ in quiz</div>
+      </div>
+      <div class="badge-item locked" id="badge-thinker">
+        <div class="badge-emoji">🧠</div>
+        <div class="badge-name">Advanced Thinker</div>
+        <div class="badge-cond">Reach Advanced Level</div>
+      </div>
+      <div class="badge-item locked" id="badge-streak">
+        <div class="badge-emoji">🔥</div>
+        <div class="badge-name">Consistent Learner</div>
+        <div class="badge-cond">7-day streak</div>
+      </div>
+      <div class="badge-item locked" id="badge-completer">
+        <div class="badge-emoji">🏆</div>
+        <div class="badge-name">Topic Champion</div>
+        <div class="badge-cond">Complete 10 topics</div>
+      </div>
+      <div class="badge-item locked" id="badge-nep">
+        <div class="badge-emoji">🇮🇳</div>
+        <div class="badge-name">NEP Achiever</div>
+        <div class="badge-cond">Complete all subjects</div>
+      </div>
+    </div>
+
+    <button class="btn-full" onclick="showScreen('diagnostic')" style="background:linear-gradient(135deg,var(--navy),var(--navy-mid));">
+      🔍 Retake Diagnostic Assessment
+    </button>
+    <div style="margin-top:10px;display:flex;gap:10px;">
+      <a href="conceptual-background.html" target="_blank" style="flex:1;" onclick="openConceptBg()">
+        <button class="btn-full" style="background:linear-gradient(135deg,#4338ca,#6366f1);">📖 Conceptual Background</button>
+      </a>
+      <a href="user-manual.html" target="_blank" style="flex:1;" onclick="openManual()">
+        <button class="btn-full" style="background:linear-gradient(135deg,#0369a1,#0ea5e9);">📋 User Manual</button>
+      </a>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="showScreen('landing')"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" onclick="showScreen('diagnostic')"><span class="nav-icon">🔍</span>Diagnose</button>
+    <button class="nav-btn" onclick="showScreen('learn')"><span class="nav-icon">📚</span>Learn</button>
+    <button class="nav-btn active" onclick="showScreen('dashboard')"><span class="nav-icon">📊</span>Progress</button>
+    <button class="nav-btn" onclick="showScreen('teacher')"><span class="nav-icon">👨‍🏫</span>Teacher</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 5: TEACHER DASHBOARD
+============================================================ -->
+<div class="screen" id="screen-teacher">
+  <div class="teacher-header">
+    <div style="display:flex;justify-content:space-between;align-items:center;max-width:900px;margin:0 auto;">
+      <div>
+        <div style="font-size:11px;color:var(--gold-light);text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">Teacher Dashboard</div>
+        <div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:white;">Class Analytics</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px;">NEP 2020 · NCF 2023 · PARAKH Aligned</div>
+      </div>
+      <div style="text-align:right;">
+        <img src="author.jpg" alt="Mateen Yousuf" style="width:52px;height:52px;border-radius:50%;border:3px solid var(--gold);object-fit:cover;object-position:top;margin-bottom:4px;" />
+        <div style="font-size:10px;color:var(--gold-light);">Mateen Yousuf</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.5);">Teacher · SED, J&K</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:900px; margin:0 auto; padding:20px; padding-bottom:80px;">
+
+    <!-- Class distribution chart -->
+    <div class="class-distribution">
+      <h3 class="section-title" style="margin-bottom:0;">📊 Class Learning Level Distribution</h3>
+      <p style="font-size:12px;color:var(--text-light);margin-bottom:4px;">Based on diagnostic assessments — NCF 2023 competency tracking</p>
+      <div class="dist-bars">
+        <div class="dist-bar-wrap">
+          <div class="dist-bar foundation" style="height:60%;" id="bar-foundation">
+            <span class="dist-bar-val" id="pct-foundation">35%</span>
+          </div>
+          <div class="dist-bar-lbl">🟠 Foundation<br><small>(12 students)</small></div>
+        </div>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar standard" style="height:75%;" id="bar-standard">
+            <span class="dist-bar-val" id="pct-standard">45%</span>
+          </div>
+          <div class="dist-bar-lbl">🔵 Standard<br><small>(15 students)</small></div>
+        </div>
+        <div class="dist-bar-wrap">
+          <div class="dist-bar advanced" style="height:30%;" id="bar-advanced">
+            <span class="dist-bar-val" id="pct-advanced">20%</span>
+          </div>
+          <div class="dist-bar-lbl">🟣 Advanced<br><small>(7 students)</small></div>
+        </div>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:16px;display:flex;gap:20px;flex-wrap:wrap;">
+        <div><span style="font-size:11px;color:var(--text-light);">Total Students</span><br><strong style="font-size:20px;">34</strong></div>
+        <div><span style="font-size:11px;color:var(--text-light);">Assessed</span><br><strong style="font-size:20px;">34</strong></div>
+        <div><span style="font-size:11px;color:var(--text-light);">Avg. Score</span><br><strong style="font-size:20px;">64%</strong></div>
+        <div><span style="font-size:11px;color:var(--text-light);">Active Today</span><br><strong style="font-size:20px;">18</strong></div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="section-title">⚡ Quick Actions</div>
+    <div class="teacher-actions">
+      <div class="action-card" onclick="showToast('📋 Assignment sent to all Foundation students!')">
+        <div class="action-card-icon">📝</div>
+        <div class="action-card-title">Assign Foundation Task</div>
+        <div class="action-card-desc">Send targeted exercises to struggling learners</div>
+      </div>
+      <div class="action-card" onclick="showToast('🎯 Challenge tasks sent to Advanced students!')">
+        <div class="action-card-icon">🚀</div>
+        <div class="action-card-title">Challenge Advanced</div>
+        <div class="action-card-desc">Send higher-order tasks to advanced learners</div>
+      </div>
+      <div class="action-card" onclick="showToast('📊 Progress report generated!')">
+        <div class="action-card-icon">📊</div>
+        <div class="action-card-title">Generate Report</div>
+        <div class="action-card-desc">Export PARAKH-format progress report</div>
+      </div>
+      <div class="action-card" onclick="showToast('🔔 Reminder sent to students!')">
+        <div class="action-card-icon">🔔</div>
+        <div class="action-card-title">Send Reminder</div>
+        <div class="action-card-desc">Notify inactive students to continue</div>
+      </div>
+    </div>
+
+    <!-- Student roster -->
+    <div class="section-title">👥 Student Roster</div>
+    <div class="student-roster">
+      <div class="roster-header">
+        <span>Class Roster (Sample)</span>
+        <button onclick="showToast('📥 Roster exported!')" style="background:var(--navy);color:white;border:none;padding:6px 14px;border-radius:20px;font-size:11px;cursor:pointer;font-weight:600;">Export</button>
+      </div>
+      <div class="roster-row header-row">
+        <span>Student Name</span>
+        <span>Level</span>
+        <span>Score</span>
+        <span>Status</span>
+      </div>
+      <!-- Populated by JS -->
+      <div id="roster-body"></div>
+    </div>
+
+    <!-- NEP Policy Insight -->
+    <div style="background:linear-gradient(135deg,#0f2744,#1a3a6b);border-radius:var(--radius);padding:24px;border:1px solid rgba(212,160,23,0.2);">
+      <div style="font-family:var(--font-display);color:white;font-size:18px;font-weight:700;margin-bottom:8px;">📜 NEP 2020 & NCF 2023 Insight</div>
+      <p style="font-size:13px;color:rgba(255,255,255,0.7);line-height:1.7;">
+        This dashboard aligns with the <span style="color:var(--gold-light);font-weight:600;">National Education Policy 2020</span> mandate for 
+        competency-based, differentiated instruction. The <span style="color:var(--gold-light);font-weight:600;">National Curriculum Framework 2023</span> 
+        emphasizes that students should progress based on mastery, not rigid grade-level pacing. 
+        <span style="color:var(--gold-light);font-weight:600;">PARAKH</span> frameworks guide the diagnostic and formative assessment design used here.
+      </p>
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="showScreen('landing')"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" onclick="showScreen('diagnostic')"><span class="nav-icon">🔍</span>Diagnose</button>
+    <button class="nav-btn" onclick="showScreen('learn')"><span class="nav-icon">📚</span>Learn</button>
+    <button class="nav-btn" onclick="showScreen('dashboard')"><span class="nav-icon">📊</span>Progress</button>
+    <button class="nav-btn active" onclick="showScreen('teacher')"><span class="nav-icon">👨‍🏫</span>Teacher</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     SCREEN 6: RESOURCES
+============================================================ -->
+<div class="screen" id="screen-resources">
+  <div class="page-header" style="background:linear-gradient(90deg,#0f2744,#1a3a6b);">
+    <div class="page-header-inner">
+      <button class="back-btn" onclick="showScreen('landing')">←</button>
+      <div>
+        <div class="page-title">Resource Library</div>
+        <div class="page-subtitle">NEP 2020 · NCF 2023 Aligned Materials</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="resource-categories">
+    <button class="resource-cat active" onclick="filterResources(this,'all')">All</button>
+    <button class="resource-cat" onclick="filterResources(this,'video')">📹 Videos</button>
+    <button class="resource-cat" onclick="filterResources(this,'worksheet')">📄 Worksheets</button>
+    <button class="resource-cat" onclick="filterResources(this,'simulation')">🔬 Simulations</button>
+    <button class="resource-cat" onclick="filterResources(this,'ncf')">📜 NCF Docs</button>
+  </div>
+
+  <div class="resource-grid" id="resource-grid"></div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn" onclick="showScreen('landing')"><span class="nav-icon">🏠</span>Home</button>
+    <button class="nav-btn" onclick="showScreen('diagnostic')"><span class="nav-icon">🔍</span>Diagnose</button>
+    <button class="nav-btn" onclick="showScreen('learn')"><span class="nav-icon">📚</span>Learn</button>
+    <button class="nav-btn" onclick="showScreen('dashboard')"><span class="nav-icon">📊</span>Progress</button>
+    <button class="nav-btn active"><span class="nav-icon">🗂️</span>Resources</button>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+// ============================================================
+// APP STATE — persisted to LocalStorage
+// ============================================================
+let appState = {
+  studentName: '',
+  studentClass: '',
+  subject: '',
+  level: 'standard',       // foundation | standard | advanced
+  diagScore: null,
+  topicsCompleted: [],
+  quizHistory: [],
+  streak: 0,
+  lastActive: null
+};
+
+// Load state from LocalStorage on startup
+function loadState() {
+  const saved = localStorage.getItem('llg_appstate');
+  if (saved) {
+    try { appState = { ...appState, ...JSON.parse(saved) }; } catch(e) {}
+  }
+}
+
+// Save state to LocalStorage
+function saveState() {
+  localStorage.setItem('llg_appstate', JSON.stringify(appState));
+}
+
+loadState();
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + id);
+  if (target) {
+    target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+  if (id === 'dashboard') refreshDashboard();
+  if (id === 'learn') renderTopics();
+  if (id === 'teacher') renderRoster();
+  if (id === 'resources') renderResources('all');
+}
+
+// ============================================================
+// TOAST NOTIFICATION
+// ============================================================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// DIAGNOSTIC ASSESSMENT DATA
+// ============================================================
+const diagnosticQuestions = [
+  {
+    category: 'Foundational Literacy',
+    question: 'Which of the following is a living thing?',
+    options: ['Stone', 'Plant 🌱', 'Water', 'Air'],
+    correct: 1,
+    level: 'foundation'
+  },
+  {
+    category: 'Foundational Numeracy',
+    question: 'What is 12 × 8?',
+    options: ['86', '96 ✓', '98', '84'],
+    correct: 1,
+    level: 'foundation'
+  },
+  {
+    category: 'Basic Comprehension',
+    question: 'The sun rises in the ___.',
+    options: ['West', 'North', 'East ✓', 'South'],
+    correct: 2,
+    level: 'foundation'
+  },
+  {
+    category: 'Standard Concepts',
+    question: 'Photosynthesis occurs in which part of a plant?',
+    options: ['Root', 'Stem', 'Leaf (Chloroplast)', 'Flower'],
+    correct: 2,
+    level: 'standard'
+  },
+  {
+    category: 'Standard Maths',
+    question: 'If x + 7 = 15, what is x?',
+    options: ['6', '7', '8 ✓', '9'],
+    correct: 2,
+    level: 'standard'
+  },
+  {
+    category: 'Standard Reasoning',
+    question: 'Which gas do plants absorb during photosynthesis?',
+    options: ['Oxygen', 'Nitrogen', 'Carbon Dioxide ✓', 'Hydrogen'],
+    correct: 2,
+    level: 'standard'
+  },
+  {
+    category: 'Standard Science',
+    question: 'Newton\'s Second Law states that Force = ?',
+    options: ['Mass × Velocity', 'Mass × Acceleration ✓', 'Weight × Distance', 'Mass ÷ Time'],
+    correct: 1,
+    level: 'standard'
+  },
+  {
+    category: 'Advanced Analysis',
+    question: 'In a food chain, which organism is always at the beginning?',
+    options: ['Carnivore', 'Herbivore', 'Omnivore', 'Producer (Plants) ✓'],
+    correct: 3,
+    level: 'advanced'
+  },
+  {
+    category: 'Advanced Maths',
+    question: 'What is the derivative of x³ + 2x?',
+    options: ['3x² + 2 ✓', 'x² + 2', '3x + 2', '3x²'],
+    correct: 0,
+    level: 'advanced'
+  },
+  {
+    category: 'Critical Thinking',
+    question: 'If supply increases but demand remains constant, the price will:',
+    options: ['Increase', 'Remain same', 'Decrease ✓', 'Double'],
+    correct: 2,
+    level: 'advanced'
+  }
+];
+
+let currentQuestion = 0;
+let diagAnswers = [];
+
+// Start diagnostic
+function startDiagnostic() {
+  const name = document.getElementById('stu-name').value.trim();
+  const cls  = document.getElementById('stu-class').value;
+  const subj = document.getElementById('stu-subject').value;
+
+  if (!name || !cls || !subj) {
+    showToast('⚠️ Please fill in all fields');
+    return;
+  }
+
+  appState.studentName = name;
+  appState.studentClass = cls;
+  appState.subject = subj;
+  saveState();
+
+  currentQuestion = 0;
+  diagAnswers = [];
+
+  document.getElementById('diag-step-form').style.display = 'none';
+  document.getElementById('diag-step-quiz').style.display = 'block';
+  renderQuestion();
+}
+
+// Render current question
+function renderQuestion() {
+  const q = diagnosticQuestions[currentQuestion];
+  const total = diagnosticQuestions.length;
+
+  document.getElementById('quiz-progress-text').textContent =
+    `Question ${currentQuestion + 1} of ${total}`;
+  document.getElementById('quiz-category-text').textContent = q.category;
+  document.getElementById('quiz-bar').style.width = ((currentQuestion + 1) / total * 100) + '%';
+
+  const letters = ['A', 'B', 'C', 'D'];
+  const html = `
+    <div class="quiz-card">
+      <div class="quiz-q-num">Question ${currentQuestion + 1} · ${q.category}</div>
+      <div class="quiz-question">${q.question}</div>
+      <div class="quiz-options">
+        ${q.options.map((opt, i) => `
+          <button class="quiz-option" onclick="selectAnswer(${i})" id="opt-${i}">
+            <span class="option-letter">${letters[i]}</span>
+            ${opt.replace(' ✓', '')}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  document.getElementById('quiz-card-container').innerHTML = html;
+  document.getElementById('quiz-next-btn').disabled = true;
+}
+
+// Select an answer
+function selectAnswer(idx) {
+  const q = diagnosticQuestions[currentQuestion];
+  const opts = document.querySelectorAll('.quiz-option');
+
+  opts.forEach(o => o.style.pointerEvents = 'none');
+  opts[idx].classList.add('selected');
+
+  const isCorrect = idx === q.correct;
+  diagAnswers.push({ questionIdx: currentQuestion, chosen: idx, correct: isCorrect });
+
+  setTimeout(() => {
+    opts[q.correct].classList.add('correct');
+    if (!isCorrect) opts[idx].classList.add('wrong');
+  }, 300);
+
+  document.getElementById('quiz-next-btn').disabled = false;
+  const isLast = currentQuestion >= diagnosticQuestions.length - 1;
+  document.getElementById('quiz-next-btn').textContent =
+    isLast ? 'See My Result 🎯' : 'Next Question →';
+}
+
+// Move to next question or show result
+function nextQuestion() {
+  currentQuestion++;
+  if (currentQuestion >= diagnosticQuestions.length) {
+    showDiagResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+// Calculate and show result
+function showDiagResult() {
+  const correct = diagAnswers.filter(a => a.correct).length;
+  const total = diagnosticQuestions.length;
+  const pct = Math.round(correct / total * 100);
+
+  let level, levelName, levelIcon, levelClass, levelDesc;
+  if (pct < 40) {
+    level = 'foundation'; levelName = 'Foundation Level'; levelIcon = '🟠'; levelClass = 'foundation';
+    levelDesc = 'You will start with foundational concepts and step-by-step explanations. This is a great place to build strong basics!';
+  } else if (pct < 75) {
+    level = 'standard'; levelName = 'Standard Level'; levelIcon = '🔵'; levelClass = 'standard';
+    levelDesc = 'You are performing at the expected grade level. You will learn standard curriculum concepts with clear explanations.';
+  } else {
+    level = 'advanced'; levelName = 'Advanced Level'; levelIcon = '🟣'; levelClass = 'advanced';
+    levelDesc = 'Excellent performance! You are ready for deeper intellectual challenges with analytical and higher-order thinking tasks.';
+  }
+
+  appState.level = level;
+  appState.diagScore = pct;
+  appState.quizHistory.push({ date: new Date().toLocaleDateString(), score: pct, type: 'Diagnostic' });
+  saveState();
+
+  const html = `
+    <div class="result-card">
+      <div class="result-level-badge ${levelClass}">${levelIcon}</div>
+      <div class="result-title">${levelName}</div>
+      <div class="result-subtitle">Your NEP 2020 aligned learning pathway is ready</div>
+      <div class="result-score" style="color:${levelClass==='foundation'?'#fb923c':levelClass==='standard'?'#60a5fa':'#a78bfa'}">${pct}%</div>
+      <div class="result-score-lbl">Diagnostic Score (${correct}/${total} correct)</div>
+      <p style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.7;margin-bottom:24px;">${levelDesc}</p>
+      <button class="btn-full btn-gold" onclick="goToLearnAtLevel('${level}')" style="margin-bottom:10px;">
+        🚀 Start ${levelName} Learning →
+      </button>
+      <button class="btn-full" onclick="restartDiagnostic()">
+        🔄 Retake Assessment
+      </button>
+    </div>
+  `;
+
+  document.getElementById('diag-step-quiz').style.display = 'none';
+  document.getElementById('diag-step-result').innerHTML = html;
+  document.getElementById('diag-step-result').style.display = 'block';
+}
+
+function restartDiagnostic() {
+  document.getElementById('diag-step-result').style.display = 'none';
+  document.getElementById('diag-step-form').style.display = 'block';
+}
+
+function goToLearnAtLevel(level) {
+  appState.level = level;
+  saveState();
+  setLevel(level);
+  showScreen('learn');
+}
+
+// ============================================================
+// LEARN — TOPICS & LESSONS
+// ============================================================
+let currentLevel   = 'foundation';
+let currentSubject = 'Science';
+
+const topicsData = {
+  Science: {
+    foundation: [
+      { name: 'What is Life?', emoji: '🌱', time: '8 min', id: 'life-basics' },
+      { name: 'Parts of a Plant', emoji: '🌿', time: '10 min', id: 'plant-parts' },
+      { name: 'Water & Its States', emoji: '💧', time: '8 min', id: 'water-states' },
+      { name: 'The Sun & Stars', emoji: '☀️', time: '10 min', id: 'sun-stars' },
+      { name: 'Animals & Food', emoji: '🐘', time: '8 min', id: 'animals-food' },
+      { name: 'Our Body', emoji: '🧑', time: '10 min', id: 'our-body' }
+    ],
+    standard: [
+      { name: 'Photosynthesis', emoji: '🌿', time: '12 min', id: 'photosynthesis' },
+      { name: 'Cell Structure', emoji: '🔬', time: '15 min', id: 'cell-structure' },
+      { name: 'Newton\'s Laws', emoji: '⚡', time: '14 min', id: 'newtons-laws' },
+      { name: 'Ecosystems', emoji: '🌍', time: '12 min', id: 'ecosystems' },
+      { name: 'Chemical Reactions', emoji: '⚗️', time: '15 min', id: 'chem-reactions' },
+      { name: 'Light & Optics', emoji: '💡', time: '13 min', id: 'light-optics' }
+    ],
+    advanced: [
+      { name: 'Genetic Inheritance', emoji: '🧬', time: '18 min', id: 'genetics' },
+      { name: 'Quantum Basics', emoji: '⚛️', time: '20 min', id: 'quantum' },
+      { name: 'Evolution Theory', emoji: '🦎', time: '18 min', id: 'evolution' },
+      { name: 'Thermodynamics', emoji: '🌡️', time: '20 min', id: 'thermodynamics' },
+      { name: 'Organic Chemistry', emoji: '🧪', time: '22 min', id: 'organic-chem' },
+      { name: 'Electromagnetism', emoji: '🧲', time: '18 min', id: 'electromagnetism' }
+    ]
+  },
+  Maths: {
+    foundation: [
+      { name: 'Basic Addition', emoji: '➕', time: '8 min', id: 'addition' },
+      { name: 'Tables & Multiplication', emoji: '✖️', time: '10 min', id: 'tables' },
+      { name: 'Fractions Basics', emoji: '½', time: '10 min', id: 'fractions' }
+    ],
+    standard: [
+      { name: 'Algebra Intro', emoji: '🔣', time: '14 min', id: 'algebra' },
+      { name: 'Geometry Basics', emoji: '📐', time: '12 min', id: 'geometry' },
+      { name: 'Linear Equations', emoji: '📈', time: '14 min', id: 'linear-eq' }
+    ],
+    advanced: [
+      { name: 'Calculus Intro', emoji: '∫', time: '20 min', id: 'calculus' },
+      { name: 'Probability & Stats', emoji: '🎲', time: '18 min', id: 'probability' },
+      { name: 'Trigonometry', emoji: '📐', time: '18 min', id: 'trigonometry' }
+    ]
+  },
+  English: {
+    foundation: [
+      { name: 'Reading Simple Texts', emoji: '📖', time: '8 min', id: 'reading-basic' },
+      { name: 'Basic Grammar', emoji: '✏️', time: '10 min', id: 'grammar-basic' }
+    ],
+    standard: [
+      { name: 'Comprehension Skills', emoji: '📝', time: '12 min', id: 'comprehension' },
+      { name: 'Writing Paragraphs', emoji: '✍️', time: '14 min', id: 'paragraphs' }
+    ],
+    advanced: [
+      { name: 'Essay Writing', emoji: '📄', time: '18 min', id: 'essay' },
+      { name: 'Literary Analysis', emoji: '🎭', time: '20 min', id: 'literary' }
+    ]
+  },
+  Social: {
+    foundation: [
+      { name: 'Our Country India', emoji: '🇮🇳', time: '8 min', id: 'india-basics' },
+      { name: 'Maps & Directions', emoji: '🗺️', time: '10 min', id: 'maps' }
+    ],
+    standard: [
+      { name: 'Democracy & Governance', emoji: '🏛️', time: '14 min', id: 'democracy' },
+      { name: 'India\'s Geography', emoji: '⛰️', time: '12 min', id: 'geography' }
+    ],
+    advanced: [
+      { name: 'Indian History Analysis', emoji: '📜', time: '18 min', id: 'history-analysis' },
+      { name: 'Global Economics', emoji: '💹', time: '20 min', id: 'economics' }
+    ]
+  }
+};
+
+// Detailed lesson content
+const lessonContent = {
+  'photosynthesis': {
+    foundation: {
+      sections: [
+        {
+          title: '🌿 What is Photosynthesis? (Simple)',
+          body: 'Photosynthesis is how green plants make their own food using sunlight. Think of it like a kitchen where plants cook their food!',
+          diagram: { art: '☀️ → 🌿 → 🍬', caption: 'Sunlight + Leaves = Food for the plant' }
+        },
+        {
+          title: '🧪 What do plants need?',
+          body: 'Plants need three things: Sunlight ☀️, Water 💧, and Carbon Dioxide (a gas in air). They use these to make sugar (food) and release Oxygen.',
+          concept: 'Sunlight + Water + Carbon Dioxide → Sugar + Oxygen'
+        }
+      ],
+      practice: {
+        q: 'Where does photosynthesis happen in a plant?',
+        options: ['In the roots', 'In the leaves 🌿', 'In the flowers', 'Underground'],
+        correct: 1
+      }
+    },
+    standard: {
+      sections: [
+        {
+          title: '🔬 Photosynthesis — The Process',
+          body: 'Photosynthesis is a biochemical process occurring in the chloroplasts of plant cells. Chlorophyll, the green pigment, absorbs light energy and uses it to convert carbon dioxide and water into glucose and oxygen.',
+          diagram: { art: '6CO₂ + 6H₂O → C₆H₁₂O₆ + 6O₂', caption: 'The balanced chemical equation of photosynthesis' }
+        },
+        {
+          title: '⚡ Light-Dependent & Light-Independent Reactions',
+          body: 'Photosynthesis occurs in two stages: (1) Light-dependent reactions occur in the thylakoid membrane where ATP and NADPH are produced. (2) The Calvin Cycle (light-independent) occurs in the stroma where CO₂ is fixed into glucose.',
+          concept: 'Light Reactions → ATP + NADPH → Calvin Cycle → Glucose'
+        }
+      ],
+      practice: {
+        q: 'Which gas is produced as a byproduct of photosynthesis?',
+        options: ['Carbon Dioxide', 'Nitrogen', 'Oxygen ✓', 'Hydrogen'],
+        correct: 2
+      }
+    },
+    advanced: {
+      sections: [
+        {
+          title: '⚗️ Photosynthetic Pathways — C3, C4, CAM',
+          body: 'Plants use different photosynthetic pathways depending on their environment. C3 plants (wheat, rice) fix CO₂ directly via RuBisCO. C4 plants (maize, sugarcane) concentrate CO₂ spatially to minimize photorespiration. CAM plants (cacti) separate CO₂ fixation temporally — absorbing at night to reduce water loss.',
+          concept: 'RuBP + CO₂ → 3-PGA (C3) | PEP + CO₂ → OAA → Malate (C4)'
+        },
+        {
+          title: '🔬 Quantum Efficiency & Light Harvesting',
+          body: 'The light-harvesting complex (LHC) contains hundreds of chlorophyll molecules arranged to maximize photon capture. Quantum coherence may play a role in the near-perfect energy transfer efficiency (~95%) in photosystems I and II — a topic of active research.',
+          diagram: { art: '🔆 → LHC → P680 → P700 → NADPH', caption: 'Electron transport chain in photosystems' }
+        }
+      ],
+      practice: {
+        q: 'Which enzyme catalyzes CO₂ fixation in the Calvin Cycle?',
+        options: ['ATP Synthase', 'RuBisCO ✓', 'Glucose Oxidase', 'Chlorophyllase'],
+        correct: 1
+      }
+    }
+  }
+};
+
+// Get default lesson for any topic
+function getDefaultLesson(topicName, level) {
+  const levelNames = { foundation: 'Foundation', standard: 'Standard', advanced: 'Advanced' };
+  const descs = {
+    foundation: 'Simple, illustrated explanation with step-by-step guidance. Perfect for building strong foundational understanding as recommended by NCF 2023.',
+    standard: 'Standard curriculum-level explanation with conceptual examples and practice questions. Aligned with NCERT learning outcomes.',
+    advanced: 'In-depth analytical exploration with higher-order thinking challenges. Designed for advanced learners per NEP 2020 gifted education guidelines.'
+  };
+
+  return {
+    sections: [
+      {
+        title: `📚 Introduction to ${topicName}`,
+        body: `Welcome to this ${levelNames[level]} Level lesson on ${topicName}. This content is specially designed for your learning level following the NCF 2023 competency framework. ${descs[level]}`
+      },
+      {
+        title: '🎯 Learning Objectives',
+        body: `By the end of this lesson, you will be able to understand core concepts of ${topicName}, apply your knowledge through practice exercises, and connect this topic to real-world applications.`,
+        concept: `Core Concept → Understanding → Application → Mastery`
+      }
+    ],
+    practice: {
+      q: `Which of the following best describes ${topicName}?`,
+      options: ['An unrelated concept', `A fundamental topic in this subject`, 'Something not in the syllabus', 'An advanced research topic'],
+      correct: 1
+    }
+  };
+}
+
+function setLevel(level) {
+  currentLevel = level;
+  appState.level = level;
+  saveState();
+
+  ['foundation', 'standard', 'advanced'].forEach(l => {
+    const tab = document.getElementById('tab-' + l);
+    if (tab) tab.className = 'level-tab';
+  });
+
+  const activeTab = document.getElementById('tab-' + level);
+  if (activeTab) activeTab.classList.add('active-' + level);
+
+  renderTopics();
+  closeLessonViewer();
+}
+
+function setSubject(btn, subj) {
+  currentSubject = subj;
+  document.querySelectorAll('.subject-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderTopics();
+  closeLessonViewer();
+}
+
+function renderTopics() {
+  const grid = document.getElementById('topic-grid');
+  if (!grid) return;
+
+  const subjects = topicsData[currentSubject] || topicsData['Science'];
+  const topics = subjects[currentLevel] || [];
+
+  const bgColors = {
+    foundation: 'linear-gradient(135deg, #fff7ed, #fed7aa)',
+    standard:   'linear-gradient(135deg, #eff6ff, #bfdbfe)',
+    advanced:   'linear-gradient(135deg, #f5f3ff, #ddd6fe)'
+  };
+
+  grid.className = 'topic-grid level-' + currentLevel;
+
+  if (topics.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-light);">No topics available for this combination yet.</div>';
+    return;
+  }
+
+  grid.innerHTML = topics.map(t => {
+    const completed = appState.topicsCompleted.includes(t.id);
+    return `
+      <div class="topic-card" onclick="openLesson('${t.id}','${t.name}')">
+        <div class="topic-card-top" style="background:${bgColors[currentLevel]}">
+          ${t.emoji}${completed ? ' <span style="font-size:16px;">✅</span>' : ''}
+        </div>
+        <div class="topic-card-body">
+          <div class="topic-card-name">${t.name}</div>
+          <div class="topic-card-sub">⏱ ${t.time} · ${currentSubject}</div>
+          <span class="topic-card-level">${currentLevel}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openLesson(id, name) {
+  const viewer = document.getElementById('lesson-viewer');
+  viewer.classList.add('open');
+  viewer.scrollIntoView({ behavior: 'smooth' });
+
+  const levelNames = { foundation: 'Foundation', standard: 'Standard', advanced: 'Advanced' };
+  document.getElementById('lesson-breadcrumb').textContent =
+    `${currentSubject} · ${levelNames[currentLevel]} Level`;
+  document.getElementById('lesson-title').textContent = name;
+  document.getElementById('lesson-meta').textContent =
+    `⏱ Estimated 10–15 min · 🎯 NEP 2020 aligned · NCF 2023 competency`;
+
+  const content = (lessonContent[id] && lessonContent[id][currentLevel])
+    ? lessonContent[id][currentLevel]
+    : getDefaultLesson(name, currentLevel);
+
+  let html = '';
+
+  content.sections.forEach(sec => {
+    html += `<div class="lesson-section">`;
+    html += `<h3>${sec.title}</h3>`;
+    html += `<p>${sec.body}</p>`;
+    if (sec.concept) {
+      html += `<div class="concept-box"><p><strong>Key Formula/Concept:</strong><br>${sec.concept}</p></div>`;
+    }
+    if (sec.diagram) {
+      html += `<div class="visual-diagram">
+        <div class="diagram-art">${sec.diagram.art}</div>
+        <div class="diagram-caption">${sec.diagram.caption}</div>
+      </div>`;
+    }
+    html += `</div>`;
+  });
+
+  // Practice question
+  const p = content.practice;
+  const letters = ['A','B','C','D'];
+  html += `
+    <div class="lesson-section">
+      <h3>✏️ Practice Question</h3>
+      <div class="practice-wrap">
+        <div class="practice-q">${p.q}</div>
+        <div class="practice-options">
+          ${p.options.map((opt,i) => `
+            <button class="practice-opt" onclick="checkPractice(this, ${i}, ${p.correct}, '${id}')">
+              ${letters[i]}. ${opt.replace(' ✓','')}
+            </button>
+          `).join('')}
+        </div>
+        <div class="feedback-msg" id="fb-${id}"></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('lesson-content').innerHTML = html;
+}
+
+function checkPractice(btn, chosen, correct, topicId) {
+  const opts = btn.closest('.practice-options').querySelectorAll('.practice-opt');
+  opts.forEach(o => o.style.pointerEvents = 'none');
+
+  const fb = document.getElementById('fb-' + topicId);
+  if (chosen === correct) {
+    btn.classList.add('correct-ans');
+    fb.textContent = '✅ Correct! Well done!';
+    fb.className = 'feedback-msg show ok';
+  } else {
+    btn.classList.add('wrong-ans');
+    opts[correct].classList.add('correct-ans');
+    fb.textContent = '❌ Not quite. The highlighted answer is correct.';
+    fb.className = 'feedback-msg show no';
+  }
+}
+
+function closeLessonViewer() {
+  const viewer = document.getElementById('lesson-viewer');
+  if (viewer) viewer.classList.remove('open');
+}
+
+function markComplete() {
+  const lessonTitle = document.getElementById('lesson-title').textContent;
+
+  // Get current topic id from the open lesson — use title as fallback key
+  const key = lessonTitle.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g,'');
+  if (!appState.topicsCompleted.includes(key)) {
+    appState.topicsCompleted.push(key);
+  }
+
+  appState.quizHistory.push({
+    date: new Date().toLocaleDateString(),
+    name: lessonTitle,
+    score: Math.floor(Math.random() * 30) + 70,
+    subject: currentSubject,
+    level: currentLevel
+  });
+
+  // Badge unlock
+  if (appState.topicsCompleted.length >= 1) {
+    localStorage.setItem('llg_badge_explorer', '1');
+  }
+
+  saveState();
+  showToast('🎉 Topic marked complete!');
+  closeLessonViewer();
+  renderTopics();
+}
+
+// ============================================================
+// DASHBOARD REFRESH
+// ============================================================
+function refreshDashboard() {
+  const name = appState.studentName || 'Learner';
+  document.getElementById('dash-greeting').textContent = `Welcome back, ${name}! 👋`;
+
+  const levelInfo = {
+    foundation: { icon: '🟠', name: 'Foundation Level', color: '#fb923c' },
+    standard:   { icon: '🔵', name: 'Standard Level',   color: '#60a5fa' },
+    advanced:   { icon: '🟣', name: 'Advanced Level',    color: '#a78bfa' }
+  };
+  const li = levelInfo[appState.level] || levelInfo.standard;
+
+  document.getElementById('dash-level-icon').textContent = li.icon;
+  document.getElementById('dash-level-name').textContent = li.name;
+  document.getElementById('dash-level-score').textContent =
+    appState.diagScore !== null
+      ? `Diagnostic Score: ${appState.diagScore}%`
+      : 'Take the diagnostic to set your level';
+
+  document.getElementById('stat-completed').textContent = appState.topicsCompleted.length;
+
+  const scores = appState.quizHistory.map(q => q.score).filter(Boolean);
+  const avg = scores.length ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
+  document.getElementById('stat-score').textContent = avg + '%';
+  document.getElementById('stat-streak').textContent = appState.streak || 0;
+  document.getElementById('stat-quizzes').textContent = appState.quizHistory.length;
+
+  // Recent activity
+  const recentList = document.getElementById('recent-list');
+  if (appState.quizHistory.length === 0) {
+    recentList.innerHTML = '<div style="padding:24px;text-align:center;color:#94a3b8;font-size:13px;">No activity yet. Start learning to see your progress here!</div>';
+  } else {
+    const recent = [...appState.quizHistory].reverse().slice(0, 5);
+    recentList.innerHTML = recent.map(q => {
+      const scoreClass = q.score >= 80 ? 'good' : q.score >= 60 ? 'avg' : 'low';
+      return `
+        <div class="recent-item">
+          <div class="recent-emoji">📚</div>
+          <div class="recent-info">
+            <div class="recent-name">${q.name || q.type || 'Activity'}</div>
+            <div class="recent-meta">${q.date} · ${q.subject || 'General'}</div>
+          </div>
+          ${q.score ? `<div class="recent-score ${scoreClass}">${q.score}%</div>` : ''}
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Badges
+  if (appState.topicsCompleted.length >= 1) {
+    document.getElementById('badge-explorer').classList.remove('locked');
+    document.getElementById('badge-explorer').classList.add('earned');
+  }
+  if (appState.level === 'advanced') {
+    document.getElementById('badge-thinker').classList.remove('locked');
+    document.getElementById('badge-thinker').classList.add('earned');
+  }
+  if (avg >= 90 && scores.length > 0) {
+    document.getElementById('badge-master').classList.remove('locked');
+    document.getElementById('badge-master').classList.add('earned');
+  }
+  if (appState.topicsCompleted.length >= 10) {
+    document.getElementById('badge-completer').classList.remove('locked');
+    document.getElementById('badge-completer').classList.add('earned');
+  }
+}
+
+// ============================================================
+// TEACHER ROSTER
+// ============================================================
+const sampleStudents = [
+  { name: 'Aisha Malik',     level: 'foundation', score: 34, status: 'Active' },
+  { name: 'Rohan Sharma',    level: 'standard',   score: 67, status: 'Active' },
+  { name: 'Priya Kapoor',    level: 'advanced',   score: 88, status: 'Active' },
+  { name: 'Bilal Ahmed',     level: 'foundation', score: 28, status: 'Inactive' },
+  { name: 'Sneha Gupta',     level: 'standard',   score: 72, status: 'Active' },
+  { name: 'Arjun Singh',     level: 'advanced',   score: 91, status: 'Active' },
+  { name: 'Fatima Wani',     level: 'foundation', score: 41, status: 'Active' },
+  { name: 'Dev Patel',       level: 'standard',   score: 58, status: 'Active' },
+  { name: 'Sara Bhat',       level: 'advanced',   score: 85, status: 'Inactive' },
+  { name: 'Mohd. Iqbal',     level: 'foundation', score: 32, status: 'Active' }
+];
+
+function renderRoster() {
+  const body = document.getElementById('roster-body');
+  if (!body) return;
+
+  body.innerHTML = sampleStudents.map(s => {
+    const pillClass = `pill-${s.level}`;
+    const lvlLabel = s.level.charAt(0).toUpperCase() + s.level.slice(1);
+    const statusStyle = s.status === 'Active'
+      ? 'color:#059669;font-weight:600;'
+      : 'color:#94a3b8;';
+    return `
+      <div class="roster-row">
+        <span style="font-weight:600;color:var(--text-dark);">${s.name}</span>
+        <span><span class="level-pill ${pillClass}">${lvlLabel}</span></span>
+        <span style="font-family:var(--font-mono);font-weight:600;">${s.score}%</span>
+        <span style="${statusStyle}">${s.status}</span>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// RESOURCES LIBRARY
+// ============================================================
+const resourcesData = [
+  { type: 'ncf', emoji: '📜', title: 'NCF 2023 Framework', desc: 'Complete National Curriculum Framework 2023 guidelines for competency-based learning', tag: 'Policy Document', color: '#f0f9ff' },
+  { type: 'ncf', emoji: '🇮🇳', title: 'NEP 2020 Summary', desc: 'Key provisions of National Education Policy 2020 relevant to classroom teachers', tag: 'Policy', color: '#fffbeb' },
+  { type: 'worksheet', emoji: '📄', title: 'Foundation Worksheet – Science', desc: 'Printable worksheets for Foundation Level learners — aligned with NCF 2023', tag: 'Foundation', color: '#fff7ed' },
+  { type: 'worksheet', emoji: '📄', title: 'Standard Worksheet – Maths', desc: 'Practice exercises for Standard Level — algebra, geometry, linear equations', tag: 'Standard', color: '#eff6ff' },
+  { type: 'simulation', emoji: '🔬', title: 'Photosynthesis Simulation', desc: 'Interactive simulation showing how light intensity affects the rate of photosynthesis', tag: 'Science', color: '#ecfdf5' },
+  { type: 'simulation', emoji: '⚗️', title: 'Chemical Reactions Lab', desc: 'Virtual chemistry lab — observe reactions between acids and bases safely', tag: 'Science', color: '#ecfdf5' },
+  { type: 'video', emoji: '📹', title: 'Differentiated Instruction Guide', desc: 'Video tutorial for teachers on implementing multi-level instruction in one classroom', tag: 'Teacher', color: '#fdf4ff' },
+  { type: 'video', emoji: '🎓', title: 'PARAKH Assessment Framework', desc: 'Understanding PARAKH — Performance Assessment, Review and Analysis of Knowledge', tag: 'Assessment', color: '#f0f9ff' },
+  { type: 'worksheet', emoji: '📋', title: 'Advanced Critical Thinking Tasks', desc: 'Higher-order thinking worksheets for Advanced Level learners per NEP 2020', tag: 'Advanced', color: '#f5f3ff' },
+  { type: 'ncf', emoji: '📊', title: 'NCERT Learning Outcomes Framework', desc: 'Competency benchmarks and mastery criteria for all subjects and grades', tag: 'NCERT', color: '#fff7ed' }
+];
+
+function renderResources(filter) {
+  const grid = document.getElementById('resource-grid');
+  if (!grid) return;
+
+  const filtered = filter === 'all' ? resourcesData : resourcesData.filter(r => r.type === filter);
+
+  grid.innerHTML = filtered.map(r => `
+    <div class="resource-card">
+      <div class="resource-card-img" style="background:${r.color}">${r.emoji}</div>
+      <div class="resource-card-body">
+        <div class="resource-card-type">${r.type.toUpperCase()}</div>
+        <div class="resource-card-title">${r.title}</div>
+        <div class="resource-card-desc">${r.desc}</div>
+      </div>
+      <div class="resource-card-footer">
+        <span class="resource-tag">🏷 ${r.tag}</span>
+        <button class="resource-btn" onclick="showToast('📥 Opening: ${r.title}')">Open</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterResources(btn, filter) {
+  document.querySelectorAll('.resource-cat').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderResources(filter);
+}
+
+// ============================================================
+// EXTERNAL PAGES (open conceptual background & manual)
+// ============================================================
+function openConceptBg() {
+  window.open('conceptual-background.html', '_blank');
+}
+function openManual() {
+  window.open('user-manual.html', '_blank');
+}
+
+// ============================================================
+// PWA — SERVICE WORKER & INSTALL
+// ============================================================
+let deferredPrompt = null;
+
+// Only register Service Worker when running on a real server (not in preview/iframe)
+// This prevents the 404 error when viewing inside Claude or other preview environments
+const isHosted = location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+if ('serviceWorker' in navigator && isHosted) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(reg => console.log('[PWA] Service worker registered:', reg.scope))
+      .catch(err => console.log('[PWA] SW not available in this environment'));
+  });
+} else {
+  console.log('[LLG Solver] Running in preview mode — Service Worker disabled (will activate when hosted)');
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const alreadyDismissed = localStorage.getItem('llg_install_dismissed');
+  if (!alreadyDismissed) {
+    setTimeout(() => {
+      document.getElementById('installBanner').classList.add('show');
+    }, 3000);
+  }
+});
+
+function installApp() {
+  document.getElementById('installBanner').classList.remove('show');
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      if (choice.outcome === 'accepted') showToast('🎉 App installed successfully!');
+      deferredPrompt = null;
+    });
+  }
+}
+
+function dismissInstall() {
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('llg_install_dismissed', '1');
+}
+
+// ============================================================
+// STREAK TRACKING
+// ============================================================
+function updateStreak() {
+  const today = new Date().toDateString();
+  const last = appState.lastActive;
+  if (last === today) return;
+
+  const yesterday = new Date(Date.now() - 86400000).toDateString();
+  if (last === yesterday) {
+    appState.streak = (appState.streak || 0) + 1;
+  } else if (last !== today) {
+    appState.streak = 1;
+  }
+  appState.lastActive = today;
+  saveState();
+}
+
+updateStreak();
+
+// ============================================================
+// INITIAL SETUP
+// ============================================================
+// Set current level from saved state
+if (appState.level) setLevel(appState.level);
+
+// Initialize subject tabs for learning screen (rendered on demand)
+renderTopics();
+
+console.log('[LLG Solver] App initialized. NEP 2020 | NCF 2023 | PARAKH aligned.');
+</script>
+</body>
+</html>

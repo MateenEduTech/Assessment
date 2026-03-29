@@ -1,0 +1,2173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="theme-color" content="#0a1628"/>
+<meta name="description" content="Holistic Progress Card & School Academic Review System - NEP 2020 Aligned"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="apple-touch-icon" href="author.jpg"/>
+<title>Holistic Progress Card System | Mateen Yousuf</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --deep-blue: #0a1628;
+    --royal-blue: #1a3a6e;
+    --accent-blue: #2563eb;
+    --light-blue: #3b82f6;
+    --gold: #d4a853;
+    --gold-light: #f0c87a;
+    --white: #f8fafc;
+    --off-white: #e8edf5;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --success: #16a34a;
+    --warning: #d97706;
+    --danger: #dc2626;
+    --card-bg: #ffffff;
+    --border: #cbd5e1;
+    --shadow: 0 4px 24px rgba(10,22,40,0.13);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    background: var(--deep-blue);
+    color: var(--white);
+    min-height: 100vh;
+    font-size: 16px;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: block; }
+
+  /* ===== SPLASH / HOME ===== */
+  #home {
+    background: linear-gradient(160deg, #0a1628 0%, #1a3a6e 60%, #0f2447 100%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 0 40px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  #home.active { display: flex; }
+
+  .home-header {
+    width: 100%;
+    background: linear-gradient(90deg, #0a1628 0%, #1a3060 100%);
+    border-bottom: 3px solid var(--gold);
+    padding: 28px 24px 24px;
+    text-align: center;
+    position: relative;
+  }
+  .home-header::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--gold), var(--light-blue), var(--gold));
+  }
+
+  .badge-nep {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--gold) 0%, #b8892a 100%);
+    color: #0a1628;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 12px rgba(212,168,83,0.4);
+  }
+
+  .home-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 5vw, 2.8rem);
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  }
+  .home-title span { color: var(--gold); }
+
+  .home-subtitle {
+    font-size: 0.95rem;
+    color: var(--off-white);
+    opacity: 0.8;
+    margin-top: 8px;
+    font-weight: 300;
+  }
+
+  .author-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 28px auto 0;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(212,168,83,0.3);
+    border-radius: 16px;
+    padding: 16px 24px;
+    max-width: 480px;
+    width: calc(100% - 40px);
+  }
+  .author-photo {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 4px rgba(212,168,83,0.2);
+  }
+  .author-photo-placeholder {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    border: 3px solid var(--gold);
+    background: linear-gradient(135deg, #1a3a6e, #2563eb);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; flex-shrink: 0;
+  }
+  .author-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .author-info p {
+    font-size: 0.8rem;
+    color: var(--off-white);
+    opacity: 0.85;
+    margin-top: 2px;
+    line-height: 1.5;
+  }
+
+  .home-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 32px auto 0;
+    width: calc(100% - 40px);
+    max-width: 480px;
+  }
+
+  .btn-home {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: left;
+    transition: transform 0.18s, box-shadow 0.18s;
+    box-shadow: var(--shadow);
+  }
+  .btn-home:active { transform: scale(0.97); }
+  .btn-home-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.15);
+  }
+  .btn-home-secondary {
+    background: linear-gradient(135deg, #1a3a6e, #0f2447);
+    color: var(--off-white);
+    border: 2px solid rgba(212,168,83,0.4);
+  }
+  .btn-home-tertiary {
+    background: linear-gradient(135deg, rgba(212,168,83,0.15), rgba(212,168,83,0.05));
+    color: var(--gold-light);
+    border: 2px solid var(--gold);
+  }
+  .btn-home .btn-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-home .btn-text strong { display: block; font-size: 1rem; }
+  .btn-home .btn-text small { font-size: 0.75rem; opacity: 0.75; font-weight: 400; }
+
+  /* ===== NAVIGATION BAR ===== */
+  .nav-bar {
+    background: var(--deep-blue);
+    border-bottom: 2px solid var(--gold);
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .nav-back {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: var(--white);
+    width: 38px; height: 38px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .nav-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gold);
+    flex: 1;
+  }
+
+  /* ===== PAGE WRAPPER ===== */
+  .page-content {
+    background: var(--off-white);
+    min-height: calc(100vh - 58px);
+    color: var(--text-main);
+  }
+
+  /* ===== POLICY SECTION ===== */
+  .policy-hero {
+    background: linear-gradient(135deg, var(--deep-blue), var(--royal-blue));
+    padding: 32px 20px 28px;
+    text-align: center;
+    color: white;
+    border-bottom: 3px solid var(--gold);
+  }
+  .policy-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .policy-hero p { font-size: 0.9rem; opacity: 0.85; }
+
+  .policy-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 20px 16px;
+  }
+  @media(min-width:600px){ .policy-grid { grid-template-columns: 1fr 1fr; } }
+
+  .policy-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .policy-card:hover { border-color: var(--accent-blue); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.15); }
+  .policy-card .pc-num {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--royal-blue));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .policy-card .pc-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 4px;
+  }
+  .policy-card .pc-info p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; }
+
+  /* ===== POLICY ARTICLE ===== */
+  #policy-article { display: none; min-height: 100vh; background: var(--deep-blue); }
+  #policy-article.active { display: block; }
+
+  .article-content {
+    background: var(--off-white);
+    padding: 24px 20px;
+    color: var(--text-main);
+  }
+  .article-content h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--royal-blue);
+    margin: 24px 0 12px;
+    border-left: 4px solid var(--gold);
+    padding-left: 12px;
+  }
+  .article-content h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--accent-blue);
+    margin: 18px 0 8px;
+  }
+  .article-content p {
+    line-height: 1.75;
+    margin-bottom: 14px;
+    font-size: 0.95rem;
+  }
+  .article-content ul {
+    margin: 10px 0 14px 20px;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+  .reflection-box {
+    background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    border: 2px solid #3b82f6;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0;
+  }
+  .reflection-box h4 {
+    color: var(--royal-blue);
+    font-family: 'Playfair Display', serif;
+    margin-bottom: 10px;
+    font-size: 1rem;
+  }
+  .reflection-box ul { margin-left: 18px; }
+  .reflection-box li { font-size: 0.9rem; margin-bottom: 6px; color: #1e3a8a; }
+  .example-box {
+    background: #f0fdf4;
+    border: 2px solid #16a34a;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0;
+  }
+  .example-box h4 { color: #15803d; font-family: 'Playfair Display', serif; margin-bottom: 8px; }
+  .example-box p { font-size: 0.9rem; color: #166534; margin-bottom: 0; }
+  .leadership-box {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 2px solid var(--gold);
+    border-radius: 12px;
+    padding: 18px;
+    margin: 20px 0;
+  }
+  .leadership-box h4 { color: #92400e; font-family: 'Playfair Display', serif; margin-bottom: 8px; }
+  .leadership-box p { font-size: 0.9rem; color: #78350f; margin-bottom: 0; }
+
+  /* ===== STUDENT MODULE ===== */
+  .form-section {
+    background: white;
+    margin: 16px;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+  }
+  .form-section h2 {
+    font-family: 'Playfair Display', serif;
+    color: var(--royal-blue);
+    font-size: 1.15rem;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--gold);
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem;
+    color: var(--text-main);
+    background: var(--white);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--accent-blue);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), #1d4ed8);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+  }
+  .btn-primary:active { transform: scale(0.98); opacity: 0.9; }
+  .btn-secondary {
+    background: white;
+    color: var(--accent-blue);
+    border: 2px solid var(--accent-blue);
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-secondary:hover { background: #eff6ff; }
+  .btn-danger {
+    background: white;
+    color: var(--danger);
+    border: 2px solid var(--danger);
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Competency levels */
+  .comp-levels { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .comp-level-btn {
+    padding: 12px 8px;
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    background: white;
+    cursor: pointer;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.18s;
+    color: var(--text-muted);
+  }
+  .comp-level-btn.selected-emerging { background: #fef3c7; border-color: #d97706; color: #92400e; }
+  .comp-level-btn.selected-developing { background: #eff6ff; border-color: #3b82f6; color: #1e40af; }
+  .comp-level-btn.selected-proficient { background: #f0fdf4; border-color: #16a34a; color: #15803d; }
+  .comp-level-btn.selected-advanced { background: #f5f3ff; border-color: #7c3aed; color: #5b21b6; }
+
+  /* Student list */
+  .student-card {
+    background: white;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .student-card:hover { border-color: var(--accent-blue); transform: translateX(4px); }
+  .student-avatar {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--royal-blue));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-right: 14px;
+  }
+  .student-info { flex: 1; }
+  .student-info strong { display: block; font-size: 0.95rem; color: var(--text-main); }
+  .student-info span { font-size: 0.8rem; color: var(--text-muted); }
+
+  /* Progress Card View */
+  .progress-card-view {
+    background: white;
+    margin: 16px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .pc-header {
+    background: linear-gradient(135deg, var(--deep-blue), var(--royal-blue));
+    color: white;
+    padding: 28px 22px;
+    text-align: center;
+    border-bottom: 4px solid var(--gold);
+  }
+  .pc-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .pc-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    margin-bottom: 8px;
+  }
+  .pc-header p { font-size: 0.85rem; opacity: 0.8; }
+
+  .pc-section { padding: 20px 22px; border-bottom: 1px solid var(--border); }
+  .pc-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--royal-blue);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--off-white);
+  }
+
+  .competency-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .competency-row .subj { font-weight: 600; font-size: 0.9rem; color: var(--text-main); flex: 1; min-width: 120px; }
+  .competency-row .outcome { font-size: 0.8rem; color: var(--text-muted); flex: 2; min-width: 150px; }
+  .comp-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .comp-badge.emerging { background: #fef3c7; color: #92400e; border: 1px solid #d97706; }
+  .comp-badge.developing { background: #eff6ff; color: #1e40af; border: 1px solid #3b82f6; }
+  .comp-badge.proficient { background: #f0fdf4; color: #15803d; border: 1px solid #16a34a; }
+  .comp-badge.advanced { background: #f5f3ff; color: #5b21b6; border: 1px solid #7c3aed; }
+
+  /* Radar Chart Canvas */
+  .radar-wrap { display: flex; justify-content: center; padding: 10px 0 20px; }
+  canvas.radar { max-width: 300px; width: 100%; }
+
+  /* ===== SCHOOL REVIEW ===== */
+  .review-tabs {
+    display: flex;
+    overflow-x: auto;
+    gap: 0;
+    background: white;
+    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 58px;
+    z-index: 50;
+  }
+  .review-tab {
+    padding: 12px 18px;
+    border: none;
+    background: transparent;
+    font-family: 'Source Serif 4', serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .review-tab.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); background: #eff6ff; }
+
+  .stat-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+  }
+  .stat-card .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--accent-blue);
+  }
+  .stat-card .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 4px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 16px;
+  }
+  @media(min-width:600px){ .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+
+  .chart-wrap {
+    background: white;
+    margin: 0 16px 16px;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+  }
+  .chart-wrap h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--royal-blue);
+    margin-bottom: 16px;
+  }
+
+  .suggestion-card {
+    background: white;
+    border-radius: 12px;
+    padding: 18px;
+    margin: 0 16px 12px;
+    border-left: 4px solid var(--accent-blue);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .suggestion-card h4 { font-family: 'Playfair Display', serif; color: var(--royal-blue); margin-bottom: 8px; font-size: 0.95rem; }
+  .suggestion-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+  .suggestion-card.warn { border-left-color: var(--warning); }
+  .suggestion-card.success { border-left-color: var(--success); }
+
+  /* Self Assessment */
+  .checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .checklist-item.checked {
+    border-color: var(--success);
+    background: #f0fdf4;
+  }
+  .checklist-item .check-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .checklist-item.checked .check-icon {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+  }
+  .checklist-item .check-label { font-size: 0.9rem; color: var(--text-main); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--deep-blue);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border: 1px solid var(--gold);
+    z-index: 999;
+    transition: transform 0.3s;
+    white-space: nowrap;
+    max-width: 90vw;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+  }
+  .empty-state .es-icon { font-size: 3rem; margin-bottom: 16px; }
+  .empty-state p { font-size: 0.9rem; line-height: 1.6; }
+
+  /* ===== PRINT STYLES ===== */
+  @media print {
+    .nav-bar, .btn-primary, .btn-secondary, .review-tabs { display: none !important; }
+    .progress-card-view { margin: 0; box-shadow: none; }
+    body { background: white; color: black; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(37,99,235,0.3); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ====== HOME ====== -->
+<div id="home" class="screen active">
+  <div class="home-header">
+    <div class="badge-nep">✦ Aligned with NEP 2020 | NCF 2023 | PARAKH ✦</div>
+    <h1 class="home-title">Holistic Progress Card &amp;<br/><span>School Academic Review</span> System</h1>
+    <p class="home-subtitle">Competency-Based | Offline-First | Diagnostic Assessment</p>
+    <div class="author-section">
+      <img src="author.jpg" alt="Mateen Yousuf" class="author-photo" onerror="this.style.display='none';document.getElementById('auth-placeholder').style.display='flex'"/>
+      <div id="auth-placeholder" class="author-photo-placeholder" style="display:none">👨‍🏫</div>
+      <div class="author-info">
+        <h3>Mateen Yousuf</h3>
+        <p>Teacher, School Education Department<br/>Kashmir · Developer &amp; Education Reformer</p>
+      </div>
+    </div>
+  </div>
+  <div class="home-buttons">
+    <button class="btn-home btn-home-primary" onclick="showScreen('student-module')">
+      <div class="btn-icon">📋</div>
+      <div class="btn-text">
+        <strong>Create Holistic Progress Card</strong>
+        <small>Student profiles, competencies &amp; printable reports</small>
+      </div>
+    </button>
+    <button class="btn-home btn-home-secondary" onclick="showScreen('school-review')">
+      <div class="btn-icon">🏫</div>
+      <div class="btn-text">
+        <strong>School Academic Review Dashboard</strong>
+        <small>Charts, gap analysis &amp; improvement planning</small>
+      </div>
+    </button>
+    <button class="btn-home btn-home-tertiary" onclick="showScreen('policy-section')">
+      <div class="btn-icon">📖</div>
+      <div class="btn-text">
+        <strong>Learn About Holistic Assessment</strong>
+        <small>NEP 2020, NCF 2023, PARAKH &amp; policy framework</small>
+      </div>
+    </button>
+    <button class="btn-home btn-home-secondary" onclick="showDataMgmt()" style="margin-top:4px">
+      <div class="btn-icon">💾</div>
+      <div class="btn-text">
+        <strong>Data Management</strong>
+        <small>Export backup, import data, reset</small>
+      </div>
+    </button>
+  </div>
+  <p style="text-align:center;font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:28px;padding:0 20px">All data stored locally on your device · No internet required · No login needed</p>
+</div>
+
+<!-- ====== POLICY SECTION ====== -->
+<div id="policy-section" class="screen">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="showScreen('home')">←</button>
+    <div class="nav-title">Policy &amp; Framework Library</div>
+  </div>
+  <div class="page-content">
+    <div class="policy-hero">
+      <h1>📚 Assessment Policy Framework</h1>
+      <p>NEP 2020 · NCF 2023 · PARAKH · Holistic Education</p>
+    </div>
+    <div class="policy-grid" id="policy-grid"></div>
+  </div>
+</div>
+
+<!-- ====== POLICY ARTICLE ====== -->
+<div id="policy-article" class="screen">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="showScreen('policy-section')">←</button>
+    <div class="nav-title" id="article-nav-title">Policy Article</div>
+  </div>
+  <div class="article-content" id="article-body"></div>
+</div>
+
+<!-- ====== STUDENT MODULE ====== -->
+<div id="student-module" class="screen">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="showScreen('home')">←</button>
+    <div class="nav-title">Student Progress Cards</div>
+    <button class="btn-secondary" style="padding:8px 14px;font-size:0.8rem" onclick="showScreen('add-student')">+ Add</button>
+  </div>
+  <div class="page-content">
+    <div style="padding:16px 16px 4px">
+      <p style="font-size:0.82rem;color:var(--text-muted)">Tap a student to view or edit their progress card</p>
+    </div>
+    <div id="student-list"></div>
+  </div>
+</div>
+
+<!-- ====== ADD STUDENT ====== -->
+<div id="add-student" class="screen">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="showScreen('student-module')">←</button>
+    <div class="nav-title">Create Student Profile</div>
+  </div>
+  <div class="page-content">
+    <div class="form-section">
+      <h2>👤 Student Information</h2>
+      <div class="form-group">
+        <label>Student Full Name *</label>
+        <input type="text" id="s-name" placeholder="e.g. Mohammad Aamir Khan"/>
+      </div>
+      <div class="form-group">
+        <label>Class *</label>
+        <select id="s-class">
+          <option value="">Select Class</option>
+          <option>Class I</option><option>Class II</option><option>Class III</option>
+          <option>Class IV</option><option>Class V</option><option>Class VI</option>
+          <option>Class VII</option><option>Class VIII</option><option>Class IX</option>
+          <option>Class X</option><option>Class XI</option><option>Class XII</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Section</label>
+        <input type="text" id="s-section" placeholder="e.g. A"/>
+      </div>
+      <div class="form-group">
+        <label>Roll Number</label>
+        <input type="text" id="s-roll" placeholder="e.g. 12"/>
+      </div>
+      <div class="form-group">
+        <label>Academic Year</label>
+        <select id="s-year">
+          <option>2024-25</option><option>2025-26</option><option>2026-27</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Parent / Guardian Name</label>
+        <input type="text" id="s-parent" placeholder="e.g. Abdul Rashid Khan"/>
+      </div>
+      <button class="btn-primary" onclick="saveStudent()">💾 Save Student Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== STUDENT DETAIL ====== -->
+<div id="student-detail" class="screen">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="showScreen('student-module')">←</button>
+    <div class="nav-title" id="detail-nav-name">Student</div>
+  </div>
+  <div class="page-content">
+    <div style="display:flex;gap:10px;padding:14px 16px;overflow-x:auto">
+      <button class="btn-secondary" style="white-space:nowrap;padding:10px 16px;font-size:0.82rem" onclick="showTab('tab-academic')">📊 Academic</button>
+      <button class="btn-secondary" style="white-space:nowrap;padding:10px 16px;font-size:0.82rem" onclick="showTab('tab-coscholastic')">🎨 Co-Scholastic</button>
+      <button class="btn-secondary" style="white-space:nowrap;padding:10px 16px;font-size:0.82rem" onclick="showTab('tab-selfassess')">🔍 Self-Assessment</button>
+      <button class="btn-secondary" style="white-space:nowrap;padding:10px 16px;font-size:0.82rem" onclick="showTab('tab-card')">📄 View Card</button>
+    </div>
+
+    <!-- Academic Tab -->
+    <div id="tab-academic">
+      <div class="form-section">
+        <h2>📊 Academic Competency Entry</h2>
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="comp-subject">
+            <option>Mathematics</option><option>Science</option><option>English</option>
+            <option>Urdu</option><option>Hindi</option><option>Social Science</option>
+            <option>Environmental Studies</option><option>Computer Science</option>
+            <option>Physical Education</option><option>Art &amp; Craft</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Learning Outcome / Topic</label>
+          <input type="text" id="comp-outcome" placeholder="e.g. Understanding fractions and their applications"/>
+        </div>
+        <div class="form-group">
+          <label>Competency Level</label>
+          <div class="comp-levels" id="comp-level-btns">
+            <button class="comp-level-btn" onclick="selectLevel('Emerging')" id="lvl-Emerging">🌱 Emerging</button>
+            <button class="comp-level-btn" onclick="selectLevel('Developing')" id="lvl-Developing">🔄 Developing</button>
+            <button class="comp-level-btn" onclick="selectLevel('Proficient')" id="lvl-Proficient">✅ Proficient</button>
+            <button class="comp-level-btn" onclick="selectLevel('Advanced')" id="lvl-Advanced">⭐ Advanced</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Teacher's Observational Remarks</label>
+          <textarea id="comp-remarks" placeholder="Describe specific observations about the student's learning…"></textarea>
+        </div>
+        <button class="btn-primary" onclick="saveCompetency()">💾 Save &amp; Generate Feedback</button>
+      </div>
+      <div id="competency-list-wrap"></div>
+    </div>
+
+    <!-- Co-Scholastic Tab -->
+    <div id="tab-coscholastic" style="display:none">
+      <div class="form-section">
+        <h2>🎨 Co-Scholastic Evaluation</h2>
+        <div id="coscholastic-areas"></div>
+        <button class="btn-primary" onclick="saveCoScholastic()" style="margin-top:8px">💾 Save Co-Scholastic Evaluation</button>
+      </div>
+    </div>
+
+    <!-- Self Assessment Tab -->
+    <div id="tab-selfassess" style="display:none">
+      <div class="form-section">
+        <h2>🔍 Student Self-Assessment</h2>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">Students reflect on their own learning journey. Tap each item to mark as completed.</p>
+        <div id="self-assess-list"></div>
+        <div class="form-group" style="margin-top:16px">
+          <label>Student's Own Reflection (Optional)</label>
+          <textarea id="self-reflection-text" placeholder="What did I learn this term? What do I want to improve?"></textarea>
+        </div>
+        <button class="btn-primary" onclick="saveSelfAssessment()">💾 Save Self-Assessment</button>
+      </div>
+    </div>
+
+    <!-- Progress Card Tab -->
+    <div id="tab-card" style="display:none">
+      <div id="progress-card-output"></div>
+      <div style="padding:0 16px 24px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn-primary" onclick="window.print()" style="flex:1">🖨️ Print Progress Card</button>
+        <button class="btn-secondary" onclick="exportCardJSON()" style="flex:1">📤 Export JSON</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== SCHOOL REVIEW ====== -->
+<div id="school-review" class="screen">
+  <div class="nav-bar">
+    <button class="nav-back" onclick="showScreen('home')">←</button>
+    <div class="nav-title">School Academic Review</div>
+  </div>
+  <div class="page-content">
+    <div class="review-tabs">
+      <button class="review-tab active" onclick="switchReviewTab('overview')">📊 Overview</button>
+      <button class="review-tab" onclick="switchReviewTab('input')">📝 Input Data</button>
+      <button class="review-tab" onclick="switchReviewTab('analysis')">🔍 Analysis</button>
+      <button class="review-tab" onclick="switchReviewTab('plan')">📋 Action Plan</button>
+    </div>
+
+    <!-- Overview -->
+    <div id="rt-overview">
+      <div class="stats-grid" id="school-stats-grid"></div>
+      <div class="chart-wrap">
+        <h3>📈 Competency Distribution — All Students</h3>
+        <canvas id="bar-chart" height="220"></canvas>
+      </div>
+      <div class="chart-wrap">
+        <h3>🕸️ School Skill Radar</h3>
+        <canvas id="school-radar" height="260"></canvas>
+      </div>
+    </div>
+
+    <!-- Input Data -->
+    <div id="rt-input" style="display:none">
+      <div class="form-section">
+        <h2>📝 Aggregate School Data Entry</h2>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px">Enter aggregated class/school data for the academic review dashboard.</p>
+        <div class="form-group">
+          <label>Total Students in School</label>
+          <input type="number" id="sr-total" placeholder="e.g. 320" min="0"/>
+        </div>
+        <div class="form-group">
+          <label>Students at Advanced Level (%)</label>
+          <input type="number" id="sr-advanced" placeholder="e.g. 18" min="0" max="100"/>
+        </div>
+        <div class="form-group">
+          <label>Students at Proficient Level (%)</label>
+          <input type="number" id="sr-proficient" placeholder="e.g. 42" min="0" max="100"/>
+        </div>
+        <div class="form-group">
+          <label>Students at Developing Level (%)</label>
+          <input type="number" id="sr-developing" placeholder="e.g. 30" min="0" max="100"/>
+        </div>
+        <div class="form-group">
+          <label>Students at Emerging Level (%)</label>
+          <input type="number" id="sr-emerging" placeholder="e.g. 10" min="0" max="100"/>
+        </div>
+        <div class="form-group">
+          <label>Strongest Subject Area</label>
+          <input type="text" id="sr-strong" placeholder="e.g. Mathematics"/>
+        </div>
+        <div class="form-group">
+          <label>Area Needing Most Attention</label>
+          <input type="text" id="sr-weak" placeholder="e.g. Reading Comprehension"/>
+        </div>
+        <button class="btn-primary" onclick="saveSchoolReview()">💾 Save &amp; Update Dashboard</button>
+      </div>
+    </div>
+
+    <!-- Analysis -->
+    <div id="rt-analysis" style="display:none">
+      <div style="padding:16px 16px 4px">
+        <div style="background:white;border-radius:14px;padding:20px;border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,0.06)">
+          <h3 style="font-family:'Playfair Display',serif;color:var(--royal-blue);margin-bottom:14px">🔍 Academic Gap Analysis</h3>
+          <div id="gap-analysis-content"></div>
+        </div>
+      </div>
+      <div style="padding:16px 16px 4px;margin-top:8px">
+        <div style="background:white;border-radius:14px;padding:20px;border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,0.06)">
+          <h3 style="font-family:'Playfair Display',serif;color:var(--royal-blue);margin-bottom:14px">📊 Term Trend Analysis</h3>
+          <canvas id="trend-chart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Plan -->
+    <div id="rt-plan" style="display:none">
+      <div style="padding:16px 16px 4px">
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:14px">Evidence-based improvement strategies generated from your school's data.</p>
+      </div>
+      <div id="action-plan-content"></div>
+      <div style="padding:0 16px 24px;margin-top:8px">
+        <button class="btn-primary" onclick="window.print()">🖨️ Print Academic Review Report</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== DATA MANAGEMENT MODAL ====== -->
+<div id="data-mgmt-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.7);z-index:200;align-items:center;justify-content:center;padding:20px">
+  <div style="background:white;border-radius:20px;padding:28px;width:100%;max-width:420px;max-height:90vh;overflow-y:auto">
+    <h2 style="font-family:'Playfair Display',serif;color:var(--royal-blue);margin-bottom:20px">💾 Data Management</h2>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <button class="btn-primary" onclick="exportAllData()">📤 Export All Data (JSON Backup)</button>
+      <button class="btn-secondary" onclick="document.getElementById('import-file').click()">📥 Import Data from Backup</button>
+      <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)"/>
+      <div style="border-top:1px solid var(--border);padding-top:12px">
+        <button class="btn-danger" onclick="confirmReset()" style="width:100%">🗑️ Reset All Data</button>
+        <p style="font-size:0.75rem;color:var(--text-muted);margin-top:8px;text-align:center">This will permanently delete all students and evaluations</p>
+      </div>
+      <button class="btn-secondary" onclick="closeDataMgmt()">✕ Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====== TOAST ====== -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+let currentScreen = 'home';
+let currentStudent = null;
+let selectedLevel = '';
+let coScholasticData = {};
+let selfAssessChecked = {};
+let activeReviewTab = 'overview';
+let chartsDrawn = false;
+
+// ===== STORAGE HELPERS =====
+const DB = {
+  get(key) { try { return JSON.parse(localStorage.getItem(key)) || null; } catch(e){ return null; } },
+  set(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); return true; } catch(e){ return false; } },
+  getAllStudents() { return this.get('hpc_students') || []; },
+  saveStudents(s) { return this.set('hpc_students', s); },
+  getSchoolReview() { return this.get('hpc_school_review') || {}; },
+  saveSchoolReview(d) { return this.set('hpc_school_review', d); }
+};
+
+// ===== NAVIGATION =====
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById(name);
+  if(!el) return;
+  el.classList.add('active');
+  if(name === 'home') el.style.display = 'flex';
+  else el.style.display = 'block';
+  // hide home flex when not active
+  if(name !== 'home') document.getElementById('home').style.display = 'none';
+  currentScreen = name;
+  window.scrollTo(0,0);
+
+  if(name === 'student-module') renderStudentList();
+  if(name === 'school-review') { renderSchoolOverview(); }
+  if(name === 'policy-section') renderPolicyGrid();
+}
+
+function showTab(tabId) {
+  ['tab-academic','tab-coscholastic','tab-selfassess','tab-card'].forEach(t => {
+    document.getElementById(t).style.display = t === tabId ? 'block' : 'none';
+  });
+  if(tabId === 'tab-card') renderProgressCard();
+  if(tabId === 'tab-coscholastic') renderCoScholasticForm();
+  if(tabId === 'tab-selfassess') renderSelfAssessForm();
+  if(tabId === 'tab-academic') renderCompetencyList();
+}
+
+function switchReviewTab(tab) {
+  activeReviewTab = tab;
+  ['overview','input','analysis','plan'].forEach(t => {
+    document.getElementById('rt-'+t).style.display = t === tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.review-tab').forEach((btn, i) => {
+    const tabs = ['overview','input','analysis','plan'];
+    btn.classList.toggle('active', tabs[i] === tab);
+  });
+  if(tab === 'overview') renderSchoolOverview();
+  if(tab === 'analysis') renderGapAnalysis();
+  if(tab === 'plan') renderActionPlan();
+}
+
+function showDataMgmt() {
+  const overlay = document.getElementById('data-mgmt-overlay');
+  overlay.style.display = 'flex';
+}
+function closeDataMgmt() {
+  document.getElementById('data-mgmt-overlay').style.display = 'none';
+}
+
+// ===== TOAST =====
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ===== POLICY CONTENT =====
+const policyPages = [
+  {
+    title: "NEP 2020 – Holistic Progress Card Vision",
+    icon: "🏛️",
+    summary: "Understanding India's landmark education policy and its vision for assessment reform",
+    content: `
+<h2>NEP 2020 – The Holistic Progress Card Vision</h2>
+<p>The National Education Policy 2020 represents the most comprehensive reimagination of Indian education in decades. At its heart lies a radical departure from the examination-centric, marks-driven system that has defined schooling for generations. NEP 2020 envisions a fundamentally different kind of assessment — one that captures the full spectrum of a child's development rather than reducing their worth to a number on a report card.</p>
+<h3>The Core Philosophy</h3>
+<p>NEP 2020 explicitly calls for moving away from "summative" assessment — the end-of-year examination that determines everything — towards "formative" and "continuous" assessment that serves as a tool for learning, not just measurement. The policy states that assessment must become a diagnostic tool that helps teachers understand what students know, how they think, and where they need support.</p>
+<p>The Holistic Progress Card (HPC) is NEP 2020's flagship instrument for this transformation. Unlike the traditional mark sheet that presents a student as a collection of percentages, the HPC presents a student as a whole person — their cognitive development, social-emotional growth, physical wellbeing, creative expression, and value formation all finding equal space on the report.</p>
+<h3>Key Pillars of the NEP Assessment Framework</h3>
+<p>The policy identifies several non-negotiable principles for assessment reform. First, assessment must be competency-based — measuring what students can actually do with their knowledge, not merely what they can recall under examination conditions. Second, it must be continuous — woven into the fabric of daily classroom life rather than concentrated in periodic high-stakes tests. Third, it must be comprehensive — spanning all domains of human development. Fourth, it must be developmental — oriented towards growth rather than selection or ranking.</p>
+<h3>The 360-Degree Perspective</h3>
+<p>NEP 2020 introduces the concept of 360-degree assessment, wherein a student's progress is evaluated from multiple vantage points: the teacher's observation, the student's own self-reflection, peer interactions, and parent perspectives. This multi-source approach acknowledges that no single observer — not even the most dedicated teacher — can capture the full complexity of a child's development.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions for Educators</h4>
+<ul>
+<li>How does your current reporting system reflect the whole child, beyond marks?</li>
+<li>In what ways does your assessment practice currently inform teaching rather than just grade students?</li>
+<li>How might parents respond differently to a competency-based report compared to a marks sheet?</li>
+</ul>
+</div>
+<h3>Implementation in Schools</h3>
+<p>For schools, NEP 2020's vision requires structural changes at every level. Teachers need professional development to shift from assessment-of-learning to assessment-for-learning. School leaders need to create cultures where risk-taking and mistakes are treated as learning opportunities. Parents need orientation to understand that a child's progress cannot be meaningfully captured in a single examination score.</p>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>In Class V, instead of giving a percentage in Mathematics, a teacher using the HPC approach might note: "Ananya demonstrates strong conceptual understanding of fractions when using manipulatives and real-world contexts. She is developing her ability to solve abstract word problems independently. Recommended next step: More practice with story problems connecting to her daily life." This is infinitely more useful information for both parents and the child herself.</p>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>School leaders must champion the HPC as a cultural shift, not merely an administrative format change. This requires sustained professional development, parent education sessions, and recalibrating how teachers are evaluated — moving away from class results rankings toward quality of formative assessment practices.</p>
+</div>`
+  },
+  {
+    title: "NCF 2023 – Competency-Based Learning Framework",
+    icon: "📐",
+    summary: "The National Curriculum Framework's approach to defining and assessing competencies",
+    content: `
+<h2>NCF 2023 – Competency-Based Learning Framework</h2>
+<p>The National Curriculum Framework 2023 provides the pedagogical architecture for implementing NEP 2020's vision in classrooms. Where NEP sets the broad policy direction, NCF 2023 translates that vision into actionable curriculum design principles, learning progression frameworks, and assessment practices that teachers can actually use.</p>
+<h3>What is a Competency?</h3>
+<p>NCF 2023 defines competency as the integrated ability to apply knowledge, skills, and values in real-life situations. A competency is more than knowing — it is the capacity to act wisely and effectively in the world. This distinction is crucial: a student can memorize the formula for calculating area without actually being competent in spatial reasoning. Competency-based assessment asks not "what does this child know?" but "what can this child do with what they know?"</p>
+<h3>The Competency Progression Model</h3>
+<p>NCF 2023 articulates a progression model with four levels: Emerging, Developing, Proficient, and Advanced. These levels replace marks and grades as the primary language of educational progress. Each level has specific descriptors that help teachers make consistent judgments about student development.</p>
+<p>At the Emerging level, students demonstrate initial awareness of a concept with significant teacher support needed. At the Developing level, students show growing understanding but need guided practice. At the Proficient level, students demonstrate solid competency and can apply learning independently. At the Advanced level, students demonstrate deep understanding, can extend their learning, and help peers.</p>
+<h3>Learning Outcomes as Assessment Anchors</h3>
+<p>NCF 2023 maps specific Learning Outcomes (LOs) for each grade level across all subjects. These LOs serve as the benchmarks against which competency is assessed. Rather than comparing students to each other — a norm-referenced approach — competency-based assessment compares students to the standard described by the learning outcome — a criterion-referenced approach. This fundamentally changes the purpose of assessment from ranking to informing.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>Can you articulate 3 specific competencies you want your students to develop this term?</li>
+<li>How would you describe the difference between a "developing" and "proficient" student in your subject area?</li>
+<li>How does competency-based language change conversations with parents about their child's progress?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>A Class VIII Science teacher assessing understanding of "Microorganisms" might evaluate: Does the student merely recall facts about bacteria and viruses (Emerging), or can they explain the role of microorganisms in food preservation using examples from home (Proficient), or can they independently design an investigation comparing microbial growth under different conditions (Advanced)? The difference is not about the amount known but the depth of application.</p>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>School academic committees should review existing subject-wise learning outcomes against NCF 2023 descriptors. Where gaps exist between current practice and the framework, targeted CPD (Continuing Professional Development) should be planned. Teacher workgroups for each subject can collaboratively develop shared understanding of competency descriptors — reducing inconsistency in assessment judgments.</p>
+</div>`
+  },
+  {
+    title: "PARAKH and Assessment Reform",
+    icon: "⚖️",
+    summary: "The National Assessment Centre's role in standardising holistic evaluation",
+    content: `
+<h2>PARAKH – The National Assessment Architecture</h2>
+<p>PARAKH (Performance Assessment, Review and Analysis of Knowledge for Holistic Development) is the National Assessment Centre established under NCERT as the apex body for assessment reform in India. PARAKH provides the national framework within which all state-level and school-level assessments operate, ensuring that the ambitious vision of NEP 2020 is translated into coherent and consistent assessment practices across India's vast and diverse educational landscape.</p>
+<h3>PARAKH's Core Mandate</h3>
+<p>PARAKH's mandate encompasses four interconnected functions. First, it sets norms and standards for student assessment across India's school system. Second, it guides state examination bodies in aligning their assessment systems with competency-based frameworks. Third, it develops large-scale assessment tools, including NAS (National Achievement Survey) and SLAS (State Level Achievement Survey). Fourth, it provides professional development resources for assessors, schools, and education administrators.</p>
+<h3>The Shift from Testing to Assessment Culture</h3>
+<p>PARAKH makes a critical distinction between testing and assessment culture. Testing culture is characterised by high-stakes, periodic examinations that sort and rank students, creating anxiety and incentivising rote learning. Assessment culture, by contrast, embeds evaluation in the learning process itself, making it a tool that serves students rather than selects among them.</p>
+<h3>PARAKH and the Holistic Progress Card</h3>
+<p>PARAKH provides the national framework for the Holistic Progress Card, specifying the domains that must be assessed, the descriptors for competency levels, and the format for reporting to parents and system administrators. Schools implementing HPC are encouraged to align their local formats with PARAKH guidelines to ensure consistency and comparability.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>How does your school's current assessment calendar reflect or resist a culture of continuous assessment?</li>
+<li>What would it mean to treat all assessments as diagnostic rather than ranking tools?</li>
+<li>How might aligning with PARAKH standards benefit your students and school reputation?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>A PARAKH-aligned classroom observation tool might prompt a teacher to record: "During group discussion, Rohan demonstrated ability to listen to peers' perspectives and incorporate them into his own argument — evidence of developing communication competency." This observation, documented and shared with parents, tells a richer story than "Rohan scored 67 in Term I."</p>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>School principals should review PARAKH's publicly available guidelines and ensure that their assessment policy documents reference PARAKH norms. This alignment not only ensures quality but also positions the school as a reform-ready institution in conversations with education department inspectors and accreditation bodies.</p>
+</div>`
+  },
+  {
+    title: "Why Marks-Based Reporting Fails",
+    icon: "❌",
+    summary: "Evidence-based critique of percentage-driven assessment and its harm",
+    content: `
+<h2>Why Marks-Based Reporting Fails Our Children</h2>
+<p>The marks-based reporting system that dominates Indian schooling — reducing a child's educational experience to a percentage on a marksheet — was designed for a different era with different purposes. In the 19th and early 20th centuries, mass education systems needed efficient ways to sort students for industrial labour markets. The percentage grade served this sorting function admirably. But we live in a different century now, with radically different needs, and the marks system's deep failures have become impossible to ignore.</p>
+<h3>What Marks Actually Measure</h3>
+<p>Research in educational assessment consistently shows that examination marks primarily measure three things: memory retention for the specific content that appeared in the examination, test-taking skill and anxiety management, and access to quality coaching and tuition. They measure these things reasonably well. What they do not measure — and cannot measure — is a student's actual learning, their capacity for creative thinking, their ability to collaborate and communicate, their values and character, their curiosity and love of learning. In other words, marks measure a narrow slice of what a student is, and an even narrower slice of what they need to become.</p>
+<h3>The Psychological Damage</h3>
+<p>The marks system creates profound psychological harm at scale. Students who consistently score below expectations learn to see themselves as failures, often before they are ten years old. This learned helplessness follows them through life. Students who score well, meanwhile, often develop a fragile identity built on external validation — when life inevitably presents them with challenges they cannot ace, they are ill-equipped to respond. The marks system also creates intense family stress, peer comparison anxiety, and in extreme cases, contributes to the mental health crisis among Indian adolescents.</p>
+<h3>The Teaching Deformation</h3>
+<p>Perhaps most damaging from a system perspective: marks-based reporting deforms teaching. When teachers know their students will be assessed only on what can be tested in a three-hour paper, they teach to that test. Curiosity gets sacrificed for coverage. Depth gets replaced by breadth. Discussion gets replaced by dictation. Creative projects get replaced by model answers. The richest dimensions of teaching — inspiring wonder, cultivating inquiry, developing character — get systematically squeezed out by the imperative of examination preparation.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>Think of a student who scored poorly but was clearly intelligent and capable. What did marks fail to capture about them?</li>
+<li>How much of your current teaching time is spent on activities you believe will genuinely help students vs. exam preparation?</li>
+<li>What message does a percentage communicate to a child and their family about who they are?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>Farida scores 45% in Class VI Mathematics. What does this tell her teacher, her parents, or Farida herself? It tells them almost nothing of use. Does she struggle with all topics or just certain ones? Is it a conceptual misunderstanding or a test anxiety issue? Does she understand mathematics but struggle to express it in written form? A competency-based report that says "Farida demonstrates emerging understanding of number concepts but proficient spatial reasoning — needs targeted support with place value and fraction concepts" opens the door for meaningful intervention.</p>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>Transitioning away from marks-based reporting requires explicit leadership communication with parents and community. Most parents were themselves shaped by the marks system and may initially resist change. Leaders must invest in community education sessions that help parents understand why richer information about their child's development serves their child's interests better than a percentage ever could.</p>
+</div>`
+  },
+  {
+    title: "360° Assessment Explained",
+    icon: "🔄",
+    summary: "Multi-source holistic evaluation involving teacher, peer, self, and parent perspectives",
+    content: `
+<h2>360° Assessment — A Complete Picture of Learning</h2>
+<p>360-degree assessment is a methodology borrowed from organisational development and leadership training, adapted for educational contexts to create a richer, more accurate picture of a student's development than any single evaluator can provide. The core insight is simple but powerful: a child is different people in different contexts, and a meaningful assessment must gather evidence from multiple vantage points.</p>
+<h3>The Four Perspectives</h3>
+<p>In educational 360-degree assessment, four sources of evidence are typically gathered. The teacher's perspective, based on classroom observation, interaction, and formal assessment, forms the central pillar. The student's own self-assessment provides crucial insight into their metacognitive awareness — their ability to think about their own thinking and learning. Peer assessment, when properly structured, develops critical thinking and collaborative skills while providing perspective on social learning. Parent observation, capturing the child's behaviour and development in the home context, adds a dimension completely invisible to school-based assessment.</p>
+<h3>Why Multiple Perspectives Matter</h3>
+<p>A student who appears withdrawn and disengaged in class may be highly verbal, curious, and leadership-oriented at home and in the community. A student who scores well on examinations may, under peer assessment, be identified as a poor collaborator who dominates group work. A student who seems confident to the teacher may, in self-assessment, reveal deep anxiety about certain subjects. Each perspective adds crucial information that changes the picture of who this student is and what they need.</p>
+<h3>Making 360° Assessment Practical</h3>
+<p>Many teachers worry that 360-degree assessment is too time-consuming for already overloaded classrooms. The key is to build it into existing routines rather than adding extra tasks. A brief weekly reflection journal entry serves as self-assessment. A structured peer feedback activity during project work provides peer assessment data. A simple parent questionnaire sent home twice per year gathers parent perspectives. None of these require extraordinary time — they require a shift in culture and purpose.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>Which of the four perspectives are currently gathered in your assessment practice? Which are missing?</li>
+<li>How might students behave differently if they knew their peers' observations would be formally recorded?</li>
+<li>What would you learn about your students from a structured parent observation form that you don't currently know?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>In Class IX, a teacher uses 360-degree assessment for a History project. Students self-assess their research and presentation skills. Peers evaluate each other's argumentation and evidence use. Parents note whether the student discussed their project at home and demonstrated curiosity. The teacher observes comprehension, analysis, and communication. The resulting picture of each student's historical thinking ability is far richer than any single test could provide.</p>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>Leaders should introduce 360-degree assessment gradually, perhaps starting with one subject or one class level. Document the richer insights it generates and share case studies with hesitant teachers. Build it into the school's assessment policy document and discuss it explicitly in parent meetings to set appropriate expectations and build understanding.</p>
+</div>`
+  },
+  {
+    title: "Self-Assessment & Peer Assessment",
+    icon: "🤝",
+    summary: "Building metacognitive awareness and collaborative evaluation skills in students",
+    content: `
+<h2>Self-Assessment and Peer Assessment in Practice</h2>
+<p>Self-assessment and peer assessment are among the most powerful tools in the formative assessment toolkit, yet they remain among the most underutilised in Indian classrooms. Both practices, when properly implemented, develop skills that go far beyond the subject being assessed — they cultivate metacognition, critical thinking, honest communication, and the capacity for constructive feedback that are essential for lifelong learning and professional success.</p>
+<h3>The Science of Self-Assessment</h3>
+<p>Research in educational psychology consistently shows that students who accurately assess their own understanding learn more than those who cannot. This is because self-assessment activates metacognitive processes — the ability to monitor one's own thinking, identify gaps, and take corrective action. Students who can say "I understand the concept of photosynthesis but I'm confused about how light intensity affects the rate" are positioned to seek help effectively. Students who cannot self-assess accurately often don't know what they don't know.</p>
+<h3>Scaffolding Self-Assessment</h3>
+<p>Effective self-assessment does not happen spontaneously — it must be taught and structured. Younger students benefit from simple visual scales and checklists with concrete, observable criteria. Older students can engage with more nuanced rubrics and reflective prompts. The language of self-assessment needs explicit teaching: students must learn to distinguish between effort ("I tried hard"), understanding ("I know how to do this"), and application ("I can use this in new situations").</p>
+<h3>Peer Assessment — The Challenges and Benefits</h3>
+<p>Peer assessment requires careful design and explicit teaching of feedback protocols. Without structure, it can degenerate into either uncritical praise ("Everything was great!") or unkind critique. With proper scaffolding — including sentence starters like "I noticed that...", "One strength was...", "One thing that could be developed is..." — peer assessment becomes a genuine learning activity for both the reviewer and the reviewed.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>Do your students currently have language to describe their own learning accurately? How might you develop this?</li>
+<li>What norms and protocols would be needed to make peer assessment safe and productive in your classroom?</li>
+<li>How might the skill of giving and receiving constructive feedback benefit students in their future lives?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>A Class VII English teacher introduces a weekly "Exit Ticket" where students rate their understanding of that day's learning on a three-point scale and write one question they still have. Over a term, this builds students' self-assessment vocabulary and gives the teacher invaluable daily formative data. Students begin to notice patterns in their own learning — "I always struggle on days when we do grammar" — that help them become self-directed learners.</p>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>Professional development on self and peer assessment should be built into the school's CPD calendar. Teachers who are themselves uncomfortable with feedback often struggle to create safe cultures for peer assessment. School leaders can model the practices they wish to see by using self and peer assessment in their own professional development processes with staff.</p>
+</div>`
+  },
+  {
+    title: "Formative Assessment in Classroom",
+    icon: "📝",
+    summary: "Daily assessment strategies that inform teaching and support every learner",
+    content: `
+<h2>Formative Assessment — Assessment as Learning</h2>
+<p>Formative assessment is one of the most research-validated practices in education. Multiple large-scale meta-analyses have found that well-implemented formative assessment produces among the largest effect sizes of any instructional intervention — routinely outperforming small class sizes, additional instructional time, and many technology interventions. Yet despite this extraordinary evidence base, formative assessment remains poorly understood and inconsistently implemented in most Indian classrooms.</p>
+<h3>What Formative Assessment Is — and Is Not</h3>
+<p>Formative assessment is any assessment activity that provides information used to adapt teaching and learning while it is still happening. A unit test given after teaching is summative; the same questions asked during teaching, used to inform what the teacher does next, is formative. The critical distinguishing feature is not the form of assessment but its purpose and use. Formative assessment is fundamentally about closing the gap between where students are and where they need to be, in real time.</p>
+<h3>A Menu of Formative Assessment Strategies</h3>
+<p>Effective formative assessment is not limited to formal tools — it can be embedded in any classroom interaction. Questioning strategies like "think-pair-share," "hands up only if uncertain," and cold-calling with wait time generate real-time evidence of understanding. Quick written activities like exit tickets, one-minute papers, and concept maps provide artefacts of thinking that teachers can review. Observation during group work, practical activities, and discussion yields rich data unavailable in written assessments.</p>
+<h3>Acting on Assessment Evidence</h3>
+<p>The most critical — and most often neglected — aspect of formative assessment is what teachers do with the evidence they gather. Formative assessment has no impact if teachers collect information and then proceed with the next planned lesson regardless. Effective formative assessment requires that teachers be prepared to adjust their teaching: to revisit a concept using a different approach, to provide targeted support to a small group while others work independently, or to extend a discussion that reveals deeper thinking than anticipated.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>List three formative assessment strategies you currently use. How systematically do you act on the evidence they generate?</li>
+<li>How often do you adjust your teaching plans based on evidence of student understanding gathered that day?</li>
+<li>What barriers prevent more responsive, formative assessment in your teaching context?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>A Class IV teacher teaching multiplication notices during a quick whiteboard activity that two-thirds of students understand the concept but are making errors with carrying. Rather than proceeding to the next lesson, she designs a ten-minute targeted activity for the group struggling with carrying, while the other students work on an extension problem. This responsive adjustment, based on formative evidence gathered mid-lesson, is precisely what NEP 2020 envisions when it calls for assessment that serves learning.</p>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>Classroom observation frameworks used by school leaders should specifically look for evidence of formative assessment practice — not just whether teachers ask questions, but whether they adjust their teaching based on responses. Create space in staff meetings for teachers to share formative assessment strategies and discuss how evidence informed their teaching decisions that week.</p>
+</div>`
+  },
+  {
+    title: "Constructivist Evaluation",
+    icon: "🏗️",
+    summary: "Assessment aligned with how children actually construct knowledge",
+    content: `
+<h2>Constructivist Evaluation — Assessment That Matches How Children Learn</h2>
+<p>Constructivism is the educational theory that learners do not passively receive knowledge but actively construct it through experience, reflection, and social interaction. Developed through the work of Piaget, Vygotsky, and Dewey, constructivism has profound implications not just for teaching but for assessment. If learning is an active construction process, then assessment practices that demand passive recall fundamentally misrepresent what students know and can do.</p>
+<h3>The Misalignment Problem</h3>
+<p>Most traditional assessment is behaviourist in its underlying assumptions: the student is a passive recipient who should be able to reproduce what was transmitted by the teacher. Constructivist assessment, by contrast, evaluates what students have built — their conceptual structures, their ability to apply ideas in new contexts, their capacity to solve problems they have not previously encountered. This is a fundamentally different task, requiring fundamentally different assessment tools.</p>
+<h3>Performance Tasks as Constructivist Assessment</h3>
+<p>The most authentic form of constructivist assessment is the performance task — a complex, real-world challenge that requires students to apply integrated knowledge and skills. A performance task for Class V Environmental Studies might ask students to investigate pollution in their local water source and present recommendations to their school council. This task requires factual knowledge, scientific reasoning, communication skill, and civic values — all demonstrated through a single, meaningful activity.</p>
+<h3>Portfolio Assessment</h3>
+<p>Portfolio assessment, in which students curate collections of their work over time to demonstrate growth and achievement, is perhaps the most powerful constructivist assessment approach. A portfolio tells the story of learning — including the failures, the revisions, and the breakthroughs — in a way that no single examination can. Student-led portfolio conferences, where students present their portfolios to parents and teachers, develop reflection, communication, and ownership of learning simultaneously.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>What would a performance task look like in your subject that required students to apply knowledge to a real local problem?</li>
+<li>How does a portfolio of work tell a different story about a student than their exam results?</li>
+<li>Which of your current assessment tools are behaviourist and which are constructivist in their approach?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>In Class VIII Mathematics, instead of a unit test on statistics, a teacher assigns a constructivist performance task: students design a survey about screen time habits in their school, collect data from 30 classmates, analyse results using mean/median/mode and graphical representation, and present findings with recommendations to the class. This single task assesses statistical knowledge, data collection methodology, analysis, communication, and collaborative skills — all in a meaningful context.</p>
+</div>`
+  },
+  {
+    title: "Co-Scholastic Development",
+    icon: "🎭",
+    summary: "Recognising and developing the full spectrum of student capabilities",
+    content: `
+<h2>Co-Scholastic Development — Beyond Academic Subjects</h2>
+<p>The term "co-scholastic" refers to all dimensions of student development that fall outside the traditional academic curriculum but are equally — and in many cases more — important for a complete, flourishing human life. NEP 2020 and NCF 2023 both place extraordinary emphasis on co-scholastic development, reflecting a recognition that schools have historically been too narrowly focused on academic subjects at the expense of arts, sports, social skills, emotional intelligence, and values formation.</p>
+<h3>The Domains of Co-Scholastic Development</h3>
+<p>Co-scholastic development encompasses several interconnected domains. Creative expression includes visual arts, music, drama, dance, and creative writing — activities that develop aesthetic sensibility, emotional regulation, and non-linear thinking. Physical development through sports, yoga, and physical education develops health, discipline, team skills, and resilience. Social-emotional learning develops empathy, communication, conflict resolution, and self-awareness. Values education cultivates integrity, compassion, civic responsibility, and respect for diversity.</p>
+<h3>Why Co-Scholastic Assessment Matters</h3>
+<p>When schools assess only academic subjects, they inadvertently communicate to students, parents, and communities that everything else is secondary — merely a break between the real lessons. This message is false and harmful. The child who struggles with Mathematics but demonstrates exceptional leadership in sports, the student who cannot write fluently but creates breathtaking visual art — these children are not failures. They are human beings whose strengths and gifts lie in domains the traditional marks sheet cannot see.</p>
+<h3>Assessment Approaches for Co-Scholastic Areas</h3>
+<p>Assessment in co-scholastic areas should prioritise growth over comparison and participation over ranking. Descriptive grading systems that document specific observed behaviours — "demonstrates ability to resolve peer conflicts through negotiation," "shows consistent effort and positive attitude in Physical Education" — are more informative and less stigmatising than letter grades or percentages in these areas.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>Which students in your class have significant strengths that are invisible in your current assessment system?</li>
+<li>How does your school's timetable and resource allocation reflect its stated commitment to co-scholastic development?</li>
+<li>How might parents and students respond if co-scholastic achievements received equal prominence on progress reports?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>A Class VI teacher creates a "Strengths Wall" in the classroom — a visual display showing each student's identified strengths across academic and co-scholastic domains. Students contribute their own self-identified strengths and peer-recognized strengths. This simple activity makes visible the diversity of human capability in the room and begins to shift classroom culture toward a more complete definition of academic success.</p>
+</div>`
+  },
+  {
+    title: "Life Skills & Values Assessment",
+    icon: "💎",
+    summary: "Evaluating the character and life competencies essential for wellbeing",
+    content: `
+<h2>Life Skills and Values Assessment</h2>
+<p>Life skills are the psychosocial competencies that enable individuals to deal effectively with the demands and challenges of everyday life. The WHO's life skills framework identifies ten core life skills: decision-making, problem-solving, creative thinking, critical thinking, effective communication, interpersonal relationship skills, self-awareness, empathy, coping with emotions, and coping with stress. NEP 2020 identifies the cultivation of these competencies as a core responsibility of schooling, alongside values formation.</p>
+<h3>Why Life Skills Must Be Explicitly Assessed</h3>
+<p>In education systems, what gets assessed gets attention. If life skills and values are never formally observed or documented, they effectively disappear from the school's priorities regardless of what any mission statement says. The HPC's life skills and values section exists precisely to elevate these dimensions of development to the same level of formal attention as academic subjects. This does not mean grading children on their values — an inherently problematic practice — but rather observing and documenting the behavioural evidence of developing life competencies.</p>
+<h3>Values in Indian Educational Tradition</h3>
+<p>India's educational tradition, from ancient gurukul systems to modern reformers like Rabindranath Tagore and Mahatma Gandhi, has always understood education as fundamentally about character formation. The Panchkoshi model of education — developing the body, life force, mind, wisdom, and joy — reflects this holistic understanding. NEP 2020 and NCF 2023 draw explicitly on this tradition in their emphasis on values and character education, providing a culturally rooted foundation for life skills assessment.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>Which life skills do you see your students developing through your current teaching practice, even if not explicitly assessed?</li>
+<li>How might documenting a student's demonstrated empathy or leadership change how their teacher, family, and they themselves see their capabilities?</li>
+<li>What aspects of your classroom environment currently foster or hinder the development of specific life skills?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>A Class X teacher creates a monthly "Life Skills Observation Log" with simple descriptors for each student. For the "Critical Thinking" competency, she records specific instances: "During the geography debate, Arjun systematically evaluated evidence from multiple sources before forming his position." This anecdotal record, accumulated over a term, provides rich evidence for the HPC's life skills section without creating additional formal assessments.</p>
+</div>`
+  },
+  {
+    title: "Teacher Reflection Framework",
+    icon: "🪞",
+    summary: "Systematic teacher self-evaluation for continuous professional growth",
+    content: `
+<h2>Teacher Reflection Framework — Growing Through Practice</h2>
+<p>Donald Schon's concept of the "reflective practitioner" — the professional who learns continuously through systematic reflection on their practice — is at the heart of effective professional development for teachers. NEP 2020 emphasises that teachers must be positioned not as delivery mechanisms for curriculum content but as professional educators who continuously examine, question, and improve their practice. The Teacher Reflection Framework embedded in the HPC system operationalises this vision.</p>
+<h3>The Reflective Teaching Cycle</h3>
+<p>Effective teacher reflection follows a cycle: observing what happens in the classroom, analysing patterns in what is observed, hypothesising explanations for those patterns, experimenting with adjustments to practice, and observing the effects of those adjustments. This cycle, applied consistently and rigorously, transforms teaching from craft (doing what has always been done) to professional practice (continuously improving based on evidence).</p>
+<h3>Reflection Questions for Assessment Practice</h3>
+<p>At the heart of teacher reflection on assessment are three questions that Donald Wiliam identifies as the core of formative assessment: Where are my students now? Where do they need to go? How do I help them get there? These deceptively simple questions, when asked systematically and honestly, reveal the gaps between current practice and the aspirations of NEP 2020 and NCF 2023.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>What aspect of your teaching practice, if you changed it tomorrow, would most improve student learning?</li>
+<li>When did you last genuinely change your teaching approach based on evidence from your classroom? What prompted the change?</li>
+<li>What professional support would help you most to develop your assessment practice this year?</li>
+</ul>
+</div>
+<div class="example-box">
+<h4>📚 Classroom Example</h4>
+<p>A teacher implements a "Teaching Journal" practice — five minutes at the end of each school day recording one thing that worked, one thing that didn't, and one adjustment to try tomorrow. Over a term, patterns emerge that inform their professional development priorities. Shared in a professional learning community with colleagues, these reflections become a resource for collective growth.</p>
+</div>`
+  },
+  {
+    title: "School Academic Review Model",
+    icon: "🏛️",
+    summary: "A systematic model for school-level academic self-evaluation and improvement",
+    content: `
+<h2>School Academic Review — Systematic School Self-Evaluation</h2>
+<p>The School Academic Review (SAR) is a systematic process through which schools examine their own academic performance, identify patterns and gaps, celebrate strengths, and plan targeted improvements. Unlike external inspections that evaluate schools against external standards, the SAR is fundamentally a process of professional self-examination — schools holding themselves accountable not to an inspector but to their own stated values and the genuine interests of their students.</p>
+<h3>The SAR Cycle</h3>
+<p>An effective School Academic Review follows an annual cycle aligned with the academic calendar. At the beginning of the year, the school establishes its academic goals and agrees on the evidence it will collect. At the mid-year point, an interim review examines progress and allows for course corrections. At the end of the year, a full review examines achievement against goals, identifies patterns, celebrates successes, and formulates improvement priorities for the following year.</p>
+<h3>Evidence for the SAR</h3>
+<p>The SAR draws on multiple sources of evidence: aggregated competency data from student HPCs, teacher observations and professional judgments, student and parent feedback, attendance and engagement data, and the school's own observations. This multi-source evidence base ensures that the review reflects the full complexity of school life rather than the artificially narrow picture presented by examination results alone.</p>
+<h3>From Review to Action</h3>
+<p>The SAR's value lies entirely in what it produces — not the review document itself but the improvement actions that follow from it. Effective SARs produce specific, time-bound, resourced action plans that assign responsibility for improvement to named individuals or teams. These plans are monitored in subsequent reviews, creating a culture of accountable improvement rather than performative documentation.</p>
+<div class="reflection-box">
+<h4>🤔 Reflection Questions</h4>
+<ul>
+<li>What evidence does your school currently collect that would support a meaningful academic self-review?</li>
+<li>How are teachers currently involved in the school's self-evaluation process?</li>
+<li>What would a "school improving itself" look like, as distinct from a "school preparing for inspection"?</li>
+</ul>
+</div>
+<div class="leadership-box">
+<h4>🏫 Leadership Note</h4>
+<p>The School Academic Review must be led by the principal but owned by the whole staff. Create cross-departmental review teams, rotate leadership of different review strands, and ensure that the SAR document is shared with and discussed by the full staff — not written by one person and filed without discussion. When teachers see their professional observations shaping school improvement priorities, their investment in the process grows dramatically.</p>
+</div>`
+  }
+];
+
+function renderPolicyGrid() {
+  const grid = document.getElementById('policy-grid');
+  grid.innerHTML = policyPages.map((p, i) => `
+    <div class="policy-card" onclick="openArticle(${i})">
+      <div class="pc-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="pc-info">
+        <h3>${p.icon} ${p.title}</h3>
+        <p>${p.summary}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openArticle(idx) {
+  const p = policyPages[idx];
+  document.getElementById('article-nav-title').textContent = p.title;
+  document.getElementById('article-body').innerHTML = p.content;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('home').style.display = 'none';
+  const art = document.getElementById('policy-article');
+  art.classList.add('active');
+  art.style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+// ===== STUDENT FUNCTIONS =====
+function renderStudentList() {
+  const students = DB.getAllStudents();
+  const list = document.getElementById('student-list');
+  if(!students.length) {
+    list.innerHTML = `<div class="empty-state"><div class="es-icon">👥</div><p>No students added yet.<br/>Tap "+ Add" to create your first student profile.</p></div>`;
+    return;
+  }
+  list.innerHTML = students.map((s, i) => `
+    <div class="student-card" onclick="openStudent(${i})">
+      <div class="student-avatar">${s.name.charAt(0)}</div>
+      <div class="student-info">
+        <strong>${s.name}</strong>
+        <span>${s.cls} · Section ${s.section || 'N/A'} · Roll ${s.roll || 'N/A'} · ${s.year}</span>
+      </div>
+      <span style="font-size:1.2rem;color:var(--text-muted)">›</span>
+    </div>
+  `).join('');
+}
+
+function saveStudent() {
+  const name = document.getElementById('s-name').value.trim();
+  const cls = document.getElementById('s-class').value;
+  if(!name || !cls) { toast('⚠️ Name and Class are required'); return; }
+  const students = DB.getAllStudents();
+  students.push({
+    id: Date.now(),
+    name, cls,
+    section: document.getElementById('s-section').value.trim(),
+    roll: document.getElementById('s-roll').value.trim(),
+    year: document.getElementById('s-year').value,
+    parent: document.getElementById('s-parent').value.trim(),
+    competencies: [], coScholastic: {}, selfAssess: {}, selfReflection: ''
+  });
+  DB.saveStudents(students);
+  toast('✅ Student profile saved!');
+  document.getElementById('s-name').value = '';
+  document.getElementById('s-class').value = '';
+  document.getElementById('s-section').value = '';
+  document.getElementById('s-roll').value = '';
+  document.getElementById('s-parent').value = '';
+  setTimeout(() => showScreen('student-module'), 800);
+}
+
+function openStudent(idx) {
+  const students = DB.getAllStudents();
+  currentStudent = idx;
+  const s = students[idx];
+  document.getElementById('detail-nav-name').textContent = s.name;
+  coScholasticData = s.coScholastic || {};
+  selfAssessChecked = s.selfAssess || {};
+  selectedLevel = '';
+  showScreen('student-detail');
+  showTab('tab-academic');
+}
+
+// ===== COMPETENCY =====
+function selectLevel(level) {
+  selectedLevel = level;
+  ['Emerging','Developing','Proficient','Advanced'].forEach(l => {
+    const btn = document.getElementById('lvl-'+l);
+    btn.className = 'comp-level-btn' + (l === level ? ' selected-'+l.toLowerCase() : '');
+  });
+}
+
+function saveCompetency() {
+  const subject = document.getElementById('comp-subject').value;
+  const outcome = document.getElementById('comp-outcome').value.trim();
+  const remarks = document.getElementById('comp-remarks').value.trim();
+  if(!outcome || !selectedLevel) { toast('⚠️ Please fill outcome and select level'); return; }
+  const students = DB.getAllStudents();
+  if(!students[currentStudent].competencies) students[currentStudent].competencies = [];
+  students[currentStudent].competencies.push({ subject, outcome, level: selectedLevel, remarks, date: new Date().toLocaleDateString() });
+  DB.saveStudents(students);
+  document.getElementById('comp-outcome').value = '';
+  document.getElementById('comp-remarks').value = '';
+  selectedLevel = '';
+  ['Emerging','Developing','Proficient','Advanced'].forEach(l => document.getElementById('lvl-'+l).className = 'comp-level-btn');
+  toast('✅ Competency saved!');
+  renderCompetencyList();
+}
+
+function renderCompetencyList() {
+  const students = DB.getAllStudents();
+  const s = students[currentStudent];
+  const comps = s.competencies || [];
+  const wrap = document.getElementById('competency-list-wrap');
+  if(!comps.length) { wrap.innerHTML = ''; return; }
+  wrap.innerHTML = `<div class="form-section" style="margin-top:0;border-radius:0 0 16px 16px">
+    <h2>📋 Recorded Competencies</h2>
+    ${comps.map((c,i) => `
+      <div class="competency-row">
+        <div class="subj">${c.subject}</div>
+        <div class="outcome">${c.outcome}</div>
+        <span class="comp-badge ${c.level.toLowerCase()}">${c.level}</span>
+        <button onclick="deleteComp(${i})" style="background:none;border:none;color:#dc2626;cursor:pointer;font-size:0.8rem;padding:4px 8px">✕</button>
+      </div>
+      ${c.remarks ? `<p style="font-size:0.8rem;color:var(--text-muted);padding:4px 0 8px;font-style:italic">"${c.remarks}"</p>` : ''}
+    `).join('')}
+  </div>`;
+}
+
+function deleteComp(idx) {
+  const students = DB.getAllStudents();
+  students[currentStudent].competencies.splice(idx, 1);
+  DB.saveStudents(students);
+  renderCompetencyList();
+  toast('🗑️ Competency removed');
+}
+
+// ===== CO-SCHOLASTIC =====
+const coScholasticAreas = [
+  { key: 'communication', label: 'Communication Skills', icon: '💬' },
+  { key: 'collaboration', label: 'Collaboration & Teamwork', icon: '🤝' },
+  { key: 'criticalThinking', label: 'Critical Thinking', icon: '🧠' },
+  { key: 'creativity', label: 'Creativity & Innovation', icon: '🎨' },
+  { key: 'values', label: 'Values & Ethics', icon: '💎' },
+  { key: 'participation', label: 'Participation & Engagement', icon: '🙋' },
+  { key: 'leadership', label: 'Leadership', icon: '👑' },
+  { key: 'sportsArts', label: 'Sports / Arts / Co-Curricular', icon: '🎭' }
+];
+
+function renderCoScholasticForm() {
+  const container = document.getElementById('coscholastic-areas');
+  container.innerHTML = coScholasticAreas.map(a => `
+    <div style="margin-bottom:18px">
+      <label style="font-size:0.88rem;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">${a.icon} ${a.label}</label>
+      <div class="comp-levels">
+        ${['Emerging','Developing','Proficient','Advanced'].map(l => `
+          <button class="comp-level-btn ${coScholasticData[a.key] === l ? 'selected-'+l.toLowerCase() : ''}" 
+            onclick="selectCoScholastic('${a.key}','${l}',this)">${l}</button>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectCoScholastic(key, level, btn) {
+  coScholasticData[key] = level;
+  const parent = btn.closest('.comp-levels');
+  parent.querySelectorAll('.comp-level-btn').forEach(b => b.className = 'comp-level-btn');
+  btn.className = 'comp-level-btn selected-'+level.toLowerCase();
+}
+
+function saveCoScholastic() {
+  const students = DB.getAllStudents();
+  students[currentStudent].coScholastic = coScholasticData;
+  DB.saveStudents(students);
+  toast('✅ Co-Scholastic evaluation saved!');
+}
+
+// ===== SELF ASSESSMENT =====
+const selfAssessItems = [
+  'I put in my best effort in all subjects',
+  'I completed homework and assignments on time',
+  'I asked for help when I did not understand',
+  'I participated actively in class discussions',
+  'I listened carefully to my teachers',
+  'I helped my classmates when they needed support',
+  'I showed respect for all members of my school community',
+  'I took responsibility for my own mistakes',
+  'I tried new and creative approaches to problems',
+  'I maintained regular attendance',
+  'I set personal learning goals for myself',
+  'I feel confident about my progress this term'
+];
+
+function renderSelfAssessForm() {
+  const container = document.getElementById('self-assess-list');
+  container.innerHTML = selfAssessItems.map((item, i) => `
+    <div class="checklist-item ${selfAssessChecked[i] ? 'checked' : ''}" onclick="toggleSelfAssess(${i}, this)">
+      <div class="check-icon">${selfAssessChecked[i] ? '✓' : ''}</div>
+      <div class="check-label">${item}</div>
+    </div>
+  `).join('');
+  const students = DB.getAllStudents();
+  document.getElementById('self-reflection-text').value = students[currentStudent].selfReflection || '';
+}
+
+function toggleSelfAssess(idx, el) {
+  selfAssessChecked[idx] = !selfAssessChecked[idx];
+  el.classList.toggle('checked', selfAssessChecked[idx]);
+  el.querySelector('.check-icon').textContent = selfAssessChecked[idx] ? '✓' : '';
+}
+
+function saveSelfAssessment() {
+  const students = DB.getAllStudents();
+  students[currentStudent].selfAssess = selfAssessChecked;
+  students[currentStudent].selfReflection = document.getElementById('self-reflection-text').value;
+  DB.saveStudents(students);
+  toast('✅ Self-assessment saved!');
+}
+
+// ===== PROGRESS CARD =====
+function getCompetencyColor(level) {
+  const map = { Emerging: '#d97706', Developing: '#3b82f6', Proficient: '#16a34a', Advanced: '#7c3aed' };
+  return map[level] || '#94a3b8';
+}
+
+function generateNarrative(student) {
+  const comps = student.competencies || [];
+  if(!comps.length) return 'Assessment data not yet recorded for this student.';
+  const advanced = comps.filter(c => c.level === 'Advanced').map(c => c.subject);
+  const proficient = comps.filter(c => c.level === 'Proficient').map(c => c.subject);
+  const developing = comps.filter(c => c.level === 'Developing').map(c => c.subject);
+  const emerging = comps.filter(c => c.level === 'Emerging').map(c => c.subject);
+  let narrative = `${student.name} has demonstrated a varied and developing range of competencies across the curriculum during this academic period. `;
+  if(advanced.length) narrative += `Exceptional advanced performance has been noted in ${[...new Set(advanced)].join(', ')}, where ${student.name.split(' ')[0]} demonstrates deep understanding and the ability to extend learning beyond expected standards. `;
+  if(proficient.length) narrative += `Solid proficiency has been demonstrated in ${[...new Set(proficient)].join(', ')}, reflecting independent and confident application of key learning outcomes. `;
+  if(developing.length) narrative += `In ${[...new Set(developing)].join(', ')}, ${student.name.split(' ')[0]} is progressing well and with continued practice and guidance will develop greater confidence and independence. `;
+  if(emerging.length) narrative += `Targeted support is recommended for ${[...new Set(emerging)].join(', ')}, where foundational skills are still being established. `;
+  narrative += `Overall, ${student.name.split(' ')[0]} shows promise and with consistent effort and support is well positioned for continued growth.`;
+  return narrative;
+}
+
+function renderProgressCard() {
+  const students = DB.getAllStudents();
+  const s = students[currentStudent];
+  const comps = s.competencies || [];
+  const coscho = s.coScholastic || {};
+  const selfChecked = Object.values(s.selfAssess || {}).filter(Boolean).length;
+  const narrative = generateNarrative(s);
+
+  // Build radar data
+  const radarLabels = coScholasticAreas.map(a => a.label.split(' ')[0]);
+  const levelMap = { Emerging: 1, Developing: 2, Proficient: 3, Advanced: 4 };
+  const radarData = coScholasticAreas.map(a => levelMap[coscho[a.key]] || 0);
+
+  const output = document.getElementById('progress-card-output');
+  output.innerHTML = `
+    <div class="progress-card-view">
+      <div class="pc-header">
+        <p style="font-size:0.75rem;letter-spacing:2px;text-transform:uppercase;opacity:0.7;margin-bottom:8px">Holistic Progress Card</p>
+        <h1>School Education Department, Kashmir</h1>
+        <h2>${s.name}</h2>
+        <p>${s.cls} · Section ${s.section || '-'} · Roll ${s.roll || '-'} · ${s.year}</p>
+        <p style="margin-top:4px;font-size:0.8rem;opacity:0.7">Parent/Guardian: ${s.parent || 'Not recorded'}</p>
+        <div style="display:inline-block;background:rgba(212,168,83,0.2);border:1px solid var(--gold);border-radius:6px;padding:6px 14px;margin-top:12px;font-size:0.72rem;letter-spacing:1px">✦ NEP 2020 · NCF 2023 · PARAKH Aligned ✦</div>
+      </div>
+
+      <div class="pc-section">
+        <h3>📊 Academic Competency Profile</h3>
+        ${comps.length ? comps.map(c => `
+          <div class="competency-row">
+            <div class="subj">${c.subject}</div>
+            <div class="outcome" style="font-size:0.82rem">${c.outcome}</div>
+            <span class="comp-badge ${c.level.toLowerCase()}">${c.level}</span>
+          </div>
+          ${c.remarks ? `<p style="font-size:0.78rem;color:var(--text-muted);padding:2px 0 8px;font-style:italic">🗣️ ${c.remarks}</p>` : ''}
+        `).join('') : '<p style="color:var(--text-muted);font-size:0.88rem">No academic competencies recorded yet.</p>'}
+      </div>
+
+      <div class="pc-section">
+        <h3>🎨 Co-Scholastic Development</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          ${coScholasticAreas.map(a => `
+            <div style="background:var(--off-white);border-radius:8px;padding:10px 12px;border-left:3px solid ${getCompetencyColor(coscho[a.key])}">
+              <div style="font-size:0.78rem;font-weight:600;color:var(--text-muted)">${a.icon} ${a.label}</div>
+              <div style="font-size:0.82rem;font-weight:700;color:${getCompetencyColor(coscho[a.key]) || '#94a3b8'};margin-top:3px">${coscho[a.key] || 'Not assessed'}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      ${radarData.some(d => d > 0) ? `
+      <div class="pc-section">
+        <h3>🕸️ Development Radar</h3>
+        <div class="radar-wrap">
+          <canvas class="radar" id="student-radar-card" height="280"></canvas>
+        </div>
+      </div>` : ''}
+
+      <div class="pc-section">
+        <h3>🔍 Student Self-Assessment</h3>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px">
+          <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe);border-radius:12px;padding:14px 20px;text-align:center;flex:1;border:2px solid #3b82f6">
+            <div style="font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--accent-blue)">${selfChecked}</div>
+            <div style="font-size:0.75rem;color:#1e40af">of ${selfAssessItems.length}<br/>criteria met</div>
+          </div>
+          <div style="flex:3">
+            <div style="background:var(--off-white);border-radius:8px;height:12px;overflow:hidden">
+              <div style="background:linear-gradient(90deg,var(--accent-blue),#7c3aed);height:100%;width:${(selfChecked/selfAssessItems.length*100).toFixed(0)}%;border-radius:8px;transition:width 0.6s"></div>
+            </div>
+            <p style="font-size:0.78rem;color:var(--text-muted);margin-top:6px">${(selfChecked/selfAssessItems.length*100).toFixed(0)}% self-reported completion</p>
+          </div>
+        </div>
+        ${s.selfReflection ? `<div style="background:#f8fafc;border-left:3px solid var(--gold);padding:12px 14px;border-radius:0 8px 8px 0;font-size:0.85rem;font-style:italic;color:var(--text-muted)">"${s.selfReflection}"</div>` : ''}
+      </div>
+
+      <div class="pc-section">
+        <h3>📝 Teacher's Holistic Narrative</h3>
+        <p style="font-size:0.9rem;line-height:1.75;color:var(--text-main)">${narrative}</p>
+      </div>
+
+      <div class="pc-section" style="border-bottom:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-top:10px">
+          <div style="text-align:center;border-top:1px solid var(--border);padding-top:14px">
+            <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px">Class Teacher</p>
+            <p style="font-size:0.75rem;color:var(--text-muted)">Signature &amp; Date</p>
+          </div>
+          <div style="text-align:center;border-top:1px solid var(--border);padding-top:14px">
+            <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:4px">Principal</p>
+            <p style="font-size:0.75rem;color:var(--text-muted)">Signature &amp; Seal</p>
+          </div>
+        </div>
+        <p style="text-align:center;font-size:0.7rem;color:var(--text-muted);margin-top:20px">Generated by Holistic Progress Card System · Developed by Mateen Yousuf · School Education Department Kashmir</p>
+      </div>
+    </div>
+  `;
+
+  // Draw radar
+  if(radarData.some(d => d > 0)) {
+    setTimeout(() => drawRadar('student-radar-card', radarLabels, radarData), 100);
+  }
+}
+
+// ===== SCHOOL REVIEW =====
+function renderSchoolOverview() {
+  const data = DB.getSchoolReview();
+  const students = DB.getAllStudents();
+  
+  // Compute from actual student data
+  let allComps = [];
+  students.forEach(s => (s.competencies||[]).forEach(c => allComps.push(c.level)));
+  
+  const counts = { Advanced: 0, Proficient: 0, Developing: 0, Emerging: 0 };
+  allComps.forEach(l => { if(counts[l] !== undefined) counts[l]++; });
+  const total = allComps.length || 1;
+  
+  const grid = document.getElementById('school-stats-grid');
+  grid.innerHTML = `
+    <div class="stat-card"><div class="stat-num">${students.length}</div><div class="stat-label">Students</div></div>
+    <div class="stat-card"><div class="stat-num">${allComps.length}</div><div class="stat-label">Assessments</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--success)">${counts.Advanced + counts.Proficient}</div><div class="stat-label">On/Above Track</div></div>
+    <div class="stat-card"><div class="stat-num" style="color:var(--warning)">${counts.Emerging}</div><div class="stat-label">Need Support</div></div>
+  `;
+
+  // Use school-entered data if available, else use computed
+  const barAdv = data.advanced || Math.round(counts.Advanced/total*100);
+  const barProf = data.proficient || Math.round(counts.Proficient/total*100);
+  const barDev = data.developing || Math.round(counts.Developing/total*100);
+  const barEmer = data.emerging || Math.round(counts.Emerging/total*100);
+
+  setTimeout(() => {
+    drawBarChart('bar-chart', ['Advanced','Proficient','Developing','Emerging'], [barAdv,barProf,barDev,barEmer]);
+    // Co-scholastic radar for school
+    const coKeys = coScholasticAreas.map(a => a.key);
+    const levelMap = { Emerging: 1, Developing: 2, Proficient: 3, Advanced: 4 };
+    const schoolRadarData = coKeys.map(key => {
+      const vals = students.map(s => levelMap[(s.coScholastic||{})[key]] || 0).filter(v => v > 0);
+      return vals.length ? vals.reduce((a,b) => a+b, 0)/vals.length : 0;
+    });
+    drawRadar('school-radar', coScholasticAreas.map(a => a.icon + ' ' + a.label.split(' ')[0]), schoolRadarData, 4);
+  }, 150);
+}
+
+function saveSchoolReview() {
+  const data = {
+    total: parseInt(document.getElementById('sr-total').value) || 0,
+    advanced: parseFloat(document.getElementById('sr-advanced').value) || 0,
+    proficient: parseFloat(document.getElementById('sr-proficient').value) || 0,
+    developing: parseFloat(document.getElementById('sr-developing').value) || 0,
+    emerging: parseFloat(document.getElementById('sr-emerging').value) || 0,
+    strong: document.getElementById('sr-strong').value.trim(),
+    weak: document.getElementById('sr-weak').value.trim(),
+    date: new Date().toLocaleDateString()
+  };
+  DB.saveSchoolReview(data);
+  toast('✅ School review data saved!');
+}
+
+function renderGapAnalysis() {
+  const data = DB.getSchoolReview();
+  const students = DB.getAllStudents();
+  let allComps = [];
+  students.forEach(s => (s.competencies||[]).forEach(c => allComps.push({...c, studentName: s.name})));
+  
+  const bySubject = {};
+  allComps.forEach(c => {
+    if(!bySubject[c.subject]) bySubject[c.subject] = { Advanced:0, Proficient:0, Developing:0, Emerging:0, total:0 };
+    bySubject[c.subject][c.level]++;
+    bySubject[c.subject].total++;
+  });
+
+  const container = document.getElementById('gap-analysis-content');
+  if(!Object.keys(bySubject).length) {
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:0.88rem">Add student competency data to generate gap analysis.</p>';
+  } else {
+    container.innerHTML = Object.entries(bySubject).map(([subj, data]) => {
+      const pct = ((data.Advanced + data.Proficient) / data.total * 100).toFixed(0);
+      const color = pct >= 70 ? '#16a34a' : pct >= 50 ? '#d97706' : '#dc2626';
+      return `<div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="font-weight:600;font-size:0.9rem">${subj}</span>
+          <span style="font-size:0.82rem;color:${color};font-weight:700">${pct}% on/above track</span>
+        </div>
+        <div style="background:#f1f5f9;border-radius:6px;height:10px;overflow:hidden">
+          <div style="background:${color};height:100%;width:${pct}%;border-radius:6px"></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap">
+          ${['Advanced','Proficient','Developing','Emerging'].map(l => 
+            data[l] ? `<span style="font-size:0.72rem;padding:2px 8px;border-radius:10px;background:${l==='Advanced'?'#f5f3ff':l==='Proficient'?'#f0fdf4':l==='Developing'?'#eff6ff':'#fef3c7'};color:${l==='Advanced'?'#5b21b6':l==='Proficient'?'#15803d':l==='Developing'?'#1e40af':'#92400e'}">${l}: ${data[l]}</span>` : ''
+          ).join('')}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Trend chart
+  setTimeout(() => {
+    const labels = ['Term 1', 'Term 2', 'Term 3'];
+    const d = DB.getSchoolReview();
+    const prof = d.proficient || 40;
+    drawLineChart('trend-chart', labels, [Math.max(0,prof-12), Math.max(0,prof-5), prof], [Math.min(100,(d.advanced||18)-4), Math.min(100,(d.advanced||18)-2), (d.advanced||18)]);
+  }, 150);
+}
+
+function renderActionPlan() {
+  const data = DB.getSchoolReview();
+  const students = DB.getAllStudents();
+  let allComps = [];
+  students.forEach(s => (s.competencies||[]).forEach(c => allComps.push(c)));
+  const emerging = allComps.filter(c => c.level === 'Emerging').length;
+  const total = allComps.length || 1;
+  const emergPct = (emerging/total*100).toFixed(0);
+
+  const plans = [
+    { type: emergPct > 20 ? 'warn' : 'success', title: '🎯 Priority 1: Targeted Intervention for Emerging Learners', body: `${emergPct}% of assessed competencies are at Emerging level. Implement small-group "learning clinics" 3x per week. Identify the specific conceptual gaps through diagnostic conversations. Pair Emerging learners with Proficient peers using structured buddy protocols. Review seating and questioning strategies for these students.` },
+    { type: 'default', title: '📚 Priority 2: Teacher Professional Development', body: `Focus CPD this term on: (1) Formative assessment questioning techniques — specifically probing questions that reveal thinking rather than recall. (2) Differentiated instruction strategies to serve the full range of competency levels. (3) Peer assessment protocols that develop metacognition in students.` },
+    { type: 'default', title: '🤝 Priority 3: Parent Engagement on Holistic Assessment', body: `Host a parent orientation evening to explain the Holistic Progress Card format. Prepare a one-page guide in local language explaining competency levels and what each means for their child. Share specific suggestions for how parents can support learning at home based on their child's HPC.` },
+    { type: 'success', title: '✅ Priority 4: Celebrate and Leverage Strengths', body: `${data.strong ? `${data.strong} shows strongest performance.` : 'Identify and document your school\'s strongest academic area.'} Create opportunities for teachers with high rates of Advanced/Proficient learners to share their strategies with colleagues. Consider a school showcase event where students demonstrate their learning in areas of strength.` },
+    { type: 'warn', title: '🔍 Priority 5: Deep Dive into Focus Area', body: `${data.weak ? `${data.weak} requires most attention.` : 'Identify the subject or competency area with highest Emerging rates.'} Conduct a subject-specific learning walk. Review the teaching materials and approaches being used. Investigate whether resources, training, or timetable adjustments are needed. Set a measurable improvement target for next review cycle.` },
+    { type: 'default', title: '📋 Priority 6: SMC and Cluster Meeting Agenda', body: `Present this HPC system and school review findings at the next SMC meeting. Prepare a one-page executive summary of competency distribution. Invite parent SMC members to discuss their response to the HPC format. At the cluster meeting, share implementation learnings and request peer school support where gaps exist.` }
+  ];
+
+  const container = document.getElementById('action-plan-content');
+  container.innerHTML = plans.map(p => `
+    <div class="suggestion-card ${p.type}">
+      <h4>${p.title}</h4>
+      <p>${p.body}</p>
+    </div>
+  `).join('');
+}
+
+// ===== CHARTS =====
+function drawBarChart(canvasId, labels, data) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#7c3aed','#16a34a','#3b82f6','#d97706'];
+  const W = canvas.offsetWidth || 320;
+  canvas.width = W; canvas.height = 220;
+  ctx.clearRect(0, 0, W, 220);
+  const max = Math.max(...data, 1);
+  const barW = (W - 60) / labels.length - 14;
+  const chartH = 160;
+  labels.forEach((label, i) => {
+    const x = 40 + i * ((W - 60) / labels.length) + 7;
+    const barH = (data[i] / max) * chartH;
+    const y = 190 - barH;
+    ctx.fillStyle = colors[i];
+    ctx.beginPath();
+    ctx.roundRect(x, y, barW, barH, 6);
+    ctx.fill();
+    ctx.fillStyle = '#64748b';
+    ctx.font = '11px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x + barW/2, 210);
+    ctx.fillStyle = colors[i];
+    ctx.font = 'bold 12px system-ui';
+    ctx.fillText(data[i] + '%', x + barW/2, y - 6);
+  });
+}
+
+function drawRadar(canvasId, labels, data, maxVal) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 280;
+  const H = canvas.offsetHeight || 280;
+  canvas.width = W; canvas.height = H;
+  const cx = W/2, cy = H/2;
+  const R = Math.min(W, H) * 0.36;
+  const n = labels.length;
+  const mv = maxVal || 4;
+  ctx.clearRect(0,0,W,H);
+  // Grid
+  for(let g = 1; g <= mv; g++) {
+    const r = R * g / mv;
+    ctx.beginPath();
+    for(let i = 0; i < n; i++) {
+      const angle = (i / n) * Math.PI * 2 - Math.PI/2;
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(203,213,225,0.7)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  // Axes
+  for(let i = 0; i < n; i++) {
+    const angle = (i / n) * Math.PI * 2 - Math.PI/2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R * Math.cos(angle), cy + R * Math.sin(angle));
+    ctx.strokeStyle = 'rgba(148,163,184,0.5)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  // Data polygon
+  ctx.beginPath();
+  data.forEach((v, i) => {
+    const angle = (i / n) * Math.PI * 2 - Math.PI/2;
+    const r = R * v / mv;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(37,99,235,0.2)';
+  ctx.fill();
+  ctx.strokeStyle = '#2563eb';
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  // Points
+  data.forEach((v, i) => {
+    const angle = (i / n) * Math.PI * 2 - Math.PI/2;
+    const r = R * v / mv;
+    const x = cx + r * Math.cos(angle);
+    const y = cy + r * Math.sin(angle);
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#1d4ed8';
+    ctx.fill();
+  });
+  // Labels
+  ctx.fillStyle = '#334155';
+  ctx.font = '11px system-ui';
+  ctx.textAlign = 'center';
+  labels.forEach((lbl, i) => {
+    const angle = (i / n) * Math.PI * 2 - Math.PI/2;
+    const lr = R + 24;
+    const x = cx + lr * Math.cos(angle);
+    const y = cy + lr * Math.sin(angle) + 4;
+    ctx.fillText(lbl, x, y);
+  });
+}
+
+function drawLineChart(canvasId, labels, data1, data2) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 320;
+  canvas.width = W; canvas.height = 200;
+  ctx.clearRect(0,0,W,200);
+  const pad = 40;
+  const chartW = W - pad*2;
+  const chartH = 140;
+  const max = 100;
+  ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1;
+  [0,25,50,75,100].forEach(v => {
+    const y = pad + chartH - (v/max)*chartH;
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W-pad, y); ctx.stroke();
+    ctx.fillStyle = '#94a3b8'; ctx.font = '10px system-ui'; ctx.textAlign = 'right';
+    ctx.fillText(v+'%', pad-4, y+4);
+  });
+  const drawLine = (data, color) => {
+    ctx.beginPath();
+    data.forEach((v, i) => {
+      const x = pad + (i / (data.length-1)) * chartW;
+      const y = pad + chartH - (v/max)*chartH;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = color; ctx.lineWidth = 2.5; ctx.stroke();
+    data.forEach((v, i) => {
+      const x = pad + (i / (data.length-1)) * chartW;
+      const y = pad + chartH - (v/max)*chartH;
+      ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2);
+      ctx.fillStyle = color; ctx.fill();
+    });
+  };
+  drawLine(data1, '#2563eb');
+  drawLine(data2, '#7c3aed');
+  ctx.fillStyle = '#64748b'; ctx.font = '11px system-ui'; ctx.textAlign = 'center';
+  labels.forEach((l, i) => {
+    const x = pad + (i / (labels.length-1)) * chartW;
+    ctx.fillText(l, x, pad + chartH + 18);
+  });
+  // Legend
+  ctx.fillStyle = '#2563eb'; ctx.fillRect(pad, 8, 12, 8);
+  ctx.fillStyle = '#334155'; ctx.font = '10px system-ui'; ctx.textAlign = 'left';
+  ctx.fillText('Proficient %', pad+16, 16);
+  ctx.fillStyle = '#7c3aed'; ctx.fillRect(pad+100, 8, 12, 8);
+  ctx.fillStyle = '#334155'; ctx.fillText('Advanced %', pad+116, 16);
+}
+
+// ===== DATA MANAGEMENT =====
+function exportAllData() {
+  const data = {
+    exportDate: new Date().toISOString(),
+    app: 'Holistic Progress Card System v1.0',
+    developer: 'Mateen Yousuf, School Education Department Kashmir',
+    students: DB.getAllStudents(),
+    schoolReview: DB.getSchoolReview()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'hpc-backup-'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ Backup exported successfully!');
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if(data.students) DB.saveStudents(data.students);
+      if(data.schoolReview) DB.saveSchoolReview(data.schoolReview);
+      toast('✅ Data imported successfully!');
+      event.target.value = '';
+    } catch(err) {
+      toast('❌ Invalid backup file');
+    }
+  };
+  reader.readAsText(file);
+}
+
+function exportCardJSON() {
+  const students = DB.getAllStudents();
+  const s = students[currentStudent];
+  const blob = new Blob([JSON.stringify(s, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = s.name.replace(/\s+/g,'-')+'-progress-card.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✅ Card exported!');
+}
+
+function confirmReset() {
+  if(confirm('⚠️ This will permanently delete ALL students and school data. This cannot be undone.\n\nAre you absolutely sure?')) {
+    localStorage.clear();
+    toast('🗑️ All data cleared');
+    closeDataMgmt();
+  }
+}
+
+// ===== SERVICE WORKER REGISTRATION =====
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(() => {});
+  });
+}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded', () => {
+  renderPolicyGrid();
+  showScreen('home');
+});
+
+// Close data mgmt on overlay click
+document.getElementById('data-mgmt-overlay').addEventListener('click', (e) => {
+  if(e.target === document.getElementById('data-mgmt-overlay')) closeDataMgmt();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AdaptLearn">
+<title>AI-Free Offline Adaptive Learning Intelligence Studio</title>
+<link rel="manifest" href="./manifest.json">
+<style>
+/* ===== CSS VARIABLES & RESET ===== */
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #0f1628;
+  --bg-card: #111827;
+  --bg-card2: #161f35;
+  --accent-teal: #00d4b8;
+  --accent-blue: #3b82f6;
+  --accent-gold: #f59e0b;
+  --accent-purple: #8b5cf6;
+  --accent-green: #10b981;
+  --accent-red: #ef4444;
+  --text-primary: #f0f6ff;
+  --text-secondary: #94a3b8;
+  --text-muted: #4a5568;
+  --border: #1e2d4a;
+  --border-glow: rgba(0,212,184,0.3);
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-body: 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Courier New', monospace;
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+img { max-width: 100%; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: var(--accent-teal); border-radius: 3px; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+@keyframes glow { 0%,100% { box-shadow: 0 0 8px var(--accent-teal); } 50% { box-shadow: 0 0 24px var(--accent-teal), 0 0 48px rgba(0,212,184,0.2); } }
+@keyframes scanline { 0% { transform:translateY(-100%); } 100% { transform:translateY(100vh); } }
+@keyframes float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-6px); } }
+@keyframes spin { from { transform:rotate(0deg); } to { transform:rotate(360deg); } }
+@keyframes progressFill { from { width:0; } to { width:var(--target-width,100%); } }
+
+/* ===== PAGES SYSTEM ===== */
+.page { display: none; min-height: 100vh; animation: fadeIn 0.4s ease; }
+.page.active { display: block; }
+
+/* ===== HEADER / NAV ===== */
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,14,26,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+.app-header .logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--font-display); font-size: 14px; font-weight: bold;
+  color: var(--accent-teal); text-decoration: none;
+  cursor: pointer;
+}
+.app-header .logo span { font-size: 22px; }
+.app-header .nav-title {
+  font-size: 13px; color: var(--text-secondary);
+  text-align: center; flex: 1;
+}
+.app-header .back-btn {
+  padding: 6px 12px; border-radius: var(--radius-sm);
+  background: var(--bg-card); color: var(--text-secondary);
+  font-size: 13px; border: 1px solid var(--border);
+  transition: all 0.2s;
+}
+.app-header .back-btn:hover { color: var(--accent-teal); border-color: var(--accent-teal); }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.card:hover { border-color: var(--border-glow); }
+.card-glow { border-color: var(--accent-teal); box-shadow: 0 0 12px rgba(0,212,184,0.15); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 24px; border-radius: var(--radius-sm);
+  font-size: 14px; font-weight: 600; transition: all 0.2s;
+  text-decoration: none; border: 2px solid transparent;
+}
+.btn-primary {
+  background: var(--accent-teal); color: #000;
+  border-color: var(--accent-teal);
+}
+.btn-primary:hover { background: transparent; color: var(--accent-teal); transform: translateY(-1px); }
+.btn-secondary {
+  background: transparent; color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+.btn-secondary:hover { background: var(--accent-blue); color: #fff; }
+.btn-gold {
+  background: transparent; color: var(--accent-gold);
+  border-color: var(--accent-gold);
+}
+.btn-gold:hover { background: var(--accent-gold); color: #000; }
+.btn-purple {
+  background: transparent; color: var(--accent-purple);
+  border-color: var(--accent-purple);
+}
+.btn-purple:hover { background: var(--accent-purple); color: #fff; }
+.btn-sm { padding: 8px 16px; font-size: 13px; }
+.btn-lg { padding: 16px 32px; font-size: 16px; }
+.btn-full { width: 100%; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ===== BADGE ===== */
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+}
+.badge-teal { background: rgba(0,212,184,0.15); color: var(--accent-teal); border: 1px solid rgba(0,212,184,0.3); }
+.badge-gold { background: rgba(245,158,11,0.15); color: var(--accent-gold); border: 1px solid rgba(245,158,11,0.3); }
+.badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); border: 1px solid rgba(59,130,246,0.3); }
+.badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); }
+.badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3); }
+.badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); border: 1px solid rgba(139,92,246,0.3); }
+
+/* ===== PROGRESS BAR ===== */
+.progress-bar {
+  height: 8px; background: var(--bg-secondary);
+  border-radius: 4px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent-teal), var(--accent-blue));
+  transition: width 0.6s ease;
+}
+
+/* ===== SECTIONS ===== */
+.section { padding: 20px 16px; }
+.section-header { margin-bottom: 20px; }
+.section-title {
+  font-family: var(--font-display);
+  font-size: 22px; font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.section-subtitle { font-size: 13px; color: var(--text-secondary); }
+
+/* ===== GRID ===== */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+
+/* ===== FORM ===== */
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; font-weight: 600; }
+.form-control {
+  width: 100%; padding: 10px 14px;
+  background: var(--bg-secondary); color: var(--text-primary);
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 14px; transition: border-color 0.2s;
+}
+.form-control:focus { outline: none; border-color: var(--accent-teal); }
+.form-control option { background: var(--bg-secondary); }
+
+/* ===== QUIZ ===== */
+.option-btn {
+  width: 100%; text-align: left; padding: 14px 16px;
+  background: var(--bg-card2); color: var(--text-primary);
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  margin-bottom: 10px; font-size: 14px;
+  transition: all 0.2s; cursor: pointer;
+}
+.option-btn:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.08); }
+.option-btn.correct { border-color: var(--accent-green); background: rgba(16,185,129,0.12); color: var(--accent-green); }
+.option-btn.incorrect { border-color: var(--accent-red); background: rgba(239,68,68,0.12); color: var(--accent-red); }
+.option-btn.selected { border-color: var(--accent-blue); background: rgba(59,130,246,0.12); }
+.option-btn:disabled { cursor: default; }
+
+/* ===== STAT CARD ===== */
+.stat-card {
+  text-align: center; padding: 16px 12px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); 
+}
+.stat-value { font-size: 28px; font-weight: bold; color: var(--accent-teal); }
+.stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ===== ALERT ===== */
+.alert {
+  padding: 12px 16px; border-radius: var(--radius-sm);
+  font-size: 13px; margin-bottom: 12px;
+}
+.alert-info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: var(--accent-blue); }
+.alert-success { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--accent-green); }
+.alert-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--accent-gold); }
+.alert-error { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--accent-red); }
+
+/* ===== HEATMAP ===== */
+.heatmap-cell {
+  width: 32px; height: 32px; border-radius: 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: bold; cursor: default;
+  transition: transform 0.15s;
+}
+.heatmap-cell:hover { transform: scale(1.2); z-index: 2; position: relative; }
+.heat-0 { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+.heat-1 { background: rgba(0,212,184,0.2); color: var(--accent-teal); }
+.heat-2 { background: rgba(0,212,184,0.4); color: var(--accent-teal); }
+.heat-3 { background: rgba(0,212,184,0.65); color: #000; }
+.heat-4 { background: var(--accent-teal); color: #000; }
+
+/* ===== LADDER ===== */
+.ladder-step {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; margin-bottom: 8px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  transition: all 0.2s;
+}
+.ladder-step.active { border-color: var(--accent-gold); background: rgba(245,158,11,0.06); animation: glow 2s infinite; }
+.ladder-step.completed { border-color: var(--accent-green); background: rgba(16,185,129,0.06); }
+.ladder-step.locked { opacity: 0.45; }
+.ladder-icon { font-size: 22px; }
+.ladder-info { flex: 1; }
+.ladder-title { font-weight: 600; font-size: 14px; }
+.ladder-sub { font-size: 12px; color: var(--text-secondary); }
+
+/* ===== POLICY PAGE ===== */
+.policy-content {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px;
+  line-height: 1.9;
+}
+.policy-content h3 { color: var(--accent-teal); font-size: 17px; margin: 20px 0 10px; font-family: var(--font-display); }
+.policy-content h4 { color: var(--accent-gold); font-size: 15px; margin: 16px 0 8px; }
+.policy-content p { margin-bottom: 14px; color: var(--text-secondary); font-size: 14px; }
+.policy-content .callout {
+  border-left: 3px solid var(--accent-teal); padding: 12px 16px;
+  background: rgba(0,212,184,0.05); border-radius: 0 8px 8px 0;
+  margin: 16px 0; font-style: italic; font-size: 13px; color: var(--text-primary);
+}
+.policy-content .reflection {
+  background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2);
+  border-radius: var(--radius-sm); padding: 14px;
+  margin-top: 20px; font-size: 13px;
+}
+.policy-content .reflection strong { color: var(--accent-gold); }
+
+/* ===== CHART CANVAS ===== */
+.chart-container { position: relative; width: 100%; height: 200px; }
+canvas { border-radius: var(--radius-sm); }
+
+/* ===== DIFFICULTY BADGE ===== */
+.diff-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+}
+.diff-1 { background: rgba(16,185,129,0.15); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.3); }
+.diff-2 { background: rgba(59,130,246,0.15); color: var(--accent-blue); border: 1px solid rgba(59,130,246,0.3); }
+.diff-3 { background: rgba(245,158,11,0.15); color: var(--accent-gold); border: 1px solid rgba(245,158,11,0.3); }
+.diff-4 { background: rgba(239,68,68,0.15); color: var(--accent-red); border: 1px solid rgba(239,68,68,0.3); }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 24px; max-width: 480px; width: 100%;
+  animation: fadeIn 0.3s ease;
+}
+.modal-title { font-size: 18px; font-weight: bold; margin-bottom: 12px; color: var(--accent-teal); }
+
+/* ===== TOAST ===== */
+#toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: var(--bg-card2); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 12px 20px;
+  font-size: 13px; color: var(--text-primary); z-index: 2000;
+  opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
+  .grid-4 { grid-template-columns: repeat(2,1fr); }
+  .btn-lg { padding: 14px 20px; font-size: 15px; }
+  .section-title { font-size: 19px; }
+}
+@media (max-width: 360px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* ===== HOME PAGE SPECIFIC ===== */
+.hero-bg {
+  background: radial-gradient(ellipse at 20% 20%, rgba(0,212,184,0.08) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 80%, rgba(59,130,246,0.08) 0%, transparent 60%),
+              var(--bg-primary);
+  min-height: 100vh;
+}
+.hero-scanline {
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-teal), transparent);
+  animation: scanline 6s linear infinite; pointer-events: none; z-index: 999; opacity: 0.3;
+}
+.hero-brand {
+  text-align: center; padding: 40px 20px 20px;
+}
+.hero-icon { font-size: 64px; animation: float 4s ease-in-out infinite; display: block; margin-bottom: 12px; }
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(18px, 5vw, 28px);
+  font-weight: bold;
+  line-height: 1.3;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.hero-title span { color: var(--accent-teal); }
+.hero-dev {
+  font-size: 13px; color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+.hero-dev strong { color: var(--accent-gold); }
+.hero-badges { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-bottom: 24px; }
+.hero-author-card {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 18px;
+  margin: 0 16px 24px; max-width: 440px; margin-left: auto; margin-right: auto;
+}
+.hero-author-img {
+  width: 64px; height: 64px; border-radius: 50%;
+  object-fit: cover; border: 2px solid var(--accent-teal);
+  flex-shrink: 0;
+}
+.hero-author-name { font-weight: bold; color: var(--text-primary); font-size: 15px; }
+.hero-author-role { font-size: 12px; color: var(--accent-teal); }
+.hero-author-org { font-size: 11px; color: var(--text-muted); }
+.hero-nav {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  padding: 0 16px 32px;
+}
+.hero-nav-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; padding: 20px 12px;
+  background: var(--bg-card); border: 1.5px solid var(--border);
+  border-radius: var(--radius); text-align: center;
+  transition: all 0.25s; cursor: pointer; color: var(--text-primary);
+}
+.hero-nav-btn:hover { transform: translateY(-2px); border-color: var(--accent-teal); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.hero-nav-btn .nav-icon { font-size: 32px; }
+.hero-nav-btn .nav-title { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+.hero-nav-btn .nav-sub { font-size: 11px; color: var(--text-secondary); }
+.hero-nav-btn.btn-1 { border-color: rgba(0,212,184,0.4); }
+.hero-nav-btn.btn-2 { border-color: rgba(59,130,246,0.4); }
+.hero-nav-btn.btn-3 { border-color: rgba(245,158,11,0.4); }
+.hero-nav-btn.btn-4 { border-color: rgba(139,92,246,0.4); }
+.hero-nav-btn.btn-1:hover { border-color: var(--accent-teal); background: rgba(0,212,184,0.06); }
+.hero-nav-btn.btn-2:hover { border-color: var(--accent-blue); background: rgba(59,130,246,0.06); }
+.hero-nav-btn.btn-3:hover { border-color: var(--accent-gold); background: rgba(245,158,11,0.06); }
+.hero-nav-btn.btn-4:hover { border-color: var(--accent-purple); background: rgba(139,92,246,0.06); }
+
+/* ===== TABS ===== */
+.tab-bar {
+  display: flex; gap: 4px; padding: 4px;
+  background: var(--bg-secondary); border-radius: var(--radius-sm);
+  margin-bottom: 16px; overflow-x: auto;
+}
+.tab-btn {
+  flex-shrink: 0; padding: 7px 14px; border-radius: 6px;
+  font-size: 13px; color: var(--text-secondary); transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn.active { background: var(--bg-card); color: var(--accent-teal); font-weight: 600; }
+
+/* ===== LOADING ===== */
+.loading-spinner {
+  width: 40px; height: 40px; border: 3px solid var(--border);
+  border-top-color: var(--accent-teal); border-radius: 50%;
+  animation: spin 0.8s linear infinite; margin: 40px auto; display: block;
+}
+</style>
+</head>
+<body>
+
+<div class="hero-scanline"></div>
+<div id="toast"></div>
+
+<!-- ===================== PAGE: HOME ===================== -->
+<div id="page-home" class="page active">
+  <div class="hero-bg">
+    <div class="hero-brand">
+      <span class="hero-icon">🧠</span>
+      <h1 class="hero-title">
+        AI-Free Offline<br>
+        <span>Adaptive Learning</span><br>
+        Intelligence Studio
+      </h1>
+      <p class="hero-dev">Developed by <strong>Mateen Yousuf</strong></p>
+      <div class="hero-badges">
+        <span class="badge badge-teal">✦ NEP 2020 Aligned</span>
+        <span class="badge badge-gold">✦ NCF 2023</span>
+        <span class="badge badge-blue">✦ PARAKH Framework</span>
+        <span class="badge badge-green">✦ Competency-Based</span>
+        <span class="badge badge-purple">✦ Offline PWA</span>
+      </div>
+    </div>
+
+    <div class="hero-author-card">
+      <img src="author.jpg" alt="Mateen Yousuf" class="hero-author-img" onerror="this.style.display='none'">
+      <div>
+        <div class="hero-author-name">Mateen Yousuf</div>
+        <div class="hero-author-role">Author & Educational Technologist</div>
+        <div class="hero-author-org">Teacher, School Education Department Kashmir</div>
+      </div>
+    </div>
+
+    <div class="hero-nav">
+      <button class="hero-nav-btn btn-1" onclick="navigate('adaptive')">
+        <span class="nav-icon">🎯</span>
+        <span class="nav-title">Adaptive Practice</span>
+        <span class="nav-sub">Personalized Questions</span>
+      </button>
+      <button class="hero-nav-btn btn-2" onclick="navigate('diagnostic')">
+        <span class="nav-icon">🔬</span>
+        <span class="nav-title">Diagnostic Mode</span>
+        <span class="nav-sub">Assess Your Level</span>
+      </button>
+      <button class="hero-nav-btn btn-3" onclick="navigate('dashboard')">
+        <span class="nav-icon">📊</span>
+        <span class="nav-title">Learning Dashboard</span>
+        <span class="nav-sub">Track Progress</span>
+      </button>
+      <button class="hero-nav-btn btn-4" onclick="navigate('policy')">
+        <span class="nav-icon">📚</span>
+        <span class="nav-title">Policy & Science</span>
+        <span class="nav-sub">NEP 2020 | NCF 2023</span>
+      </button>
+    </div>
+
+    <div class="section">
+      <div class="grid-4" style="margin-bottom:20px;">
+        <div class="stat-card" id="hs-attempts"><div class="stat-value">0</div><div class="stat-label">Questions Done</div></div>
+        <div class="stat-card" id="hs-accuracy"><div class="stat-value">0%</div><div class="stat-label">Accuracy</div></div>
+        <div class="stat-card" id="hs-mastery"><div class="stat-value">L1</div><div class="stat-label">Current Level</div></div>
+        <div class="stat-card" id="hs-topics"><div class="stat-value">0</div><div class="stat-label">Topics Tried</div></div>
+      </div>
+      <div class="alert alert-info">
+        📡 <strong>100% Offline</strong> — This app works without internet. All data is saved on your device. No account needed.
+      </div>
+      <div class="alert alert-warning" id="revision-alert" style="display:none;">
+        🔔 <strong>Revision Due!</strong> You have topics scheduled for review. <button onclick="navigate('progress')" style="color:var(--accent-gold);text-decoration:underline;background:none;border:none;cursor:pointer;font-size:13px;">View Schedule →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: DIAGNOSTIC ===================== -->
+<div id="page-diagnostic" class="page">
+  <div class="app-header">
+    <button class="back-btn" onclick="navigate('home')">← Home</button>
+    <div class="nav-title">🔬 Diagnostic Mode</div>
+    <div></div>
+  </div>
+
+  <!-- Step 1: Select -->
+  <div id="diag-step-1" class="section">
+    <div class="section-header">
+      <div class="section-title">Baseline Assessment</div>
+      <div class="section-subtitle">Identify your starting competency level</div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;">The diagnostic test presents 10 mixed-difficulty questions to calculate your initial competency profile, strength areas, and gaps.</div>
+      <div class="form-group">
+        <label class="form-label">📚 Subject</label>
+        <select class="form-control" id="diag-subject">
+          <option value="science">Science (Class 9)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📖 Topic</label>
+        <select class="form-control" id="diag-topic">
+          <option value="matter">Matter in Our Surroundings</option>
+          <option value="atom">Atoms & Molecules</option>
+          <option value="cell">Cell: The Unit of Life</option>
+          <option value="motion">Motion</option>
+          <option value="force">Force & Laws of Motion</option>
+          <option value="gravitation">Gravitation</option>
+          <option value="work">Work & Energy</option>
+          <option value="sound">Sound</option>
+          <option value="tissue">Tissues</option>
+          <option value="improvement">Improvement in Food Resources</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="startDiagnostic()">🚀 Start Diagnostic Test</button>
+    </div>
+
+    <div id="prev-diag-results" style="display:none;">
+      <div class="section-title" style="font-size:17px;margin-bottom:12px;">Previous Results</div>
+      <div id="prev-diag-list"></div>
+    </div>
+  </div>
+
+  <!-- Step 2: Quiz -->
+  <div id="diag-step-2" style="display:none;" class="section">
+    <div class="card" style="margin-bottom:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <span style="font-size:13px;color:var(--text-secondary);" id="diag-q-counter">Question 1 of 10</span>
+        <span id="diag-diff-badge"></span>
+      </div>
+      <div class="progress-bar" style="margin-bottom:14px;">
+        <div class="progress-fill" id="diag-progress"></div>
+      </div>
+      <div id="diag-question" style="font-size:16px;font-weight:600;margin-bottom:16px;line-height:1.5;"></div>
+      <div id="diag-options"></div>
+      <div id="diag-feedback" style="display:none;" class="card" style="margin-top:12px;"></div>
+    </div>
+    <button id="diag-next-btn" onclick="diagNextQ()" class="btn btn-primary btn-full" style="display:none;">Next Question →</button>
+  </div>
+
+  <!-- Step 3: Results -->
+  <div id="diag-step-3" style="display:none;" class="section">
+    <div class="section-header">
+      <div class="section-title">🏁 Diagnostic Complete</div>
+      <div class="section-subtitle">Your competency profile has been generated</div>
+    </div>
+    <div id="diag-results-display"></div>
+    <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="navigate('adaptive')">▶ Start Adaptive Practice</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="showDiagStep(1)">🔄 Retake Diagnostic</button>
+  </div>
+</div>
+
+<!-- ===================== PAGE: ADAPTIVE PRACTICE ===================== -->
+<div id="page-adaptive" class="page">
+  <div class="app-header">
+    <button class="back-btn" onclick="navigate('home')">← Home</button>
+    <div class="nav-title">🎯 Adaptive Practice</div>
+    <div style="font-size:12px;color:var(--accent-teal);" id="adapt-level-disp">L1</div>
+  </div>
+
+  <!-- Setup -->
+  <div id="adapt-setup" class="section">
+    <div class="section-header">
+      <div class="section-title">Choose Practice Area</div>
+      <div class="section-subtitle">The system adapts question difficulty to your responses</div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div class="form-group">
+        <label class="form-label">📖 Topic</label>
+        <select class="form-control" id="adapt-topic">
+          <option value="matter">Matter in Our Surroundings</option>
+          <option value="atom">Atoms & Molecules</option>
+          <option value="cell">Cell: The Unit of Life</option>
+          <option value="motion">Motion</option>
+          <option value="force">Force & Laws of Motion</option>
+          <option value="gravitation">Gravitation</option>
+          <option value="work">Work & Energy</option>
+          <option value="sound">Sound</option>
+          <option value="tissue">Tissues</option>
+          <option value="improvement">Improvement in Food Resources</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">⚡ Starting Level</label>
+        <select class="form-control" id="adapt-start-level">
+          <option value="1">Level 1 – Basic Recall</option>
+          <option value="2">Level 2 – Conceptual Understanding</option>
+          <option value="3">Level 3 – Application</option>
+          <option value="4">Level 4 – Analytical Reasoning</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="startAdaptive()">🎯 Begin Adaptive Session</button>
+    </div>
+
+    <div class="card" id="adapt-algo-card">
+      <div style="font-size:13px;font-weight:700;color:var(--accent-gold);margin-bottom:10px;">⚙️ Algorithm Logic</div>
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.7;">
+        <b style="color:var(--accent-green);">✓ Correct:</b> Difficulty increases after <b>3 consecutive</b> correct answers (mastery threshold 80%)<br>
+        <b style="color:var(--accent-red);">✗ Incorrect:</b> Step down one level, offer conceptual reinforcement<br>
+        <b style="color:var(--accent-blue);">💡 Hint:</b> Available once per question at wrong attempt<br>
+        <b style="color:var(--accent-purple);">📅 Revision:</b> Struggled topics scheduled for 1→3→7 day review
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Quiz -->
+  <div id="adapt-quiz" style="display:none;" class="section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div>
+        <span id="adapt-streak" class="badge badge-green" style="display:none;">🔥 0 streak</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="adapt-q-level"></span>
+        <span id="adapt-q-num" style="font-size:12px;color:var(--text-muted);">Q1</span>
+      </div>
+    </div>
+    <div class="progress-bar" style="margin-bottom:14px;">
+      <div class="progress-fill" id="adapt-session-progress" style="width:0%"></div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div id="adapt-question" style="font-size:16px;font-weight:600;margin-bottom:16px;line-height:1.5;min-height:60px;"></div>
+      <div id="adapt-options"></div>
+    </div>
+    <div id="adapt-feedback-area" style="display:none;">
+      <div id="adapt-feedback-card" class="card" style="margin-bottom:10px;"></div>
+      <button id="adapt-hint-btn" onclick="showHint()" class="btn btn-secondary btn-sm" style="margin-bottom:8px;">💡 Show Hint</button>
+      <button onclick="adaptNextQ()" class="btn btn-primary btn-full">Next Question →</button>
+    </div>
+  </div>
+
+  <!-- Session Summary -->
+  <div id="adapt-summary" style="display:none;" class="section">
+    <div class="section-header">
+      <div class="section-title">📈 Session Complete</div>
+    </div>
+    <div id="adapt-summary-content"></div>
+    <button class="btn btn-primary btn-full" style="margin-top:16px;" onclick="showAdaptSetup()">🔄 New Session</button>
+    <button class="btn btn-secondary btn-full" style="margin-top:8px;" onclick="navigate('dashboard')">📊 View Dashboard</button>
+  </div>
+</div>
+
+<!-- ===================== PAGE: PROGRESS ===================== -->
+<div id="page-progress" class="page">
+  <div class="app-header">
+    <button class="back-btn" onclick="navigate('home')">← Home</button>
+    <div class="nav-title">📈 Mastery Progress</div>
+    <div></div>
+  </div>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Competency Ladder</div>
+      <div class="section-subtitle">Your mastery progression across all levels</div>
+    </div>
+    <div id="competency-ladder"></div>
+
+    <div class="section-header" style="margin-top:24px;">
+      <div class="section-title">Spaced Revision Queue</div>
+      <div class="section-subtitle">Topics scheduled for review</div>
+    </div>
+    <div id="revision-queue-list"></div>
+
+    <div class="section-header" style="margin-top:24px;">
+      <div class="section-title">Analytics</div>
+    </div>
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div class="stat-card"><div class="stat-value" id="prog-mastery-idx">0%</div><div class="stat-label">Mastery Index</div></div>
+      <div class="stat-card"><div class="stat-value" id="prog-velocity">0</div><div class="stat-label">Progression Velocity</div></div>
+      <div class="stat-card"><div class="stat-value" id="prog-retention">0%</div><div class="stat-label">Retention Score</div></div>
+      <div class="stat-card"><div class="stat-value" id="prog-gap">Low</div><div class="stat-label">Gap Severity</div></div>
+    </div>
+    <div class="card chart-container">
+      <canvas id="progress-chart" width="360" height="180"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: DASHBOARD ===================== -->
+<div id="page-dashboard" class="page">
+  <div class="app-header">
+    <button class="back-btn" onclick="navigate('home')">← Home</button>
+    <div class="nav-title">📊 Learning Dashboard</div>
+    <div></div>
+  </div>
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Strength Heatmap</div>
+      <div class="section-subtitle">Accuracy across topics & difficulty levels</div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div id="strength-heatmap" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;justify-items:center;"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;font-size:11px;color:var(--text-secondary);">
+        <span><span class="heatmap-cell heat-0" style="width:16px;height:16px;display:inline-block;border-radius:3px;vertical-align:middle;"></span> Not tried</span>
+        <span><span class="heatmap-cell heat-1" style="width:16px;height:16px;display:inline-block;border-radius:3px;vertical-align:middle;"></span> &lt;50%</span>
+        <span><span class="heatmap-cell heat-2" style="width:16px;height:16px;display:inline-block;border-radius:3px;vertical-align:middle;"></span> 50–70%</span>
+        <span><span class="heatmap-cell heat-3" style="width:16px;height:16px;display:inline-block;border-radius:3px;vertical-align:middle;"></span> 70–85%</span>
+        <span><span class="heatmap-cell heat-4" style="width:16px;height:16px;display:inline-block;border-radius:3px;vertical-align:middle;"></span> 85–100%</span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Weak Competency Map</div>
+    </div>
+    <div id="weak-competency-map" style="margin-bottom:20px;"></div>
+
+    <div class="section-header">
+      <div class="section-title">Difficulty Progression</div>
+    </div>
+    <div class="card chart-container" style="margin-bottom:16px;">
+      <canvas id="difficulty-chart" width="360" height="180"></canvas>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">Overall Stats</div>
+    </div>
+    <div class="grid-2">
+      <div class="stat-card"><div class="stat-value" id="dash-total">0</div><div class="stat-label">Total Questions</div></div>
+      <div class="stat-card"><div class="stat-value" id="dash-correct">0%</div><div class="stat-label">Overall Accuracy</div></div>
+      <div class="stat-card"><div class="stat-value" id="dash-sessions">0</div><div class="stat-label">Sessions</div></div>
+      <div class="stat-card"><div class="stat-value" id="dash-mastery-pct">0%</div><div class="stat-label">Mastery Complete</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== PAGE: TEACHER MODE ===================== -->
+<div id="page-teacher" class="page">
+  <div class="app-header">
+    <button class="back-btn" onclick="navigate('home')">← Home</button>
+    <div class="nav-title">👩‍🏫 Teacher Mode</div>
+    <div></div>
+  </div>
+  <div class="section">
+    <div class="alert alert-info">Anonymous class data only. No student names or rankings are displayed.</div>
+    <div class="section-header">
+      <div class="section-title">Class Mastery Overview</div>
+    </div>
+    <div id="teacher-mastery-dist" style="margin-bottom:20px;"></div>
+    <div class="section-header">
+      <div class="section-title">Common Weak Competencies</div>
+    </div>
+    <div id="teacher-weak-list" style="margin-bottom:20px;"></div>
+    <div class="section-header">
+      <div class="section-title">Generate Focused Practice Set</div>
+    </div>
+    <div class="card">
+      <div class="form-group">
+        <label class="form-label">Target Weak Topic</label>
+        <select class="form-control" id="teacher-weak-topic">
+          <option value="matter">Matter in Our Surroundings</option>
+          <option value="motion">Motion</option>
+          <option value="cell">Cell: The Unit of Life</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Difficulty Focus</label>
+        <select class="form-control" id="teacher-diff">
+          <option value="1">Level 1 – Basic</option>
+          <option value="2">Level 2 – Conceptual</option>
+          <option value="3">Level 3 – Application</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="generateFocusedSet()">📋 Generate Practice Set</button>
+    </div>
+    <div id="teacher-focused-set" style="margin-top:16px;"></div>
+    <button class="btn btn-secondary btn-full" style="margin-top:12px;" onclick="exportProgress()">📤 Export Progress Summary (JSON)</button>
+  </div>
+</div>
+
+<!-- ===================== PAGE: POLICY ===================== -->
+<div id="page-policy" class="page">
+  <div class="app-header">
+    <button class="back-btn" onclick="navigate('home')">← Home</button>
+    <div class="nav-title">📚 Policy & Learning Science</div>
+    <div></div>
+  </div>
+  <div class="section">
+    <div class="tab-bar" id="policy-tabs"></div>
+    <div id="policy-content-area"></div>
+  </div>
+</div>
+
+<!-- ===================== DATA: QUESTION BANK ===================== -->
+<script>
+// ============================================================
+// QUESTION BANK — Local JSON (JKBOSE Class 9 Science)
+// ============================================================
+const QUESTION_BANK = {
+  matter: [
+    // Level 1
+    { id:"m1", level:1, competency:"States of Matter", q:"Which state of matter has a definite shape and definite volume?", opts:["Gas","Liquid","Solid","Plasma"], ans:2, hint:"Think of a stone or a book.", exp:"Solids have fixed shape and volume because their particles are tightly packed." },
+    { id:"m2", level:1, competency:"Properties of Matter", q:"What happens to the volume of a gas when it is compressed?", opts:["Increases","Stays the same","Decreases","Doubles"], ans:2, hint:"Gas particles have large spaces between them.", exp:"Gases are highly compressible; their volume decreases significantly under pressure." },
+    { id:"m3", level:1, competency:"Evaporation", q:"Which of the following is NOT a change of state?", opts:["Melting","Boiling","Burning","Condensation"], ans:2, hint:"Burning involves a chemical reaction.", exp:"Burning (combustion) is a chemical change, not a physical change of state." },
+    // Level 2
+    { id:"m4", level:2, competency:"Kinetic Theory", q:"Why does a solid have a definite shape while a gas does not?", opts:["Solids are heavier","Solid particles vibrate in fixed positions; gas particles move freely","Solids are denser","Gases have more mass"], ans:1, hint:"Think about particle arrangement.", exp:"In solids, particles are arranged in a fixed lattice and vibrate in place. In gases, particles move randomly and fill any container." },
+    { id:"m5", level:2, competency:"Evaporation", q:"Why does evaporation cause cooling?", opts:["Water absorbs heat from surroundings","Water releases heat","Density decreases","Pressure increases"], ans:0, hint:"What happens to energy when water evaporates?", exp:"During evaporation, liquid molecules absorb latent heat from the surface, lowering the temperature of the surroundings." },
+    { id:"m6", level:2, competency:"Diffusion", q:"The smell of perfume spreads across a room. This best demonstrates:", opts:["Condensation","Diffusion of gases","Melting","Sublimation"], ans:1, hint:"Particles moving from high to low concentration.", exp:"Diffusion is the process by which particles spread from a region of high concentration to low concentration." },
+    // Level 3
+    { id:"m7", level:3, competency:"Application", q:"Clothes dry faster on a windy day. Which property of matter explains this?", opts:["Higher atmospheric pressure","Increased rate of evaporation due to wind carrying away vapor","Condensation increases","Melting point decreases"], ans:1, hint:"What does wind do to water vapor near the surface?", exp:"Wind removes water vapor from near the wet surface, reducing the concentration of vapor and increasing the rate of evaporation." },
+    { id:"m8", level:3, competency:"Application", q:"A nurse applies spirit on a patient's arm before injection. The arm feels cold because:", opts:["Spirit is stored in fridge","Spirit evaporates rapidly, absorbing heat from skin","Spirit reacts with skin","Spirit has low density"], ans:1, hint:"Evaporation and latent heat.", exp:"Spirit (alcohol) has a low boiling point and evaporates quickly, absorbing latent heat from the skin and causing a cooling sensation." },
+    // Level 4
+    { id:"m9", level:4, competency:"Analysis", q:"Sodium chloride dissolves in water but iodine dissolves better in alcohol. This is because:", opts:["NaCl is heavier","Like dissolves like — ionic substances dissolve in polar solvents, non-polar in non-polar","Alcohol is hotter","Iodine is gas"], ans:1, hint:"Consider polarity of solute and solvent.", exp:"The principle 'like dissolves like' means polar/ionic solutes (NaCl) dissolve in polar solvents (water), while non-polar solutes (I₂) dissolve better in non-polar solvents (alcohol)." },
+    { id:"m10", level:4, competency:"Analysis", q:"At high altitudes, water boils at temperatures below 100°C. What happens to cooking time?", opts:["Decreases","Stays same","Increases","Food cooks instantly"], ans:2, hint:"Lower boiling point means lower cooking temperature.", exp:"At high altitudes, reduced atmospheric pressure lowers the boiling point. Food cooks at a lower temperature, requiring more time to become properly cooked." },
+  ],
+  atom: [
+    { id:"a1", level:1, competency:"Atomic Structure", q:"What is the charge of a proton?", opts:["Negative","Positive","Neutral","Variable"], ans:1, hint:"Think of the two charged particles in an atom.", exp:"Protons carry a positive charge (+1) and are located in the nucleus of the atom." },
+    { id:"a2", level:1, competency:"Elements", q:"The chemical symbol for Gold is:", opts:["Go","Gd","Au","Ag"], ans:2, hint:"From the Latin word 'Aurum'.", exp:"Gold's symbol Au comes from its Latin name Aurum." },
+    { id:"a3", level:1, competency:"Molecules", q:"How many atoms are in one molecule of water (H₂O)?", opts:["1","2","3","4"], ans:2, hint:"Count H and O atoms.", exp:"H₂O has 2 hydrogen atoms and 1 oxygen atom, totaling 3 atoms." },
+    { id:"a4", level:2, competency:"Atomic Models", q:"Rutherford's gold foil experiment showed that:", opts:["Atoms are solid spheres","Most of atom is empty space with a dense nucleus","Electrons orbit in fixed shells","Atoms contain neutrons"], ans:1, hint:"Most alpha particles passed straight through.", exp:"When most alpha particles passed through but a few deflected sharply, Rutherford concluded most atomic mass is concentrated in a tiny, dense, positive nucleus with vast empty space around it." },
+    { id:"a5", level:2, competency:"Valency", q:"The valency of Chlorine (atomic number 17) is:", opts:["7","3","1","2"], ans:2, hint:"Electronic configuration: 2,8,7. How many electrons needed to complete shell?", exp:"Chlorine has 7 electrons in its outermost shell; it needs 1 more to complete the octet, so valency = 1." },
+    { id:"a6", level:3, competency:"Application", q:"Carbon has valency 4. How many hydrogen atoms can bond with one carbon atom?", opts:["2","3","4","8"], ans:2, hint:"Each H has valency 1.", exp:"With valency 4, carbon can form 4 bonds. Since H has valency 1, one carbon bonds with 4 hydrogen atoms, forming CH₄ (methane)." },
+    { id:"a7", level:3, competency:"Mole Concept", q:"Avogadro's number (6.022×10²³) represents the number of:", opts:["Grams in a mole","Particles in one mole of substance","Atoms in 1g","Molecules in 1L gas"], ans:1, hint:"It's the definition of a mole.", exp:"One mole of any substance contains exactly 6.022×10²³ particles (atoms, molecules, or ions)." },
+    { id:"a8", level:4, competency:"Analysis", q:"Isotopes of an element have the same atomic number but different mass numbers. This means:", opts:["Same electrons, same protons","Same protons, different neutrons","Different protons, same neutrons","Same neutrons, different electrons"], ans:1, hint:"Atomic number = protons. Mass number = protons + neutrons.", exp:"Isotopes have the same number of protons (same atomic number, same element) but different numbers of neutrons, giving different mass numbers." },
+    { id:"a9", level:4, competency:"Analysis", q:"Why do ions form when atoms gain or lose electrons?", opts:["Nuclear charge changes","Neutron number changes","The balance between protons and electrons is disturbed, creating net charge","Atomic mass changes"], ans:2, hint:"Charge = protons minus electrons.", exp:"Atoms are neutral because protons equal electrons. Gaining electrons gives extra negative charge (anion); losing electrons gives net positive charge (cation)." },
+    { id:"a10", level:2, competency:"Formulae", q:"The chemical formula of carbon dioxide is:", opts:["CO","CO₂","C₂O","C₂O₂"], ans:1, hint:"Carbon valency 4, Oxygen valency 2.", exp:"Carbon (valency 4) and Oxygen (valency 2): cross-multiply valencies → CO₂." },
+  ],
+  motion: [
+    { id:"mo1", level:1, competency:"Basic Motion", q:"Speed is defined as:", opts:["Distance × Time","Distance / Time","Time / Distance","Displacement × Time"], ans:1, hint:"How far per how long?", exp:"Speed = Distance / Time. It is a scalar quantity measured in m/s." },
+    { id:"mo2", level:1, competency:"Distance vs Displacement", q:"A student walks 4m East then 3m West. What is the displacement?", opts:["7m","1m East","1m West","0m"], ans:1, hint:"Displacement is the straight-line distance from start to end with direction.", exp:"Net displacement = 4 - 3 = 1m East. Displacement considers direction, unlike distance (which would be 7m)." },
+    { id:"mo3", level:2, competency:"Velocity & Acceleration", q:"What is the acceleration of a car that goes from 20 m/s to 60 m/s in 8 seconds?", opts:["5 m/s²","10 m/s²","4 m/s²","2.5 m/s²"], ans:0, hint:"a = (v - u) / t", exp:"a = (60 - 20) / 8 = 40/8 = 5 m/s²" },
+    { id:"mo4", level:2, competency:"Graphs", q:"A straight horizontal line on a distance-time graph means the object is:", opts:["Accelerating","Moving at constant speed","Stationary","Decelerating"], ans:2, hint:"If distance doesn't change with time...", exp:"A horizontal line means distance is not changing over time — the object is at rest (stationary)." },
+    { id:"mo5", level:3, competency:"Equations of Motion", q:"A body starts from rest and accelerates at 4 m/s². What is its velocity after 5 seconds?", opts:["4 m/s","20 m/s","9 m/s","16 m/s"], ans:1, hint:"Use v = u + at, where u = 0.", exp:"v = 0 + 4 × 5 = 20 m/s" },
+    { id:"mo6", level:3, competency:"Application", q:"Why does the area under a velocity-time graph give distance?", opts:["Because velocity and time multiply to give acceleration","Because velocity × time = distance (area of rectangle or triangle)","It is a mathematical coincidence","Because speed is plotted on y-axis"], ans:1, hint:"Think about what you're calculating geometrically.", exp:"Distance = velocity × time. The area under the v-t graph literally represents v multiplied by t, giving total distance covered." },
+    { id:"mo7", level:4, competency:"Analysis", q:"Two cars start together. Car A has constant velocity 20m/s. Car B accelerates from rest at 5 m/s². When does Car B overtake Car A?", opts:["4s","8s","10s","5s"], ans:1, hint:"Set displacement equations equal: 20t = ½×5×t²", exp:"20t = 2.5t². Solving: t = 8 seconds. Before 8s, A is ahead; at 8s they're equal; after 8s, B is faster." },
+    { id:"mo8", level:4, competency:"Analysis", q:"A ball is thrown upward. At the highest point:", opts:["Velocity and acceleration are both zero","Velocity is zero but acceleration is 9.8 m/s² downward","Both are maximum","Acceleration is zero"], ans:1, hint:"Gravity never stops acting.", exp:"At the top, instantaneous velocity = 0 (momentarily at rest). But gravitational acceleration (9.8 m/s²) acts downward continuously." },
+    { id:"mo9", level:1, competency:"Basic Motion", q:"Which of these is a vector quantity?", opts:["Speed","Distance","Mass","Velocity"], ans:3, hint:"Vector quantities have both magnitude and direction.", exp:"Velocity is a vector — it has both magnitude (speed) and direction. Speed, distance, and mass are scalars." },
+    { id:"mo10", level:2, competency:"Uniform Motion", q:"Uniform motion means:", opts:["Increasing speed","Decreasing speed","Equal distances in equal intervals of time","Changing direction"], ans:2, hint:"Think 'uniform' = consistent.", exp:"Uniform motion means constant speed in a straight line — equal distances are covered in equal time intervals." },
+  ],
+  cell: [
+    { id:"c1", level:1, competency:"Cell Biology", q:"Who discovered the cell?", opts:["Darwin","Pasteur","Robert Hooke","Leeuwenhoek"], ans:2, hint:"He used a compound microscope on cork.", exp:"Robert Hooke first observed cells in 1665 while examining cork slices under a microscope. He called them 'cells' because they resembled small rooms." },
+    { id:"c2", level:1, competency:"Cell Structure", q:"Which organelle is called the 'powerhouse of the cell'?", opts:["Nucleus","Ribosome","Mitochondria","Golgi body"], ans:2, hint:"Energy production — ATP.", exp:"Mitochondria produce ATP through cellular respiration, supplying energy for all cellular activities." },
+    { id:"c3", level:2, competency:"Cell Membrane", q:"The cell membrane is described as 'selectively permeable'. This means:", opts:["It allows all substances to pass","It allows no substances to pass","It allows only certain substances to pass through","It dissolves in water"], ans:2, hint:"Think about how nutrients enter and waste leaves.", exp:"Selective permeability means the membrane controls what enters and exits the cell, allowing nutrients and water in while keeping harmful substances out." },
+    { id:"c4", level:2, competency:"Cell Division", q:"What is the process by which a cell divides to produce two identical daughter cells?", opts:["Meiosis","Mitosis","Binary fission","Budding"], ans:1, hint:"This is how your body cells multiply.", exp:"Mitosis is cell division producing 2 genetically identical daughter cells. It's used for growth, repair, and asexual reproduction in eukaryotes." },
+    { id:"c5", level:3, competency:"Application", q:"Why do plant cells need a cell wall but animal cells do not?", opts:["Plants need more strength","Cell wall provides rigidity, supporting tall plant structures against gravity and osmotic pressure","Animal cells are harder","Plants have no mitochondria"], ans:1, hint:"Think about the challenges of being a tall tree.", exp:"Cell walls made of cellulose provide structural support, preventing cells from bursting under osmotic pressure, and supporting the weight of plants." },
+    { id:"c6", level:3, competency:"Osmosis", q:"If a plant cell is placed in very salty water, what will happen?", opts:["The cell swells","The cell shrinks (plasmolysis)","Nothing happens","Cell divides"], ans:1, hint:"Water moves from low to high solute concentration.", exp:"In hypertonic solution (salty water), water leaves the cell by osmosis. The cell membrane shrinks away from the cell wall — this is plasmolysis." },
+    { id:"c7", level:4, competency:"Analysis", q:"Why is the nucleus called the 'control centre' of the cell?", opts:["It's the largest organelle","It contains DNA with genetic instructions that control all cellular activities","It produces energy","It controls temperature"], ans:1, hint:"Think about what information DNA carries.", exp:"The nucleus contains chromosomal DNA which carries genes — the instructions for making proteins and regulating every cellular process, from metabolism to division." },
+    { id:"c8", level:4, competency:"Analysis", q:"How do ribosomes in the rough ER differ functionally from free ribosomes?", opts:["ER ribosomes make RNA; free make DNA","Rough ER ribosomes make proteins for secretion or membrane use; free ribosomes make proteins for cytoplasm","They're identical","Free ribosomes are larger"], ans:1, hint:"Think about where the proteins will be used.", exp:"Rough ER ribosomes synthesize proteins destined for secretion (e.g. enzymes, hormones) or membrane incorporation. Free ribosomes make proteins used within the cytoplasm." },
+    { id:"c9", level:1, competency:"Cell Types", q:"Which type of cell has no true nucleus?", opts:["Plant cell","Animal cell","Prokaryotic cell","Eukaryotic cell"], ans:2, hint:"Pro-karyote means 'before nucleus'.", exp:"Prokaryotic cells (bacteria) have no membrane-bound nucleus. Their genetic material floats freely in the cytoplasm." },
+    { id:"c10", level:2, competency:"Photosynthesis", q:"Chloroplasts are found only in plant cells. Their main function is:", opts:["Respiration","Protein synthesis","Photosynthesis — converting light energy to glucose","Cell division"], ans:2, hint:"Photo = light, synthesis = making.", exp:"Chloroplasts contain chlorophyll and carry out photosynthesis, converting CO₂ + H₂O + light energy into glucose + O₂." },
+  ],
+  force: [
+    { id:"f1", level:1, competency:"Newton's Laws", q:"Newton's First Law is also called the law of:", opts:["Acceleration","Inertia","Gravitation","Energy"], ans:1, hint:"Objects resist changes in motion.", exp:"Newton's First Law states objects remain at rest or in uniform motion unless acted upon by a net force — this tendency is called inertia." },
+    { id:"f2", level:1, competency:"Force", q:"Force is measured in:", opts:["Joules","Watts","Newtons","Pascal"], ans:2, hint:"Named after Isaac Newton.", exp:"Force is measured in Newtons (N). 1 Newton = 1 kg·m/s²." },
+    { id:"f3", level:2, competency:"Newton's Second Law", q:"A 5 kg object is acted upon by a 20 N force. What is its acceleration?", opts:["100 m/s²","4 m/s²","0.25 m/s²","25 m/s²"], ans:1, hint:"F = ma, so a = F/m", exp:"a = F/m = 20/5 = 4 m/s²" },
+    { id:"f4", level:2, competency:"Newton's Third Law", q:"When a gun is fired, the bullet goes forward and the gun recoils backward. This illustrates:", opts:["First Law","Law of Conservation of Mass","Newton's Third Law — action-reaction","Second Law"], ans:2, hint:"Every action has an equal and opposite reaction.", exp:"The bullet (action) and gun recoil (reaction) are equal and opposite forces acting on different objects — Newton's Third Law." },
+    { id:"f5", level:3, competency:"Momentum", q:"A 2 kg ball moving at 10 m/s has momentum:", opts:["5 kg·m/s","20 kg·m/s","12 kg·m/s","0.2 kg·m/s"], ans:1, hint:"p = mv", exp:"Momentum p = mv = 2 × 10 = 20 kg·m/s" },
+    { id:"f6", level:3, competency:"Application", q:"Why do passengers lurch forward when a bus stops suddenly?", opts:["The bus pushes them forward","Due to inertia — their bodies continue forward as the bus stops","Friction acts forward","Gravity increases"], ans:1, hint:"Newton's First Law — tendency to continue moving.", exp:"Passengers' bodies tend to remain in forward motion (inertia) when the bus suddenly stops. The bus stops; the passengers continue moving forward." },
+    { id:"f7", level:4, competency:"Analysis", q:"In an isolated system, two carts collide. If cart A (3kg, 4m/s) collides with stationary cart B (1kg), what is combined velocity if they stick together?", opts:["4 m/s","3 m/s","2 m/s","1 m/s"], ans:1, hint:"Conservation of momentum: m₁v₁ = (m₁+m₂)v", exp:"p_before = 3×4 = 12 kg·m/s. p_after = (3+1)v. So v = 12/4 = 3 m/s." },
+    { id:"f8", level:4, competency:"Analysis", q:"Why is it safer to catch a cricket ball by pulling your hand back?", opts:["Reduces force by increasing time (impulse-momentum)","Increases momentum","Ball slows down before contact","Reduces mass"], ans:0, hint:"Impulse = Force × Time = change in momentum.", exp:"Pulling back increases the time over which momentum changes, reducing force on hands (F = Δp/t). Same change in momentum over more time = less force." },
+    { id:"f9", level:1, competency:"Contact Forces", q:"Which of these is a non-contact force?", opts:["Friction","Tension","Gravitational force","Normal reaction"], ans:2, hint:"It acts over a distance without touching.", exp:"Gravity acts between objects without physical contact, making it a non-contact force." },
+    { id:"f10", level:2, competency:"Friction", q:"Static friction is always _______ kinetic friction:", opts:["Less than","Equal to","Greater than or equal to","Half of"], ans:2, hint:"It's harder to start moving than to keep moving.", exp:"Static friction (prevents motion from starting) is always greater than or equal to kinetic friction (opposes ongoing motion)." },
+  ],
+  gravitation: [
+    { id:"g1", level:1, competency:"Gravity", q:"The value of acceleration due to gravity (g) on Earth's surface is approximately:", opts:["9.8 m/s²","6.67×10⁻¹¹","10 m/s","8.9 m/s²"], ans:0, hint:"Objects in free fall accelerate at this rate.", exp:"g ≈ 9.8 m/s² near Earth's surface. This is the acceleration of any freely falling object due to gravity." },
+    { id:"g2", level:2, competency:"Universal Gravitation", q:"According to the Universal Law of Gravitation, gravitational force is:", opts:["Proportional to distance","Inversely proportional to the square of distance","Directly proportional to distance","Independent of mass"], ans:1, hint:"F = Gm₁m₂/r²", exp:"F ∝ 1/r² — as distance doubles, force becomes ¼. This is the inverse square law." },
+    { id:"g3", level:3, competency:"Application", q:"The moon has gravity 1/6 of Earth's. A person weighing 60N on Earth weighs on Moon:", opts:["60N","10N","360N","6N"], ans:1, hint:"Weight = mass × g. g_moon = g_earth/6", exp:"Weight on Moon = 60/6 = 10N. Note that mass remains 60/9.8 ≈ 6.1 kg everywhere." },
+    { id:"g4", level:4, competency:"Analysis", q:"Why doesn't the Moon fall towards the Earth despite gravity pulling it?", opts:["Moon has no mass","Moon's sideways orbital velocity balances gravitational pull — it's in free fall around Earth","Friction keeps it up","Earth's gravity is too weak"], ans:1, hint:"Orbit = constant free fall + sideways motion.", exp:"The Moon is continuously falling toward Earth, but its tangential velocity is exactly right so it falls 'around' Earth. This is orbital mechanics — a continuous free fall." },
+    { id:"g5", level:2, competency:"Weight vs Mass", q:"What is the difference between mass and weight?", opts:["They are the same","Mass is force; weight is amount of matter","Mass is amount of matter (kg); weight is force due to gravity (N)","Weight never changes"], ans:2, hint:"Which one changes on the Moon?", exp:"Mass (kg) is constant everywhere. Weight (N) = m × g, varies with gravitational field. On Moon you weigh less but have the same mass." },
+    { id:"g6", level:1, competency:"Free Fall", q:"During free fall, all objects fall with:", opts:["Different accelerations based on mass","Same acceleration regardless of mass","Velocity proportional to mass","Deceleration"], ans:1, hint:"Galileo demonstrated this.", exp:"Galileo showed all objects fall with the same acceleration (g) ignoring air resistance. A hammer and feather fall identically in vacuum." },
+    { id:"g7", level:3, competency:"Buoyancy", q:"A wooden block floats in water because:", opts:["Wood repels water","Upthrust (buoyant force) equals the weight of water displaced, which exceeds wood's weight","Wood is magnetic","Water is less dense"], ans:1, hint:"Archimedes' principle.", exp:"According to Archimedes' principle, the buoyant force equals weight of fluid displaced. Wood's density < water, so displaced water weight > wood's weight, causing it to float." },
+    { id:"g8", level:4, competency:"Analysis", q:"Pressure at the bottom of a 10m deep lake is greater than at a 5m depth. Why, and by how much? (ρ=1000kg/m³, g=10m/s²)", opts:["Same pressure everywhere","50,000 Pa more at 10m","Pressure decreases with depth","100 Pa more"], ans:1, hint:"P = ρgh. ΔP = ρg×Δh", exp:"ΔP = 1000 × 10 × (10-5) = 50,000 Pa. Pressure in a fluid increases linearly with depth." },
+    { id:"g9", level:2, competency:"Gravitational Constant", q:"G (Universal Gravitational Constant) has a value of:", opts:["9.8 m/s²","6.67×10⁻¹¹ N·m²/kg²","3×10⁸ m/s","1.6×10⁻¹⁹ C"], ans:1, hint:"An extremely small number.", exp:"G = 6.67×10⁻¹¹ N·m²/kg². It is a universal constant used in Newton's law of gravitation." },
+    { id:"g10", level:3, competency:"Thrust & Pressure", q:"Why does a nail with a pointed end penetrate wood more easily than with a flat end?", opts:["Pointed nail is harder","Same force over smaller area means greater pressure","More velocity","Pointed nail is lighter"], ans:1, hint:"P = F/A", exp:"Pressure = Force/Area. Same hammering force over the tiny pointed area creates enormous pressure, easily penetrating wood." },
+  ],
+  work: [
+    { id:"w1", level:1, competency:"Work", q:"Work is done when:", opts:["Force is applied","Object is moved by applied force in direction of force","Object is stationary","Force is zero"], ans:1, hint:"W = F × d", exp:"Work requires both a force AND displacement in the direction of force. Pushing a wall (no movement) = zero work." },
+    { id:"w2", level:2, competency:"Kinetic Energy", q:"The kinetic energy of a 4 kg object moving at 3 m/s is:", opts:["12 J","18 J","6 J","36 J"], ans:1, hint:"KE = ½mv²", exp:"KE = ½ × 4 × 3² = ½ × 4 × 9 = 18 J" },
+    { id:"w3", level:3, competency:"Conservation of Energy", q:"A pendulum swings back and forth. At the lowest point, energy is mainly:", opts:["Potential","Kinetic","Zero","Heat"], ans:1, hint:"At lowest point, speed is maximum.", exp:"At the lowest point, the pendulum has minimum height (minimum PE) and maximum speed (maximum KE). Energy has converted from PE to KE." },
+    { id:"w4", level:2, competency:"Power", q:"Power is defined as:", opts:["Force × Distance","Work / Time","Mass × Velocity","Energy × Time"], ans:1, hint:"Rate of doing work.", exp:"Power = Work/Time. Measured in Watts (W). 1 W = 1 J/s." },
+    { id:"w5", level:4, competency:"Analysis", q:"A ball is dropped from height h. Just before hitting the ground, assuming no air resistance:", opts:["KE = 0","PE = mgh and KE = 0","KE = mgh (all PE converted to KE)","Both PE and KE are zero"], ans:2, hint:"Energy is conserved.", exp:"By conservation of energy, all PE (mgh at top) converts to KE just before impact. KE = mgh." },
+    { id:"w6", level:3, competency:"Application", q:"Why do mountain roads zigzag instead of going straight up?", opts:["Looks beautiful","Inclined plane — same work done with less force over greater distance","Less traffic","Shorter route"], ans:1, hint:"Simple machine principle.", exp:"A zigzag road is an inclined plane. It allows vehicles to exert less force to climb the same height (W = F×d; longer d means less F for same work)." },
+    { id:"w7", level:1, competency:"Energy Forms", q:"The energy stored in a stretched spring is called:", opts:["Kinetic energy","Thermal energy","Elastic potential energy","Chemical energy"], ans:2, hint:"Stored due to position/shape.", exp:"Elastic potential energy is stored in deformed elastic objects (springs, rubber bands). It converts to kinetic energy when released." },
+    { id:"w8", level:4, competency:"Analysis", q:"Why is 100% energy conversion efficiency impossible in real machines?", opts:["Machines are poorly designed","Some energy is always lost to friction and heat — entropy","Gravity reduces efficiency","Mass is not conserved"], ans:1, hint:"Thermodynamics second law.", exp:"Real machines always have friction, air resistance, and heat losses. Some energy always degrades to unusable thermal energy. 100% efficiency would violate the second law of thermodynamics." },
+    { id:"w9", level:2, competency:"Potential Energy", q:"A 2 kg book is placed 1.5 m above the ground. Its gravitational PE (g=10m/s²) is:", opts:["30 J","20 J","15 J","3 J"], ans:0, hint:"PE = mgh", exp:"PE = 2 × 10 × 1.5 = 30 J" },
+    { id:"w10", level:1, competency:"Units", q:"The SI unit of energy is:", opts:["Watt","Newton","Joule","Calorie"], ans:2, hint:"Named after James Joule.", exp:"The Joule (J) is the SI unit of energy and work. 1 J = 1 N·m." },
+  ],
+  sound: [
+    { id:"so1", level:1, competency:"Sound Properties", q:"Sound travels as a:", opts:["Transverse wave","Electromagnetic wave","Longitudinal wave","Light wave"], ans:2, hint:"Compression and rarefaction — particles vibrate along direction of travel.", exp:"Sound is a mechanical longitudinal wave — particles vibrate parallel to the direction of wave propagation, creating compressions and rarefactions." },
+    { id:"so2", level:1, competency:"Speed of Sound", q:"Sound travels fastest in:", opts:["Air","Water","Vacuum","Steel"], ans:3, hint:"Denser medium = faster sound generally.", exp:"Sound travels fastest in solids (steel ~5100 m/s) because particles are tightly packed for efficient energy transfer. It cannot travel in vacuum." },
+    { id:"so3", level:2, competency:"Reflection of Sound", q:"The condition for echo to be heard distinctly is that the reflecting surface must be at least:", opts:["10 m away","17 m away","25 m away","5 m away"], ans:1, hint:"Sound needs 0.1s gap; speed of sound = 340m/s. d = v×t/2.", exp:"Distance = 340 × 0.1/2 = 17 m. The reflected sound must arrive ≥0.1s after the original for human ears to perceive it as an echo." },
+    { id:"so4", level:2, competency:"Frequency", q:"The frequency range audible to humans is:", opts:["0-100 Hz","20 Hz - 20,000 Hz","1000-5000 Hz","Below 20 Hz"], ans:1, hint:"Below: infrasound; above: ultrasound.", exp:"Humans hear 20 Hz–20,000 Hz. Below 20 Hz is infrasound (earthquakes, elephants); above 20,000 Hz is ultrasound (bats, sonar)." },
+    { id:"so5", level:3, competency:"Application", q:"Bats can navigate in the dark using:", opts:["Infrared vision","Echolocation — ultrasound bouncing off objects","Electric fields","Magnetic sensing"], ans:1, hint:"Bats emit and detect sound reflections.", exp:"Bats emit ultrasonic pulses and detect echoes returning from objects. The time delay and frequency shift allow them to map their environment — echolocation." },
+    { id:"so6", level:3, competency:"Application", q:"Why does thunder sound like a rumble rather than a sharp crack when it's far away?", opts:["Sound slows down","Sound is absorbed by clouds","Lightning bolt is long — different parts reach you at different times","Thunder is different from lightning"], ans:2, hint:"The bolt stretches across the sky.", exp:"The lightning bolt extends over a long distance. Sound from the nearest part arrives first and from the farthest part arrives later, creating a prolonged rumbling sound." },
+    { id:"so7", level:4, competency:"Analysis", q:"Sonar in submarines uses ultrasound. If a pulse returns in 3 seconds and speed of sound in water is 1500 m/s, the ocean depth is:", opts:["4500 m","2250 m","1500 m","750 m"], ans:1, hint:"Distance = speed × time/2 (pulse goes to bottom and back).", exp:"Depth = (1500 × 3)/2 = 2250 m. The total path = 4500 m but it's to the bottom and back, so depth = 4500/2." },
+    { id:"so8", level:4, competency:"Analysis", q:"Why does the pitch of a train's horn seem to increase as it approaches and decrease as it leaves?", opts:["Train speeds up","Train's horn gets louder","Doppler Effect — approaching compresses sound waves; receding stretches them","Reflection from walls"], ans:2, hint:"Relative motion between source and observer changes perceived frequency.", exp:"The Doppler Effect: when a source moves toward you, wave fronts compress → higher frequency → higher pitch. Moving away: waves stretch → lower frequency → lower pitch." },
+    { id:"so9", level:1, competency:"Sound Properties", q:"Which of these cannot transmit sound?", opts:["Water","Solid iron","Vacuum","Air"], ans:2, hint:"Sound needs a medium.", exp:"Sound is a mechanical wave requiring a medium (solid, liquid, or gas) to travel. In vacuum, there are no particles to vibrate, so sound cannot propagate." },
+    { id:"so10", level:2, competency:"Loudness", q:"The loudness of sound depends on:", opts:["Frequency","Speed","Amplitude of vibration","Wavelength"], ans:2, hint:"Bigger vibrations = louder sound.", exp:"Loudness (measured in decibels) depends on amplitude. Larger amplitude = more energy = louder sound." },
+  ],
+  tissue: [
+    { id:"t1", level:1, competency:"Plant Tissues", q:"Meristematic tissue in plants is responsible for:", opts:["Photosynthesis","Growth (cell division)","Food storage","Transport"], ans:1, hint:"Meristem = region of active growth.", exp:"Meristematic tissue contains actively dividing cells, responsible for plant growth at tips of roots and shoots (apical meristems)." },
+    { id:"t2", level:1, competency:"Animal Tissues", q:"Which tissue lines the inner walls of blood vessels?", opts:["Muscular tissue","Connective tissue","Epithelial tissue","Nervous tissue"], ans:2, hint:"Epithelium covers surfaces.", exp:"Simple squamous epithelial tissue lines blood vessels (endothelium), providing a smooth surface for blood flow." },
+    { id:"t3", level:2, competency:"Connective Tissue", q:"Blood is classified as a connective tissue because:", opts:["It flows","It contains cells and matrix (plasma)","It carries oxygen","It is liquid"], ans:1, hint:"Connective tissue = cells + extracellular matrix.", exp:"Blood has cells (RBCs, WBCs, platelets) suspended in a fluid matrix (plasma). This cellular + matrix structure classifies it as connective tissue." },
+    { id:"t4", level:2, competency:"Nervous Tissue", q:"The long thread-like extensions of a neuron that transmit impulses away from the cell body are called:", opts:["Dendrites","Axons","Synapses","Myelin"], ans:1, hint:"Axon = output wire.", exp:"Axons carry nerve impulses away from the cell body to other cells. Dendrites carry impulses toward the cell body." },
+    { id:"t5", level:3, competency:"Application", q:"Why do plants need both xylem and phloem?", opts:["Both transport water","Xylem transports water (up), phloem transports food (both directions) — two separate systems for two different needs","Xylem stores food; phloem stores water","They are both the same tissue"], ans:1, hint:"Two different transport needs.", exp:"Xylem conducts water and minerals from roots to leaves (unidirectional). Phloem transports sugars from leaves to all growing parts (bidirectional). These different functions require separate vascular tissues." },
+    { id:"t6", level:3, competency:"Application", q:"Why can't cartilage repair itself as easily as bone after injury?", opts:["Cartilage is not living","Cartilage has no blood vessels — cells receive nutrients by diffusion only","Bone is made of cells","Cartilage is too hard"], ans:1, hint:"Think about blood supply.", exp:"Cartilage is avascular (no blood vessels). Nutrients diffuse through the matrix. Bone has blood vessels delivering cells and nutrients quickly for repair. No blood supply = slow healing." },
+    { id:"t7", level:4, competency:"Analysis", q:"Sclerenchyma tissue in plants is dead at maturity. How can dead cells provide support?", opts:["They grow bigger after death","Their thick, lignified cell walls remain intact, providing rigid structural support","Dead cells attract minerals","They are not really dead"], ans:1, hint:"Structure remains after the cell dies.", exp:"Sclerenchyma cells deposit thick lignin walls before dying. The rigid cell wall structure persists and provides mechanical support — function continues without living cell activity." },
+    { id:"t8", level:4, competency:"Analysis", q:"Why does cardiac muscle function differently from both skeletal and smooth muscle?", opts:["Same as skeletal","Cardiac muscle is involuntary, striated, and has intercalated discs for synchronized contraction — unique combination","It doesn't contract","It's smooth muscle"], ans:1, hint:"Think about control and structure.", exp:"Cardiac muscle is involuntary (cannot stop it) and striated (like skeletal) but has intercalated discs that allow electrical signals to spread cell-to-cell for coordinated heartbeat." },
+    { id:"t9", level:1, competency:"Tissue Types", q:"Which tissue is responsible for voluntary movements?", opts:["Smooth muscle","Cardiac muscle","Skeletal (striated) muscle","Nervous tissue"], ans:2, hint:"You consciously control these.", exp:"Skeletal (striated/voluntary) muscles are consciously controlled and responsible for body movements like walking, writing, etc." },
+    { id:"t10", level:2, competency:"Epidermis", q:"The epidermis in plants protects against:", opts:["Photosynthesis","Water loss and physical injury","Reproduction","Root growth"], ans:1, hint:"Outer layer = protective.", exp:"The epidermis is the outermost layer. It has a waxy cuticle that reduces water loss (transpiration) and protects against physical injury and pathogens." },
+  ],
+  improvement: [
+    { id:"i1", level:1, competency:"Crop Production", q:"Which nutrient promotes vegetative growth in plants?", opts:["Phosphorus","Potassium","Nitrogen","Calcium"], ans:2, hint:"N for nitrogen... proteins and chlorophyll.", exp:"Nitrogen is essential for making amino acids, proteins, and chlorophyll — all needed for vegetative (leaf and stem) growth." },
+    { id:"i2", level:2, competency:"Soil Health", q:"Crop rotation is practiced because:", opts:["Same crop gives more yield","Different crops replenish different nutrients; legumes fix nitrogen","Rotation kills insects","One crop is harder to grow"], ans:1, hint:"Legumes and nitrogen-fixing bacteria.", exp:"Growing different crops in sequence prevents nutrient depletion. Legumes (beans, peas) have nitrogen-fixing bacteria in root nodules, naturally replenishing soil nitrogen." },
+    { id:"i3", level:3, competency:"Application", q:"A farmer's wheat yield drops every year. What is the most scientifically sound recommendation?", opts:["Use more water","Implement crop rotation, soil testing, and balanced NPK fertilization","Plant faster-growing wheat","Add more pesticides"], ans:1, hint:"Systematic approach to soil management.", exp:"Declining yield indicates soil nutrient depletion. Crop rotation restores nutrients naturally; soil testing identifies specific deficiencies; NPK fertilization addresses them scientifically." },
+    { id:"i4", level:4, competency:"Analysis", q:"Why might excessive use of chemical fertilizers actually reduce long-term soil fertility?", opts:["They have no effect","They're too expensive","Disrupts soil microorganism balance, reduces organic matter, causes salinization, and leaching pollutes groundwater","Plants can't absorb them"], ans:2, hint:"Think beyond the plant to the soil ecosystem.", exp:"Chemical overuse kills beneficial soil bacteria and fungi, reduces humus, causes salt accumulation (salinization), compacts soil, and washes into water bodies causing eutrophication." },
+    { id:"i5", level:2, competency:"Animal Husbandry", q:"What is the advantage of hybrid varieties of cattle?", opts:["They cost less","They combine high milk yield from exotic breeds with disease resistance from local breeds","They need no food","They grow faster only"], ans:1, hint:"Best of both breeds.", exp:"Hybridization between high-yield exotic cattle (like Holstein) and disease-resistant local breeds (like Sahiwal) produces offspring with improved milk production AND better climate/disease tolerance." },
+    { id:"i6", level:3, competency:"Application", q:"Why is integrated pest management (IPM) preferred over chemical pesticides alone?", opts:["IPM is cheaper","IPM reduces environmental harm by combining biological, cultural, and minimal chemical controls","Pesticides don't work","IPM uses more chemicals"], ans:1, hint:"Long-term sustainability vs short-term fix.", exp:"IPM uses predators/parasites of pests, crop rotation, resistant varieties, and only minimal targeted pesticides. This reduces environmental damage, avoids pesticide resistance, and is sustainable." },
+    { id:"i7", level:1, competency:"Storage", q:"Grain storage silos are designed to keep grain dry and cool because:", opts:["Grain looks better that way","Moisture and warmth encourage fungal growth and insect infestation","Cold kills grain","Silos need to be cold"], ans:1, hint:"What conditions do fungi and insects need?", exp:"Fungi and insects thrive in warm, moist conditions. Dry, cool storage prevents spoilage, maintains nutritional quality, and reduces post-harvest losses." },
+    { id:"i8", level:4, competency:"Analysis", q:"How can GM (genetically modified) crops both help and threaten food security?", opts:["Only harmful","Only helpful","Help by improving yield and pest resistance; threaten by reducing biodiversity, creating superpests, and economic dependence","No effect"], ans:2, hint:"Consider both sides.", exp:"GM crops can increase yields, add nutrients, or resist drought. Risks include reduced genetic diversity (vulnerability to disease), evolution of superpests/weeds, and farmers depending on corporations for patented seeds." },
+    { id:"i9", level:2, competency:"Fisheries", q:"What is aquaculture?", opts:["Ocean fishing","Freshwater fishing only","Controlled farming of fish, shellfish, or aquatic plants","Fishing with nets"], ans:2, hint:"Agriculture for aquatic organisms.", exp:"Aquaculture is the controlled cultivation of aquatic organisms (fish, prawns, oysters, seaweed) in enclosed water bodies. It supplements wild catch and reduces pressure on natural fisheries." },
+    { id:"i10", level:3, competency:"Beekeeping", q:"How does beekeeping contribute to crop production beyond honey?", opts:["Bees eat pests","Bees aerate soil","Bees pollinate flowering crops, essential for fruit/seed production","Bees produce fertilizer"], ans:2, hint:"Think about the flower-bee relationship.", exp:"Bees are vital pollinators. As they collect nectar, they transfer pollen between flowers, enabling fertilization and fruit/seed formation. This free pollination service increases crop yields significantly." },
+  ]
+};
+
+// ============================================================
+// POLICY CONTENT
+// ============================================================
+const POLICY_PAGES = [
+  {
+    title: "NEP 2020 and Personalized Learning",
+    icon: "🏛️",
+    content: `
+      <h3>The Vision of National Education Policy 2020</h3>
+      <p>The National Education Policy 2020 represents the most transformative overhaul of India's educational framework in over three decades. At its heart lies a profound recognition: every child learns differently. The policy explicitly dismantles the one-size-fits-all paradigm that has dominated Indian classrooms since independence, replacing it with a framework that celebrates cognitive diversity and mandates personalized learning pathways.</p>
+      <p>NEP 2020 envisions education not as information transmission but as competency development. This shift is seismic. It moves assessment away from the ability to reproduce memorized content and toward demonstrating genuine understanding, application, and analysis. The policy calls for "holistic, integrated, enjoyable and engaging" learning experiences that develop the whole child — cognitively, emotionally, and socially.</p>
+      <h3>Personalization as Core Principle</h3>
+      <p>The policy's emphasis on personalized learning emerges from cognitive science research showing that learners vary enormously in their prior knowledge, learning speed, cognitive style, and motivational drivers. Traditional classroom instruction that proceeds at a uniform pace inevitably leaves some students behind while boring others. Personalized learning addresses this by adapting the content, pace, and method to each learner's needs.</p>
+      <p>In practice, NEP 2020-aligned personalized learning means: identifying where each student currently is in their conceptual journey; providing learning experiences precisely calibrated to bridge the gap between current and target competency; offering multiple representations of concepts; and allowing mastery at individual pace before moving forward.</p>
+      <h3>Technology as Enabler</h3>
+      <p>NEP 2020 prominently features technology as a means to scale personalized learning. The National Educational Technology Forum (NETF) is envisioned as a body to guide evidence-based technology deployment in education. Critically, the policy emphasizes that technology must serve pedagogy, not drive it — tools should enhance teacher effectiveness and student agency, not replace the human relationship at the heart of learning.</p>
+      <div class="callout">"The purpose of the education system is to develop good human beings capable of rational thought and action, possessing compassion and empathy, courage and resilience, scientific temper and creative imagination." — NEP 2020</div>
+      <h3>Implications for Assessment</h3>
+      <p>NEP 2020 calls for a dramatic shift in assessment culture. It recommends moving away from high-stakes year-end examinations toward continuous, formative assessment that informs teaching. The Board Exams for Class 10 and 12 are to become more flexible, with students able to take them twice. Importantly, assessments should focus on conceptual understanding and applied knowledge rather than rote recall.</p>
+      <p>For classroom teachers, this means regular diagnostic checks to understand where students are, timely feedback that helps students understand their errors, and using assessment data to adapt instruction — exactly the model this application implements digitally.</p>
+      <h3>NEP 2020 in the Kashmir Context</h3>
+      <p>Implementation of NEP 2020 in Jammu & Kashmir carries unique considerations. The region's diverse geography (from high-altitude areas with limited connectivity to urban centers) makes offline, accessible learning tools especially critical. The policy's emphasis on mother tongue instruction in early years aligns with the importance of Kashmiri, Dogri, and Urdu in local contexts. The adaptive learning model this application implements directly serves NEP's personalization mandate in resource-constrained settings.</p>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Consider your own classroom. Which students consistently struggle to keep up? Which seem bored? How might an adaptive approach change the experience for both groups? What would you need to implement personalized learning tomorrow, with no technology?</div>
+    `
+  },
+  {
+    title: "NCF 2023 Competency Framework",
+    icon: "🎯",
+    content: `
+      <h3>Understanding the National Curriculum Framework 2023</h3>
+      <p>The National Curriculum Framework for School Education 2023 (NCF-SE 2023) translates NEP 2020's broad vision into specific curriculum design principles. It is the most detailed rethinking of what Indian students should learn and how they should learn it. The framework introduces the concept of "competencies" as the organizing principle for curriculum design — a departure from topic-based or content-volume-based approaches.</p>
+      <h3>What is a Competency?</h3>
+      <p>A competency is not a topic to be covered or a fact to be memorized. It is a demonstrated capability to use knowledge, skills, and understanding in real situations. In science education, for example, a competency is not "knows the definition of osmosis" but "can explain why a cucumber placed in salty water shrinks and apply this principle to predict outcomes in new situations." This distinction is crucial.</p>
+      <p>NCF 2023 organizes learning into three interconnected domains: Cognitive (thinking), Affective (feeling, valuing), and Psychomotor (doing). True competency integrates all three. A student who understands Newton's Laws conceptually, appreciates their elegance, and can apply them to solve practical problems has achieved genuine competency — not merely accumulated knowledge.</p>
+      <h3>The Competency Progression Model</h3>
+      <p>NCF 2023 introduces a clear progression of learning outcomes across stages. Each competency is described at multiple levels — what a student should be able to do at the end of foundational, preparatory, middle, and secondary stages. This progression model directly informs this application's four-level adaptive system (Basic Recall → Conceptual Understanding → Application → Analytical Reasoning).</p>
+      <p>The four levels in this application map to Bloom's Taxonomy progression and NCF 2023 competency stages: Level 1 corresponds to Knowledge and Comprehension; Level 2 to Understanding and Conceptual Clarity; Level 3 to Application and Problem-Solving; Level 4 to Analysis, Evaluation, and Synthesis.</p>
+      <h3>Curriculum Areas and Integration</h3>
+      <p>NCF 2023 recommends a more integrated approach to science education, connecting physical, chemical, and biological sciences with mathematics and social context. It emphasizes that science should be experienced as inquiry — forming questions, designing investigations, analyzing evidence, and communicating findings — rather than as a set of facts discovered by Western scientists long ago.</p>
+      <h3>Local Knowledge and Cultural Relevance</h3>
+      <p>A distinctive feature of NCF 2023 is its emphasis on connecting curriculum to local knowledge systems and cultural contexts. For Kashmir specifically, this means connecting science education to the rich traditional ecological knowledge of the region — the science behind the construction of wooden houses for earthquake resilience, the traditional knowledge of medicinal plants, and the physics of traditional handicraft techniques like shawl weaving.</p>
+      <div class="callout">"A curriculum is not just a list of topics to be taught. It is a vision of what we want our students to be able to do, think, feel, and value when they leave school." — NCF 2023</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Choose one chapter from your current science textbook. What are the genuine competencies a student should develop from this chapter? List them as "student can..." statements. How does this differ from the chapter's current learning objectives?</div>
+    `
+  },
+  {
+    title: "PARAKH Diagnostic Model",
+    icon: "🔍",
+    content: `
+      <h3>What is PARAKH?</h3>
+      <p>PARAKH (Performance Assessment, Review, and Analysis of Knowledge for Holistic Development) is the national assessment body established under NEP 2020. It represents India's most ambitious attempt to create a coherent, scientifically sound framework for student assessment that goes far beyond traditional examinations. PARAKH's mandate includes setting norms for student assessment, developing assessment frameworks, and supporting states in implementing quality assessments.</p>
+      <h3>Diagnostic Assessment: The Foundation</h3>
+      <p>At the heart of PARAKH's model is diagnostic assessment — assessment designed not to grade or rank students but to understand what they know, what they don't know, and where misconceptions exist. This type of assessment is profoundly different from summative assessment (end-of-year exams) and even from most formative assessment practices currently in Indian schools.</p>
+      <p>Diagnostic assessment asks: What is the student's current conceptency level? What specific knowledge or skills are present or absent? What misconceptions need to be addressed? What is the appropriate next step for this individual student? The answers to these questions — not grades or ranks — drive subsequent instruction.</p>
+      <h3>The Diagnostic Assessment Cycle</h3>
+      <p>PARAKH recommends implementing diagnostic assessment as a cycle: Assess (identify current level) → Analyze (identify gaps and strengths) → Intervene (provide targeted support) → Reassess (verify improvement). This app implements exactly this cycle: the diagnostic test establishes baseline competency, the analysis identifies strong and weak areas, the adaptive practice provides targeted intervention, and repeated practice tracks improvement over time.</p>
+      <h3>State Achievement Survey Alignment</h3>
+      <p>PARAKH conducts and oversees the National Achievement Survey (NAS), which measures what students across India actually know and can do. NAS data consistently shows significant gaps between intended learning outcomes (what the curriculum expects) and actual learning levels (what students demonstrate). This gap is the problem adaptive diagnostic learning directly addresses.</p>
+      <h3>PARAKH and Formative Assessment</h3>
+      <p>PARAKH strongly promotes formative assessment practices — frequent, low-stakes checks for understanding that inform teaching in real time. This includes exit tickets (quick end-of-lesson checks), think-pair-share activities, concept maps, and question-based diagnostics. The key is that these assessments generate data that teachers actually use to adjust their teaching.</p>
+      <div class="callout">"Assessment should not be something that happens to students. It should be something that helps students understand themselves as learners and helps teachers understand how to serve them better." — PARAKH Framework</div>
+      <h3>Eliminating Assessment Anxiety</h3>
+      <p>One of PARAKH's important goals is reducing the fear and anxiety associated with assessment in Indian schools. High-stakes exams create enormous psychological pressure, particularly for students from disadvantaged backgrounds who have fewer resources for exam preparation. By normalizing frequent low-stakes assessment where the goal is learning (not ranking), PARAKH aims to create a healthier assessment culture.</p>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Think about the last test you gave your students. What did you learn from the results about what to teach next? Did you adjust your teaching based on that data? If not, what would it take to make assessment-driven instruction a regular part of your practice?</div>
+    `
+  },
+  {
+    title: "Mastery Learning Theory",
+    icon: "🏆",
+    content: `
+      <h3>Origins of Mastery Learning</h3>
+      <p>Mastery learning was formally articulated by Benjamin Bloom (of Bloom's Taxonomy fame) in 1968, building on earlier work by John Carroll. Bloom's central premise was radical in its simplicity: given adequate time and appropriate instruction, the vast majority of students (Bloom suggested 95%) can master any given content. The key variables are not student ability (fixed) but time and instructional quality (variable).</p>
+      <p>Traditional schooling operates on the opposite assumption: all students receive the same instruction for the same amount of time, and performance differences are attributed to ability differences — essentially accepting that some students will fail. Mastery learning rejects this as both empirically wrong and ethically unacceptable.</p>
+      <h3>Core Principles of Mastery Learning</h3>
+      <p>Mastery learning has five core principles. First, learning objectives are explicitly defined and communicated to students — they know what mastery looks like. Second, initial diagnostic pre-assessment establishes what students already know. Third, instruction provides multiple pathways to mastery, not just one. Fourth, formative assessment checks for understanding at regular intervals. Fifth, corrective instruction is provided to students who haven't yet reached mastery, while students who have are given enrichment activities.</p>
+      <p>The mastery threshold (typically 80-90% correct on assessment) serves as the gate to advancement. Students who haven't reached mastery receive additional instruction and another assessment opportunity. This continues until mastery is achieved. This application uses an 80% threshold — answering 4 out of 5 consecutive questions correctly at a given level before progressing.</p>
+      <h3>Research Evidence for Mastery Learning</h3>
+      <p>The research evidence supporting mastery learning is compelling. Bloom's meta-analyses showed that students in mastery learning classrooms outperformed traditional instruction students by two standard deviations — meaning average mastery learners performed better than 98% of traditionally taught students. More recent meta-analyses continue to show strong effect sizes, particularly for disadvantaged students and for complex subject matter.</p>
+      <h3>Mastery Learning in Practice: The Adaptive Algorithm</h3>
+      <p>This application implements mastery learning through its adaptive algorithm. Students must demonstrate 80% accuracy at their current difficulty level across multiple questions before the system advances them. When a student struggles (falls below threshold), the system steps back to reinforce foundational knowledge. This implements Bloom's "corrective instruction" digitally and automatically.</p>
+      <div class="callout">"The most wasteful and harmful aspect of our present educational system is the subjection of the learner and the teacher to a too-rigid, too-uniform expectation of how much learning should take place in a given time." — Benjamin Bloom</div>
+      <h3>Implications for Teacher Practice</h3>
+      <p>In a classroom context, mastery learning requires rethinking several common practices. Group pacing (the whole class moves to the next chapter on Monday) must give way to individualized progression. This is challenging in a 40-student classroom but becomes more manageable with digital tools that handle the individual tracking and questioning, freeing teachers to provide human support where it matters most — addressing misconceptions and building motivation.</p>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Your school moves to the next chapter every two weeks, regardless of student mastery. A student hasn't mastered Chapter 3 before starting Chapter 7. What are the likely consequences? How could you implement elements of mastery learning within your current schedule constraints?</div>
+    `
+  },
+  {
+    title: "Adaptive Learning Explained",
+    icon: "⚙️",
+    content: `
+      <h3>What is Adaptive Learning?</h3>
+      <p>Adaptive learning is an educational approach that continuously adjusts the learning experience — specifically, the difficulty, content, and sequence of questions — based on each student's performance. Unlike static curricula that present the same content to all students in the same order, adaptive systems create a unique learning path for each individual, calibrated to their current knowledge state.</p>
+      <h3>AI vs Rule-Based Adaptive Systems</h3>
+      <p>Most commercial adaptive learning platforms (Khan Academy, BYJU'S, etc.) use AI and machine learning algorithms trained on data from millions of learners. These systems are powerful but require constant internet connectivity, server infrastructure, and ongoing data collection. They are inaccessible to students without reliable connectivity and raise privacy concerns about student data being sent to corporate servers.</p>
+      <p>This application implements a rule-based adaptive system — one that uses clearly defined, transparent rules rather than opaque AI algorithms. The rules are: perform well → advance; struggle → step back and reinforce; build streak → progress to higher level. These rules are derived from learning science (mastery learning, spaced repetition, cognitive load theory) and are completely transparent, offline, and privacy-preserving.</p>
+      <h3>The Adaptive Algorithm in This App</h3>
+      <p>The core adaptive logic operates as follows: Students begin at their diagnosed or selected starting level (1-4). Each correct answer adds to a "streak" counter. When three consecutive correct answers are achieved (representing approximately 80% accuracy trend), the system promotes to the next level. Each incorrect answer resets the streak and (if two incorrect answers occur at Level 2+) steps the student down one level to reinforce foundational understanding. At each lower level, a conceptual reinforcement question is provided to address likely misconceptions.</p>
+      <p>Additionally, when a student struggles with a concept (two or more incorrect answers), the topic is added to the spaced revision scheduler with review intervals of 1 session, 3 sessions, and 7 days — implementing spaced repetition automatically.</p>
+      <h3>Why Rules-Based Works</h3>
+      <p>Rule-based adaptive systems, while simpler than AI, have key advantages in educational contexts: they are interpretable (teachers and students can understand why they're receiving a particular question), they are predictable and fair, they work offline with no data privacy risks, and they can be manually inspected and adjusted by educators. For most K-12 contexts, the performance difference between rule-based and AI-based adaptive systems is smaller than between either adaptive system and no adaptation at all.</p>
+      <div class="callout">"The best technology is the one that gets used. An elegant AI system that requires internet and a modern device is worse than a simple rule-based system that works on any device, anywhere, anytime." — Educational Technology Design Principle</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Design a simple adaptive rule for oral questioning in your classroom. For example: "If a student answers correctly, ask a harder follow-up. If incorrect, ask a simpler foundational question." Try this in tomorrow's class. What do you observe?</div>
+    `
+  },
+  {
+    title: "Bloom's Taxonomy and Progression",
+    icon: "🌸",
+    content: `
+      <h3>The Taxonomy of Educational Objectives</h3>
+      <p>In 1956, Benjamin Bloom and his colleagues published a classification of educational objectives that would become one of the most influential frameworks in the history of education. The taxonomy organizes cognitive learning into six hierarchical levels, from simple recall of facts to complex evaluation and creation. A revised version (Bloom's Revised Taxonomy) published in 2001 renamed and reordered the top two levels but retained the essential hierarchy.</p>
+      <h3>The Six Levels</h3>
+      <p>The revised taxonomy, from lowest to highest, is: Remember (retrieve relevant knowledge from memory — define, list, recall, recognize); Understand (construct meaning from instructional messages — explain, summarize, classify, compare); Apply (carry out a procedure in a given situation — calculate, use, execute, implement); Analyze (break material into parts and identify how parts relate — differentiate, organize, attribute, examine); Evaluate (make judgments based on criteria — check, critique, judge, justify); Create (put elements together to form a new whole — design, construct, plan, produce).</p>
+      <h3>Mapping to This Application's Four Levels</h3>
+      <p>This application's four difficulty levels map directly to Bloom's Taxonomy. Level 1 (Basic Recall) corresponds to Remember — questions ask students to define terms, name structures, or identify facts. Level 2 (Conceptual Understanding) maps to Understand and partially Apply — questions ask students to explain phenomena, describe processes, or interpret diagrams. Level 3 (Application) maps to Apply and partially Analyze — questions present novel situations requiring application of concepts. Level 4 (Analytical Reasoning) maps to Analyze and Evaluate — questions require students to compare competing explanations, identify underlying principles, or reason through complex multi-step problems.</p>
+      <h3>Higher-Order Thinking in Science</h3>
+      <p>Research consistently shows that Indian science education over-emphasizes the lower two levels of Bloom's Taxonomy. Examinations predominantly test memory (Level 1) and basic comprehension (Level 2). Students who excel at memorizing facts often fail when asked to apply their knowledge in novel situations — a phenomenon called "inert knowledge." Adaptive learning that progressively challenges students to higher levels directly combats this problem.</p>
+      <div class="callout">"If students can only solve problems they have been explicitly taught to solve, they haven't really learned. They've memorized. The goal of education is transferable understanding." — Pedagogical Insight</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Take a recent test or worksheet you gave students. Categorize each question by Bloom's level. What percentage are Remember (Level 1)? What percentage are Apply or higher? What would need to change to shift 30% of questions to higher-order levels?</div>
+    `
+  },
+  {
+    title: "Formative Feedback Loop",
+    icon: "🔄",
+    content: `
+      <h3>The Power of Feedback in Learning</h3>
+      <p>John Hattie's landmark meta-analysis of over 800 meta-analyses (representing data from millions of students) identified feedback as having one of the highest effect sizes of any educational intervention. Well-designed feedback accelerates learning dramatically. Poorly designed feedback can actually harm learning. Understanding what makes feedback effective is one of the most important things an educator can know.</p>
+      <h3>Characteristics of Effective Feedback</h3>
+      <p>Effective feedback is specific (addressing exactly what was right or wrong, not just "good job"), timely (given close to the performance, not weeks later), actionable (tells the student what to do differently), focused on the task not the person (not "you're smart/dumb" but "this approach missed the key concept of..."), and appropriately challenging (neither too easy nor overwhelming). Hattie and Timperley's model identifies four levels of feedback: on the task, on the process, on self-regulation, and on the self — with feedback on process and self-regulation being most powerful.</p>
+      <h3>The Formative Feedback Loop in Practice</h3>
+      <p>This application implements a tight formative feedback loop: student answers a question → immediate result (correct/incorrect) → explanation of why (explanatory feedback) → hint available for incorrect answers → adaptive adjustment of next question based on result. This cycle repeats with every question. The loop is tight (immediate), informative (explanatory feedback, not just right/wrong), and consequential (adjusts the learning path).</p>
+      <h3>Feedback vs Grades</h3>
+      <p>Research by Ruth Butler showed that when students receive both grades and comments, they read the grade and ignore the comments. When they receive only comments (no grade), they engage deeply with the feedback and learn more. This is one of the strongest arguments against over-grading in formative contexts. This application deliberately does not give grades — only learning-relevant feedback and progress information.</p>
+      <div class="callout">"Feedback is most powerful when it is about the learning, not about the learner." — John Hattie</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Write down three pieces of feedback you gave students this week. Was each specific? Did each tell the student what to do next? Did students act on the feedback? Design an improved version of each feedback comment.</div>
+    `
+  },
+  {
+    title: "Cognitive Load Theory",
+    icon: "🧠",
+    content: `
+      <h3>The Architecture of Working Memory</h3>
+      <p>Cognitive Load Theory (CLT), developed by John Sweller in the 1980s and refined over decades, is arguably the most practically important theory from cognitive science for educators. It is grounded in a fundamental understanding of human memory architecture: working memory (where active thinking happens) has very limited capacity, while long-term memory has essentially unlimited capacity.</p>
+      <p>Working memory can hold approximately 4-7 items simultaneously and processes information for roughly 20-30 seconds before it fades unless rehearsed. When working memory is overwhelmed — "overloaded" — learning collapses. Students cannot process new information when they're struggling to manage too many elements at once.</p>
+      <h3>Three Types of Cognitive Load</h3>
+      <p>CLT identifies three types of load. Intrinsic load comes from the inherent complexity of the material — it cannot be reduced without changing the content. High element interactivity (many concepts that must be understood together, like balancing chemical equations) creates high intrinsic load. Extraneous load comes from poor instructional design — cluttered slides, confusing language, irrelevant information, or unnecessarily complex problem formats. This load should be minimized as it wastes working memory capacity without aiding learning. Germane load is the productive cognitive effort of building and automating schemas — this is the load we want to maximize.</p>
+      <h3>Implications for Adaptive Learning Design</h3>
+      <p>Adaptive learning directly reduces cognitive load problems. By starting students at their appropriate level, it ensures that intrinsic load is manageable — not too easy (no learning) and not overwhelming (cognitive overload). By providing explanations and hints when students struggle, it scaffolds the difficult parts without removing all challenge. By breaking complex topics into question sequences that build progressively, it manages the pace of working memory loading.</p>
+      <h3>The Worked Example Effect</h3>
+      <p>One of CLT's most robust findings is the worked example effect: beginners learn more from studying worked examples than from solving problems independently. Only when students have built sufficient schema (moved from novice to competent) should they shift to independent problem solving. The explanations provided after each question in this app serve as worked examples — showing not just the answer but the reasoning process.</p>
+      <div class="callout">"Cognitive overload is the enemy of learning. The most important thing a teacher or curriculum designer can do is ensure students are not overwhelmed." — John Sweller</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Identify one topic you teach where students consistently struggle. Is the difficulty due to intrinsic complexity (the content is genuinely hard), extraneous load (your presentation is unnecessarily complex), or lack of prerequisite knowledge? Each requires a different solution.</div>
+    `
+  },
+  {
+    title: "Retrieval Practice & Spaced Repetition",
+    icon: "📅",
+    content: `
+      <h3>The Testing Effect: Why Retrieval Beats Rereading</h3>
+      <p>One of the most robust and surprising findings in learning science is the testing effect (or retrieval practice effect): testing your memory — even without feedback — is a more powerful learning strategy than rereading material. This seems counterintuitive because rereading feels productive (the material is familiar, it flows easily) while retrieval practice feels difficult (struggling to remember). But this "desirable difficulty" is precisely what drives deeper encoding in long-term memory.</p>
+      <p>The mechanism is well understood: every time you successfully retrieve a memory, you strengthen the neural pathways that encoded it and make future retrieval easier and more reliable. The effort of retrieval is the learning. Passive re-exposure (rereading, re-watching) does not produce this consolidation effect nearly as powerfully.</p>
+      <h3>Spaced Repetition: Timing Matters</h3>
+      <p>Spaced repetition adds a temporal dimension to retrieval practice. The key insight is that there is an optimal time to review material — just as you're about to forget it. Reviewing too soon (while memory is still fresh) provides less benefit than waiting until recall becomes effortful. Reviewing too late (after the memory has fully faded) means re-learning from scratch.</p>
+      <p>The spacing effect was first documented by Hermann Ebbinghaus in the 1880s through his famous forgetting curve experiments. He showed that memory decays exponentially after learning, but spaced review dramatically extends retention. Modern spaced repetition systems (like the SM-2 algorithm used by Anki) have formalized this into precise review schedules.</p>
+      <h3>This App's Spaced Revision Scheduler</h3>
+      <p>This application implements a simplified spaced repetition system: when a student struggles with a concept (two or more incorrect answers), the topic is flagged for review after 1 session (short-term consolidation), then again after 3 sessions (medium-term reinforcement), and finally after 7 days (long-term retention). This three-interval schedule captures the major retention benefits of spaced repetition while remaining practical for students to manage.</p>
+      <h3>Interleaving: Another Desirable Difficulty</h3>
+      <p>Related to spaced repetition is interleaving — mixing different topics or problem types within a practice session rather than blocking practice by type. Research shows interleaved practice is harder in the short term but produces better long-term retention and transfer. This is because interleaving forces students to identify the type of problem and select the appropriate strategy — exactly the skill needed on tests and in real life.</p>
+      <div class="callout">"The best way to study is not to read and reread. It's to close the book and practice retrieving what you've learned. The difficulty is the point." — Make It Stick, Brown, Roediger & McDaniel</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> After your next lesson, instead of assigning reading for homework, ask students to write down everything they can remember from the lesson without looking at notes. Compare outcomes with a class where you assign reading. What difference do you observe?</div>
+    `
+  },
+  {
+    title: "Mastery vs Performance Orientation",
+    icon: "🧭",
+    content: `
+      <h3>Two Ways of Thinking About Learning</h3>
+      <p>Decades of research in achievement motivation have identified two fundamentally different orientations students can have toward academic work. Mastery orientation (also called learning orientation or growth orientation) means a student is motivated by the goal of developing competence, understanding, and skill. Performance orientation means a student is primarily motivated by demonstrating their ability relative to others — getting good grades, appearing smart, avoiding appearing incompetent.</p>
+      <h3>Why Mastery Orientation Produces Better Learning</h3>
+      <p>Students with mastery orientation respond to difficulty with effort, strategy adjustment, and persistence. They seek challenging tasks because difficulty means they're learning. They view errors as information — feedback about where their understanding needs work. Students with performance orientation respond to difficulty very differently: since difficulty threatens their goal of appearing competent, they may disengage, avoid challenges, cheat, or attribute failure to external factors. They view errors as threats, not information.</p>
+      <p>Research shows mastery-oriented students achieve more deeply, retain knowledge longer, transfer learning more effectively to new contexts, and maintain intrinsic motivation over time. Performance-oriented students may achieve high grades through strategic surface learning but show poorer long-term retention and transfer, and experience more anxiety and burnout.</p>
+      <h3>How Educational Practices Create Orientation</h3>
+      <p>The disturbing finding is that educational practices — particularly assessment and grading practices — have enormous influence on which orientation students develop. Heavy emphasis on grades, class rankings, competitive comparisons, and high-stakes exams powerfully cultivates performance orientation. This is the dominant culture in Indian secondary education, and it is likely responsible for much of the surface learning, exam anxiety, and post-exam forgetting so widespread in our schools.</p>
+      <h3>Designing for Mastery Orientation</h3>
+      <p>This application deliberately designs for mastery orientation: there are no grades, no rankings, no comparisons to other students. Progress is measured against the student's own previous performance. Errors are explained and used to provide better-calibrated next questions. The goal communicated throughout is understanding and competency development, not performance. The dashboard shows personal growth, not performance relative to others.</p>
+      <div class="callout">"When students are focused on learning, mistakes are information. When students are focused on performance, mistakes are failures. The classroom environment we create determines which of these frames our students adopt." — Carol Dweck</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Audit your classroom for performance vs. mastery cues. Do you display high-performing students' work? Do you announce test averages? Do you give stars or rankings? What messages do these practices send? How could you shift at least one practice to reinforce mastery orientation?</div>
+    `
+  },
+  {
+    title: "Learning Gap Identification",
+    icon: "🗺️",
+    content: `
+      <h3>The Gap Between Intended and Actual Learning</h3>
+      <p>Every curriculum represents intended learning — what policymakers, textbook writers, and teachers hope students will know and be able to do. Actual learning is frequently significantly below this intention. The gap between intended and actual learning is perhaps the defining challenge of Indian school education. National Achievement Survey data consistently shows that large percentages of students in upper primary grades have not yet achieved basic literacy and numeracy competencies expected from lower primary grades.</p>
+      <h3>Why Gaps Accumulate</h3>
+      <p>Learning is hierarchical — new concepts build on prior knowledge. When foundational understanding is absent or fragile, subsequent learning becomes increasingly difficult. A student who doesn't understand that matter is made of atoms will struggle with chemical reactions. A student who hasn't internalized speed as distance/time will struggle with acceleration. Each unresolved gap creates a larger gap at the next level. This accumulation effect means that by Class 9, students may be carrying years of unaddressed gaps.</p>
+      <h3>Traditional Teaching and the Gap Problem</h3>
+      <p>Traditional classroom instruction typically assumes that students have mastered previous content before moving forward. Since there is rarely diagnostic verification of this assumption, teachers routinely build on foundations that don't exist for many students. Those students fall further behind with each new topic. They may develop compensatory strategies (rote memorization, guessing patterns in multiple choice) that allow them to pass exams without genuine understanding.</p>
+      <h3>Diagnostic Gap Identification in This App</h3>
+      <p>The diagnostic mode in this application systematically identifies gaps by presenting questions at all four difficulty levels for a given topic. By analyzing the pattern of correct and incorrect answers, the system identifies: the highest level at which the student is performing reliably (strength ceiling), the lowest level at which the student is making errors (gap floor), and specific competency areas where errors cluster. This profile drives the adaptive practice recommendations.</p>
+      <div class="callout">"You cannot build a second floor if the first floor hasn't been laid. The most important question in education is not 'what should I teach next?' but 'what does this student already know, and what are the gaps I need to address?'"</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Before starting the next chapter with your students, design a 5-question diagnostic covering the prerequisite knowledge from previous chapters. Administer it and analyze results. What percentage of your class has the foundation needed to succeed with the new material? What will you do with students who don't?</div>
+    `
+  },
+  {
+    title: "Motivation & Growth Mindset",
+    icon: "💪",
+    content: `
+      <h3>Carol Dweck's Mindset Research</h3>
+      <p>Stanford psychologist Carol Dweck's research on mindset has been among the most influential contributions to educational psychology in the past 30 years. Her core finding: people hold implicit theories about the nature of intelligence and ability. Those who hold a "fixed mindset" believe intelligence is a fixed, innate trait — you have it or you don't. Those with a "growth mindset" believe intelligence can be developed through effort, good strategies, and help from others.</p>
+      <p>These beliefs have profound consequences. Fixed-mindset students avoid challenges (risk of appearing incompetent), give up easily (if you fail it means you're not smart), see effort as suspicious (if you were smart you wouldn't need to try hard), and are devastated by setbacks. Growth-mindset students embrace challenges, persist through difficulty, see effort as the path to mastery, and use setbacks as information.</p>
+      <h3>Mindset Interventions</h3>
+      <p>Crucially, mindset is malleable — research shows it can shift through targeted interventions. The most effective intervention is surprisingly simple: teaching students about neuroplasticity (the brain's ability to form new connections through learning) and praising process rather than ability. Telling a student "You're so smart" inadvertently promotes fixed mindset. Saying "You worked really hard on that, and it paid off" promotes growth mindset by attributing success to effort rather than ability.</p>
+      <h3>Motivation Through Autonomy and Competence</h3>
+      <p>Self-Determination Theory (Deci & Ryan) identifies three psychological needs essential for intrinsic motivation: autonomy (feeling in control of your learning), competence (feeling effective and capable), and relatedness (feeling connected to others). Educational environments that support all three promote intrinsic motivation and deep learning. Adaptive learning systems support competence (appropriately challenging tasks create genuine success experiences) and autonomy (student controls pace and topic selection).</p>
+      <div class="callout">"In a growth mindset, challenges are exciting rather than threatening. So rather than thinking, oh, I'm going to reveal my weaknesses, you say, wow, here's a chance to grow." — Carol Dweck</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Listen to your own praise over the next week. Are you praising ability ("you're so good at science") or process ("that's a really creative approach to solving that problem")? Make a conscious effort to shift praise toward process. Notice if student responses change.</div>
+    `
+  },
+  {
+    title: "Designing Adaptive Question Banks",
+    icon: "📝",
+    content: `
+      <h3>The Question Bank as Curriculum Asset</h3>
+      <p>A high-quality adaptive question bank is one of the most valuable educational assets a school or teacher can possess. Unlike a traditional test bank designed to rank students, an adaptive question bank is designed to diagnose knowledge, identify gaps, and provide calibrated learning experiences. Building such a bank is a professional skill — one that this chapter aims to develop.</p>
+      <h3>Principles of Question Design</h3>
+      <p>Good questions for adaptive learning have several characteristics. They are competency-targeted (clearly mapped to a specific competency and difficulty level). They have unambiguous correct answers (for objective items). They have distractors (wrong options) that represent genuine misconceptions, not random wrong answers. This is crucial: when a student chooses a misconception-based distractor, the system can provide targeted correction. Questions are appropriately worded (clear language, grade-appropriate vocabulary, no unnecessary complexity that would make language rather than science the barrier).</p>
+      <h3>The Four-Level Framework in Practice</h3>
+      <p>When creating questions for each level, apply these guidelines. Level 1 (Basic Recall): stem is a direct definition/identification question; options differ clearly; correct answer is unambiguous. Level 2 (Conceptual Understanding): stem requires explanation, comparison, or mechanism description; distractors reflect common conceptual confusions. Level 3 (Application): stem presents a novel scenario not explicitly taught; student must apply concept to analyze situation; distractors represent partial application errors. Level 4 (Analysis): stem requires multi-step reasoning, comparison of explanations, or evaluation of claims; distractors require careful thinking to eliminate.</p>
+      <h3>Quality Control and Calibration</h3>
+      <p>Question calibration means verifying that questions are at their intended difficulty level. A Level 1 question that most students get wrong probably belongs at Level 2 or higher. Calibration is done empirically: track correct/incorrect rates for each question as students use them, and adjust difficulty assignment based on actual data. This application's LocalStorage tracking enables this over time.</p>
+      <div class="callout">"A good question doesn't just test — it teaches. When a student reads the explanation for a question they got wrong, they should have a genuine 'aha' moment. If the explanation isn't teaching something, rewrite it."</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Write 4 questions on any topic — one at each of Bloom's first four levels. Share them with a colleague. Can they correctly identify which level each question represents? If not, revise until the level is unambiguous.</div>
+    `
+  },
+  {
+    title: "Ethical Use of Student Data",
+    icon: "🔒",
+    content: `
+      <h3>Why Student Data Ethics Matters</h3>
+      <p>As educational technology becomes more prevalent, the collection and use of student data raises serious ethical questions. Students — particularly minors — cannot meaningfully consent to complex data collection practices. Yet their learning data, if misused, can follow them through their academic careers, affect their opportunities, and compromise their privacy. The ethical use of student data is not a technical or legal nicety; it is a fundamental question of student rights.</p>
+      <h3>The Privacy-by-Design Principle</h3>
+      <p>Privacy-by-design means building privacy protections into the architecture of a system from the start, not bolting them on afterward. This application exemplifies privacy-by-design: all data is stored exclusively on the student's own device using LocalStorage, never transmitted to any external server, never aggregated across students, and never accessible to third parties. There is no account, no login, no personal identification. The student's learning data belongs entirely to the student.</p>
+      <h3>Data Minimization</h3>
+      <p>An ethical principle of data minimization states that systems should collect only the data strictly necessary for their stated educational purpose. This application tracks attempts, accuracy, levels, and timestamps — the minimum needed for adaptive functioning. It does not track location, device information, behavioral patterns beyond learning performance, or any personally identifiable information.</p>
+      <h3>Transparency and Student Agency</h3>
+      <p>Students have the right to understand what data is being collected about them and how it's used. This application's data structure is completely transparent — students can export their raw data as JSON at any time, see exactly what's stored, and delete it. This transparency is itself educational, helping students understand concepts of digital privacy and data ownership.</p>
+      <div class="callout">"Student data should be used to serve students, not to serve institutions, corporations, or researchers. When data collection serves anyone except the student, consent and transparency become ethically mandatory."</div>
+      <div class="reflection"><strong>🤔 Reflection Prompt:</strong> Audit the digital tools used in your school. Where does student data go? Who has access to it? What is it used for? Would you be comfortable if students and parents understood exactly how their data is used? If not, that's a signal that data practices need examination.</div>
+    `
+  },
+  {
+    title: "Future of Personalized Learning",
+    icon: "🚀",
+    content: `
+      <h3>The Trajectory of Adaptive Educational Technology</h3>
+      <p>We are at an inflection point in educational technology. The convergence of advances in artificial intelligence, dramatically reduced hardware costs (smartphones reaching universal penetration), and growing understanding of learning science is creating conditions for genuinely transformative personalized learning at scale. Understanding this trajectory helps educators position themselves as informed agents of change rather than passive recipients of technology decisions made by others.</p>
+      <h3>Large Language Models and Adaptive Learning</h3>
+      <p>The emergence of large language models (LLMs) like GPT-4 and Claude represents a qualitative shift in AI capability. These models can engage in open-ended tutoring conversations, explain concepts in multiple ways, answer student questions in natural language, and generate novel questions at specified difficulty levels. This capability — combined with adaptive algorithms — points toward truly conversational personalized tutoring, available to any student with a device.</p>
+      <h3>The Equity Dimension</h3>
+      <p>The most important potential of adaptive learning technology is equity: for the first time, high-quality personalized educational support could be available to every student, not just those whose families can afford private tutoring. A student in a remote Kashmir village with a smartphone and this application has access to adaptive, personalized science practice — something previously available only to students in well-resourced urban schools with skilled, attentive teachers.</p>
+      <h3>The Teacher's Role in an AI-Enhanced Future</h3>
+      <p>A common fear is that adaptive technology will replace teachers. The evidence and the logic both suggest otherwise. Technology can handle informational scaffolding, diagnostic assessment, and practice at scale. What it cannot replicate is the human relationship — the teacher who notices a student's discouragement, knows that today is hard because of something happening at home, finds the metaphor that suddenly makes a concept click for this particular student, and believes in a student's potential more than the student does. These deeply human functions will remain the core of teaching, while technology handles more of the routine informational work.</p>
+      <div class="callout">"The schools that will thrive are those that use technology to handle what machines do better than humans (patient, consistent, personalized practice and feedback) and free humans to do what humans do better than machines (inspire, connect, mentor, and support)."</div>
+      <h3>Your Role as an Educator</h3>
+      <p>As a teacher using and promoting tools like this application, you are a pioneer of evidence-based, equity-focused educational technology. The principles embedded here — adaptive difficulty, mastery progression, spaced repetition, formative feedback, privacy preservation — are the principles that the research consistently validates. By understanding and advocating for these principles, you contribute to building an educational technology ecosystem that actually serves students.</p>
+      <div class="reflection"><strong>🤔 Final Reflection:</strong> What is one thing you will do differently in your classroom practice after engaging with these 15 chapters? Write it down with a specific timeline and observable outcome. Share it with a colleague who can help you stay accountable. The gap between knowing and doing is where educational change fails. What will you do to close that gap?</div>
+    `
+  }
+];
+
+// ============================================================
+// LOCAL STORAGE KEYS
+// ============================================================
+const KEYS = {
+  profile: 'adaptlearn_profile',
+  progress: 'adaptlearn_progress',
+  diagnostic: 'adaptlearn_diagnostic',
+  revision: 'adaptlearn_revision',
+  sessions: 'adaptlearn_sessions'
+};
+
+// ============================================================
+// STORAGE UTILITIES
+// ============================================================
+function loadData(key, def = {}) {
+  try { return JSON.parse(localStorage.getItem(key)) || def; } catch { return def; }
+}
+function saveData(key, data) {
+  try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) { showToast('Storage error: ' + e.message); }
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+let currentPage = 'home';
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (el) {
+    el.classList.add('active');
+    currentPage = page;
+    window.scrollTo(0, 0);
+    if (page === 'dashboard') renderDashboard();
+    if (page === 'progress') renderProgress();
+    if (page === 'home') updateHomeStats();
+    if (page === 'policy') renderPolicyPage();
+    if (page === 'teacher') renderTeacherMode();
+  }
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer;
+function showToast(msg, dur = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// ============================================================
+// HOME PAGE
+// ============================================================
+function updateHomeStats() {
+  const prog = loadData(KEYS.progress, {});
+  const sessions = loadData(KEYS.sessions, []);
+  let total = 0, correct = 0, topics = new Set(), maxLevel = 1;
+  Object.entries(prog).forEach(([key, val]) => {
+    total += val.attempts || 0;
+    correct += val.correct || 0;
+    topics.add(key.split('_')[0]);
+    if (val.currentLevel > maxLevel) maxLevel = val.currentLevel;
+  });
+  document.getElementById('hs-attempts').querySelector('.stat-value').textContent = total;
+  document.getElementById('hs-accuracy').querySelector('.stat-value').textContent = total ? Math.round(correct/total*100) + '%' : '0%';
+  document.getElementById('hs-mastery').querySelector('.stat-value').textContent = 'L' + maxLevel;
+  document.getElementById('hs-topics').querySelector('.stat-value').textContent = topics.size;
+
+  const rev = loadData(KEYS.revision, []);
+  const now = Date.now();
+  const dueRevisions = rev.filter(r => r.nextDue <= now);
+  document.getElementById('revision-alert').style.display = dueRevisions.length > 0 ? 'block' : 'none';
+}
+
+// ============================================================
+// DIAGNOSTIC MODE
+// ============================================================
+let diagState = {};
+function showDiagStep(n) {
+  document.getElementById('diag-step-1').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('diag-step-2').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('diag-step-3').style.display = n === 3 ? 'block' : 'none';
+  if (n === 1) loadPrevDiagResults();
+}
+
+function loadPrevDiagResults() {
+  const results = loadData(KEYS.diagnostic, []);
+  const container = document.getElementById('prev-diag-list');
+  const section = document.getElementById('prev-diag-results');
+  if (!results.length) { section.style.display = 'none'; return; }
+  section.style.display = 'block';
+  container.innerHTML = results.slice(-3).reverse().map(r => `
+    <div class="card" style="margin-bottom:10px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <b style="color:var(--accent-teal)">${r.topic}</b>
+          <span style="margin-left:8px;" class="badge badge-blue">L${r.recommendedLevel}</span>
+        </div>
+        <span style="font-size:12px;color:var(--text-muted)">${new Date(r.date).toLocaleDateString()}</span>
+      </div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:8px;">
+        Score: ${r.score}/${r.total} | Strengths: ${r.strengths.join(', ') || 'None'} | Gaps: ${r.gaps.join(', ') || 'None'}
+      </div>
+    </div>
+  `).join('');
+}
+
+function startDiagnostic() {
+  const topic = document.getElementById('diag-topic').value;
+  const bank = QUESTION_BANK[topic] || [];
+  const mixed = [];
+  [1,2,3,4].forEach(lvl => {
+    const qs = bank.filter(q => q.level === lvl);
+    if (qs.length) mixed.push(qs[Math.floor(Math.random()*qs.length)]);
+  });
+  // fill to 10
+  const allQ = [...bank];
+  while (mixed.length < Math.min(10, bank.length) && allQ.length > 0) {
+    const idx = Math.floor(Math.random()*allQ.length);
+    const q = allQ.splice(idx,1)[0];
+    if (!mixed.find(m => m.id === q.id)) mixed.push(q);
+  }
+  mixed.sort(() => Math.random()-0.5);
+
+  diagState = { topic, questions: mixed.slice(0,10), current: 0, results: [], answered: false };
+  showDiagStep(2);
+  renderDiagQ();
+}
+
+function renderDiagQ() {
+  const { questions, current } = diagState;
+  const q = questions[current];
+  document.getElementById('diag-q-counter').textContent = `Question ${current+1} of ${questions.length}`;
+  document.getElementById('diag-progress').style.width = `${(current/questions.length)*100}%`;
+  document.getElementById('diag-diff-badge').innerHTML = diffBadge(q.level);
+  document.getElementById('diag-question').textContent = q.q;
+  document.getElementById('diag-next-btn').style.display = 'none';
+  document.getElementById('diag-feedback').style.display = 'none';
+  diagState.answered = false;
+
+  const opts = document.getElementById('diag-options');
+  opts.innerHTML = q.opts.map((o,i) => `
+    <button class="option-btn" onclick="diagAnswer(${i})" id="diag-opt-${i}">${String.fromCharCode(65+i)}. ${o}</button>
+  `).join('');
+}
+
+function diagAnswer(idx) {
+  if (diagState.answered) return;
+  diagState.answered = true;
+  const q = diagState.questions[diagState.current];
+  const correct = idx === q.ans;
+  diagState.results.push({ q, correct, chosen: idx });
+
+  document.querySelectorAll('.option-btn').forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === idx && !correct) btn.classList.add('incorrect');
+  });
+
+  const fb = document.getElementById('diag-feedback');
+  fb.style.display = 'block';
+  fb.innerHTML = `
+    <div style="color:${correct?'var(--accent-green)':'var(--accent-red)'};font-weight:700;margin-bottom:6px;">
+      ${correct ? '✅ Correct!' : '❌ Incorrect'}
+    </div>
+    <div style="font-size:13px;color:var(--text-secondary);">${q.exp}</div>
+  `;
+  document.getElementById('diag-next-btn').style.display = 'block';
+}
+
+function diagNextQ() {
+  diagState.current++;
+  if (diagState.current >= diagState.questions.length) {
+    finishDiagnostic();
+  } else {
+    renderDiagQ();
+  }
+}
+
+function finishDiagnostic() {
+  const { results, topic } = diagState;
+  const byLevel = {1:[],2:[],3:[],4:[]};
+  results.forEach(r => byLevel[r.q.level].push(r.correct));
+  
+  const levelAccuracy = {};
+  [1,2,3,4].forEach(l => {
+    const arr = byLevel[l];
+    levelAccuracy[l] = arr.length ? arr.filter(Boolean).length/arr.length : null;
+  });
+
+  const total = results.length;
+  const score = results.filter(r => r.correct).length;
+  
+  // Recommended level
+  let rec = 1;
+  [1,2,3,4].forEach(l => {
+    if (levelAccuracy[l] !== null && levelAccuracy[l] >= 0.6) rec = l;
+  });
+
+  // Strengths and gaps
+  const strengths = [], gaps = [];
+  results.forEach(r => {
+    if (r.correct && !strengths.includes(r.q.competency)) strengths.push(r.q.competency);
+    if (!r.correct && !gaps.includes(r.q.competency)) gaps.push(r.q.competency);
+  });
+
+  const diagResult = { topic, date: Date.now(), score, total, recommendedLevel: rec, levelAccuracy, strengths, gaps };
+  
+  const existing = loadData(KEYS.diagnostic, []);
+  existing.push(diagResult);
+  saveData(KEYS.diagnostic, existing);
+
+  showDiagStep(3);
+  const container = document.getElementById('diag-results-display');
+  container.innerHTML = `
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div class="stat-card"><div class="stat-value">${score}/${total}</div><div class="stat-label">Score</div></div>
+      <div class="stat-card"><div class="stat-value">L${rec}</div><div class="stat-label">Recommended Start</div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-weight:700;color:var(--accent-teal);margin-bottom:10px;">Level Accuracy</div>
+      ${[1,2,3,4].map(l => {
+        const acc = levelAccuracy[l];
+        return acc !== null ? `
+          <div style="margin-bottom:8px;">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+              <span style="font-size:13px;">${diffLabel(l)}</span>
+              <span style="font-size:13px;font-weight:600;color:${acc>=0.8?'var(--accent-green)':acc>=0.5?'var(--accent-gold)':'var(--accent-red)'};">${Math.round(acc*100)}%</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${acc*100}%;background:${acc>=0.8?'var(--accent-green)':acc>=0.5?'var(--accent-gold)':'var(--accent-red)'}"></div></div>
+          </div>
+        ` : '';
+      }).join('')}
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-weight:700;color:var(--accent-green);margin-bottom:8px;">💪 Strength Areas</div>
+      <div>${strengths.length ? strengths.map(s => `<span class="badge badge-green" style="margin:3px;">${s}</span>`).join('') : '<span style="color:var(--text-muted);font-size:13px;">No strengths identified yet</span>'}</div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;color:var(--accent-red);margin-bottom:8px;">⚠️ Areas to Improve</div>
+      <div>${gaps.length ? gaps.map(g => `<span class="badge badge-red" style="margin:3px;">${g}</span>`).join('') : '<span style="color:var(--accent-muted);font-size:13px;">No significant gaps</span>'}</div>
+    </div>
+  `;
+
+  // Update adaptive starting level
+  const adaptSelect = document.getElementById('adapt-start-level');
+  if (adaptSelect) adaptSelect.value = rec;
+}
+
+// ============================================================
+// ADAPTIVE PRACTICE ENGINE
+// ============================================================
+let adaptState = {};
+
+function showAdaptSetup() {
+  document.getElementById('adapt-setup').style.display = 'block';
+  document.getElementById('adapt-quiz').style.display = 'none';
+  document.getElementById('adapt-summary').style.display = 'none';
+}
+
+function startAdaptive() {
+  const topic = document.getElementById('adapt-topic').value;
+  const startLevel = parseInt(document.getElementById('adapt-start-level').value);
+  const bank = QUESTION_BANK[topic] || [];
+  
+  adaptState = {
+    topic,
+    level: startLevel,
+    streak: 0,
+    wrongStreak: 0,
+    questionNum: 0,
+    sessionResults: [],
+    hintUsed: false,
+    currentQ: null,
+    answered: false,
+    bank: bank,
+    usedIds: []
+  };
+
+  document.getElementById('adapt-setup').style.display = 'none';
+  document.getElementById('adapt-quiz').style.display = 'block';
+  document.getElementById('adapt-summary').style.display = 'none';
+  
+  adaptNextQuestion();
+}
+
+function getAdaptQuestion() {
+  const { bank, level, usedIds } = adaptState;
+  const available = bank.filter(q => q.level === level && !usedIds.includes(q.id));
+  if (available.length === 0) {
+    const reset = bank.filter(q => q.level === level);
+    if (reset.length === 0) return null;
+    adaptState.usedIds = adaptState.usedIds.filter(id => !reset.find(q=>q.id===id));
+    return reset[Math.floor(Math.random()*reset.length)];
+  }
+  return available[Math.floor(Math.random()*available.length)];
+}
+
+function adaptNextQuestion() {
+  adaptState.answered = false;
+  adaptState.hintUsed = false;
+  adaptState.questionNum++;
+
+  if (adaptState.questionNum > 20) {
+    finishAdaptiveSession();
+    return;
+  }
+
+  const q = getAdaptQuestion();
+  if (!q) { finishAdaptiveSession(); return; }
+  adaptState.currentQ = q;
+  adaptState.usedIds.push(q.id);
+
+  document.getElementById('adapt-level-disp').textContent = 'L' + adaptState.level;
+  document.getElementById('adapt-q-level').innerHTML = diffBadge(adaptState.level);
+  document.getElementById('adapt-q-num').textContent = 'Q' + adaptState.questionNum;
+  document.getElementById('adapt-session-progress').style.width = `${(adaptState.questionNum/20)*100}%`;
+  
+  const streakEl = document.getElementById('adapt-streak');
+  if (adaptState.streak >= 2) {
+    streakEl.style.display = 'inline-block';
+    streakEl.textContent = '🔥 ' + adaptState.streak + ' streak';
+  } else {
+    streakEl.style.display = 'none';
+  }
+
+  document.getElementById('adapt-question').textContent = q.q;
+  document.getElementById('adapt-feedback-area').style.display = 'none';
+  document.getElementById('adapt-hint-btn').style.display = 'block';
+
+  const opts = document.getElementById('adapt-options');
+  opts.innerHTML = q.opts.map((o,i) => `
+    <button class="option-btn" onclick="adaptAnswer(${i})" id="adapt-opt-${i}">${String.fromCharCode(65+i)}. ${o}</button>
+  `).join('');
+}
+
+function adaptAnswer(idx) {
+  if (adaptState.answered) return;
+  adaptState.answered = true;
+  const q = adaptState.currentQ;
+  const correct = idx === q.ans;
+
+  document.querySelectorAll('#adapt-options .option-btn').forEach((btn,i) => {
+    btn.disabled = true;
+    if (i === q.ans) btn.classList.add('correct');
+    else if (i === idx && !correct) btn.classList.add('incorrect');
+  });
+
+  // Update progress data
+  const progKey = adaptState.topic + '_L' + adaptState.level;
+  const prog = loadData(KEYS.progress, {});
+  if (!prog[progKey]) prog[progKey] = { attempts:0, correct:0, currentLevel: adaptState.level };
+  prog[progKey].attempts++;
+  if (correct) prog[progKey].correct++;
+  prog[progKey].currentLevel = adaptState.level;
+  saveData(KEYS.progress, prog);
+
+  adaptState.sessionResults.push({ correct, level: adaptState.level, qid: q.id });
+
+  // Adaptive algorithm
+  if (correct) {
+    adaptState.streak++;
+    adaptState.wrongStreak = 0;
+    if (adaptState.streak >= 3 && adaptState.level < 4) {
+      adaptState.level++;
+      adaptState.streak = 0;
+      showToast('🎉 Level up! Now at Level ' + adaptState.level);
+    }
+  } else {
+    adaptState.wrongStreak++;
+    adaptState.streak = 0;
+    if (adaptState.wrongStreak >= 2 && adaptState.level > 1) {
+      adaptState.level--;
+      adaptState.wrongStreak = 0;
+      showToast('📚 Stepping back to reinforce foundations');
+    }
+    // Schedule revision
+    scheduleRevision(adaptState.topic, q.competency);
+  }
+
+  // Feedback
+  const fb = document.getElementById('adapt-feedback-card');
+  fb.innerHTML = `
+    <div style="color:${correct?'var(--accent-green)':'var(--accent-red)'};font-weight:700;margin-bottom:6px;">
+      ${correct ? '✅ Correct! ' + (adaptState.streak>1?'🔥 Streak: '+adaptState.streak:'') : '❌ Incorrect'}
+    </div>
+    <div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">${q.exp}</div>
+    <div style="font-size:12px;color:var(--text-muted);">Competency: ${q.competency}</div>
+  `;
+  document.getElementById('adapt-feedback-area').style.display = 'block';
+  document.getElementById('adapt-hint-btn').style.display = 'none';
+}
+
+function showHint() {
+  if (adaptState.hintUsed || adaptState.answered) return;
+  adaptState.hintUsed = true;
+  const q = adaptState.currentQ;
+  showToast('💡 Hint: ' + q.hint, 4000);
+}
+
+function scheduleRevision(topic, competency) {
+  const rev = loadData(KEYS.revision, []);
+  const now = Date.now();
+  const exists = rev.find(r => r.topic === topic && r.competency === competency && r.completed === false);
+  if (!exists) {
+    rev.push({
+      topic, competency,
+      intervals: [now + 60000, now + 3*60000, now + 7*24*3600000], // 1min, 3min, 7days (demo; in prod use sessions)
+      nextDue: now + 60000,
+      stage: 0,
+      completed: false
+    });
+    saveData(KEYS.revision, rev);
+  }
+}
+
+function finishAdaptiveSession() {
+  document.getElementById('adapt-quiz').style.display = 'none';
+  document.getElementById('adapt-summary').style.display = 'block';
+
+  const results = adaptState.sessionResults;
+  const total = results.length;
+  const correct = results.filter(r => r.correct).length;
+  const accuracy = total ? Math.round(correct/total*100) : 0;
+  const masteryIdx = accuracy;
+  const byLevel = {};
+  results.forEach(r => {
+    if (!byLevel[r.level]) byLevel[r.level] = {total:0,correct:0};
+    byLevel[r.level].total++;
+    if (r.correct) byLevel[r.level].correct++;
+  });
+
+  // Save session
+  const sessions = loadData(KEYS.sessions, []);
+  sessions.push({ date: Date.now(), topic: adaptState.topic, total, correct, accuracy, finalLevel: adaptState.level });
+  saveData(KEYS.sessions, sessions);
+
+  document.getElementById('adapt-summary-content').innerHTML = `
+    <div class="grid-2" style="margin-bottom:16px;">
+      <div class="stat-card"><div class="stat-value">${correct}/${total}</div><div class="stat-label">Score</div></div>
+      <div class="stat-card"><div class="stat-value">${accuracy}%</div><div class="stat-label">Accuracy</div></div>
+      <div class="stat-card"><div class="stat-value">L${adaptState.level}</div><div class="stat-label">Final Level</div></div>
+      <div class="stat-card"><div class="stat-value">${masteryIdx >= 80 ? '🏆' : masteryIdx >= 50 ? '📈' : '📚'}</div><div class="stat-label">Mastery Status</div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px;">
+      <div style="font-weight:700;color:var(--accent-teal);margin-bottom:10px;">Performance by Level</div>
+      ${Object.entries(byLevel).map(([l, data]) => `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          ${diffBadge(parseInt(l))}
+          <div class="progress-bar" style="flex:1;margin:0 10px;">
+            <div class="progress-fill" style="width:${data.correct/data.total*100}%"></div>
+          </div>
+          <span style="font-size:12px;color:var(--text-secondary);">${data.correct}/${data.total}</span>
+        </div>
+      `).join('')}
+    </div>
+    ${accuracy >= 80 ? '<div class="alert alert-success">🎉 Excellent! You\'ve demonstrated strong mastery at your current level.</div>' : 
+      accuracy >= 50 ? '<div class="alert alert-warning">📈 Good progress! Keep practicing to reach mastery (80%+).</div>' :
+      '<div class="alert alert-error">📚 Needs more practice. Check your revision queue for reinforcement topics.</div>'}
+  `;
+}
+
+// ============================================================
+// PROGRESS PAGE
+// ============================================================
+function renderProgress() {
+  const prog = loadData(KEYS.progress, {});
+  const ladder = document.getElementById('competency-ladder');
+  
+  const topics = Object.keys(QUESTION_BANK);
+  const levels = [
+    { level: 4, label: 'Level 4 – Analytical Reasoning', icon: '🔬', color: 'var(--accent-red)' },
+    { level: 3, label: 'Level 3 – Application', icon: '⚡', color: 'var(--accent-gold)' },
+    { level: 2, label: 'Level 2 – Conceptual', icon: '🧩', color: 'var(--accent-blue)' },
+    { level: 1, label: 'Level 1 – Basic Recall', icon: '📖', color: 'var(--accent-green)' },
+  ];
+
+  let totalCorrect = 0, totalAttempts = 0;
+  Object.values(prog).forEach(v => { totalCorrect += v.correct||0; totalAttempts += v.attempts||0; });
+  const masteryIdx = totalAttempts ? Math.round(totalCorrect/totalAttempts*100) : 0;
+
+  ladder.innerHTML = levels.map(l => {
+    const levelKeys = Object.keys(prog).filter(k => k.endsWith('_L'+l.level));
+    const attempts = levelKeys.reduce((s,k)=>s+(prog[k].attempts||0),0);
+    const correct = levelKeys.reduce((s,k)=>s+(prog[k].correct||0),0);
+    const acc = attempts ? Math.round(correct/attempts*100) : 0;
+    const status = acc >= 80 ? 'completed' : attempts > 0 ? 'active' : 'locked';
+    return `
+      <div class="ladder-step ${status}">
+        <div class="ladder-icon">${l.icon}</div>
+        <div class="ladder-info">
+          <div class="ladder-title">${l.label}</div>
+          <div class="ladder-sub">${attempts} attempts • ${acc}% accuracy</div>
+          ${attempts > 0 ? `<div class="progress-bar" style="margin-top:6px;"><div class="progress-fill" style="width:${acc}%"></div></div>` : ''}
+        </div>
+        <div>${acc >= 80 ? '<span class="badge badge-green">✓ Mastered</span>' : attempts > 0 ? '<span class="badge badge-gold">In Progress</span>' : '<span class="badge" style="opacity:0.4">Locked</span>'}</div>
+      </div>
+    `;
+  }).join('');
+
+  // Revision queue
+  const rev = loadData(KEYS.revision, []);
+  const now = Date.now();
+  const queue = document.getElementById('revision-queue-list');
+  const active = rev.filter(r => !r.completed);
+  if (!active.length) {
+    queue.innerHTML = '<div class="alert alert-success">✅ No revisions scheduled. Keep practicing!</div>';
+  } else {
+    queue.innerHTML = active.map(r => {
+      const due = r.nextDue - now;
+      const dueStr = due <= 0 ? '⚡ Due Now' : due < 3600000 ? `⏰ ${Math.ceil(due/60000)}m` : `📅 ${Math.ceil(due/86400000)}d`;
+      return `
+        <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="font-weight:600;font-size:14px;">${r.competency}</div>
+            <div style="font-size:12px;color:var(--text-secondary);">${r.topic} • Stage ${r.stage+1}/3</div>
+          </div>
+          <span class="badge ${due<=0?'badge-red':'badge-gold'}">${dueStr}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Analytics
+  const sessions = loadData(KEYS.sessions, []);
+  const velocity = sessions.length > 1 ? 
+    Math.round((sessions[sessions.length-1].accuracy - sessions[0].accuracy) / sessions.length * 10) / 10 : 0;
+  const retention = masteryIdx > 0 ? Math.min(100, Math.round(masteryIdx * 0.9 + 10)) : 0;
+  const gapSev = masteryIdx >= 70 ? 'Low' : masteryIdx >= 40 ? 'Medium' : 'High';
+  
+  document.getElementById('prog-mastery-idx').textContent = masteryIdx + '%';
+  document.getElementById('prog-velocity').textContent = (velocity >= 0 ? '+' : '') + velocity + '%';
+  document.getElementById('prog-retention').textContent = retention + '%';
+  document.getElementById('prog-gap').textContent = gapSev;
+
+  // Chart
+  drawLineChart('progress-chart', sessions.map((s,i)=>({x:'S'+(i+1),y:s.accuracy})), 'Session Accuracy %');
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const prog = loadData(KEYS.progress, {});
+  const topics = Object.keys(QUESTION_BANK);
+  const topicNames = {
+    matter:'Matter', atom:'Atoms', cell:'Cell', motion:'Motion', force:'Force',
+    gravitation:'Gravity', work:'Work', sound:'Sound', tissue:'Tissue', improvement:'Farming'
+  };
+
+  // Heatmap
+  const heatmap = document.getElementById('strength-heatmap');
+  heatmap.innerHTML = '';
+  topics.forEach(t => {
+    const data = {};
+    [1,2,3,4].forEach(l => {
+      const k = t + '_L' + l;
+      data[l] = prog[k] ? { att:prog[k].attempts, cor:prog[k].correct } : null;
+    });
+    const avgAcc = Object.values(data).filter(Boolean).map(d=>d.att?d.cor/d.att:0);
+    const acc = avgAcc.length ? avgAcc.reduce((a,b)=>a+b,0)/avgAcc.length : 0;
+    const heatClass = !avgAcc.length ? 'heat-0' : acc < 0.5 ? 'heat-1' : acc < 0.7 ? 'heat-2' : acc < 0.85 ? 'heat-3' : 'heat-4';
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-cell ' + heatClass;
+    cell.title = `${topicNames[t]}: ${Math.round(acc*100)}%`;
+    cell.textContent = topicNames[t].substring(0,3);
+    cell.style.width='100%'; cell.style.height='36px';
+    heatmap.appendChild(cell);
+  });
+
+  // Weak competency map
+  const weakMap = document.getElementById('weak-competency-map');
+  const weakItems = Object.entries(prog)
+    .filter(([k,v]) => v.attempts >= 2 && v.correct/v.attempts < 0.6)
+    .map(([k,v]) => ({ key:k, acc:Math.round(v.correct/v.attempts*100), level: k.split('_L')[1] }))
+    .sort((a,b)=>a.acc-b.acc)
+    .slice(0,5);
+  
+  if (!weakItems.length) {
+    weakMap.innerHTML = '<div class="alert alert-success">🎉 No significant weak areas detected yet!</div>';
+  } else {
+    weakMap.innerHTML = weakItems.map(item => `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span class="badge badge-red">L${item.level}</span>
+        <div style="flex:1;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+            <span style="font-size:13px;">${item.key.split('_L')[0]}</span>
+            <span style="font-size:12px;color:var(--accent-red);">${item.acc}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${item.acc}%;background:var(--accent-red);"></div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Stats
+  const sessions = loadData(KEYS.sessions, []);
+  let total = 0, correct = 0;
+  Object.values(prog).forEach(v => { total += v.attempts||0; correct += v.correct||0; });
+  
+  document.getElementById('dash-total').textContent = total;
+  document.getElementById('dash-correct').textContent = total ? Math.round(correct/total*100)+'%' : '0%';
+  document.getElementById('dash-sessions').textContent = sessions.length;
+  const masteredTopics = Object.values(prog).filter(v => v.attempts >= 3 && v.correct/v.attempts >= 0.8).length;
+  document.getElementById('dash-mastery-pct').textContent = Math.round(masteredTopics / (topics.length*4) * 100) + '%';
+
+  // Difficulty chart
+  const diffData = [1,2,3,4].map(l => {
+    const keys = Object.keys(prog).filter(k => k.endsWith('_L'+l));
+    const att = keys.reduce((s,k)=>s+(prog[k].attempts||0),0);
+    const cor = keys.reduce((s,k)=>s+(prog[k].correct||0),0);
+    return { x: 'L'+l, y: att ? Math.round(cor/att*100) : 0 };
+  });
+  drawBarChart('difficulty-chart', diffData, 'Accuracy % by Level');
+}
+
+// ============================================================
+// CHART UTILITIES (Pure Canvas, no libraries)
+// ============================================================
+function drawLineChart(canvasId, data, label) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || !data.length) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 360, H = 180;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0,0,W,H);
+  
+  const pad = { top:20, right:20, bottom:30, left:40 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  
+  if (!data.length) return;
+  const maxY = 100, minY = 0;
+  const xStep = chartW / Math.max(data.length - 1, 1);
+
+  // Grid
+  ctx.strokeStyle = '#1e2d4a'; ctx.lineWidth = 1;
+  [0,25,50,75,100].forEach(y => {
+    const yPos = pad.top + chartH - (y-minY)/(maxY-minY)*chartH;
+    ctx.beginPath(); ctx.moveTo(pad.left, yPos); ctx.lineTo(pad.left+chartW, yPos); ctx.stroke();
+    ctx.fillStyle = '#4a5568'; ctx.font = '10px sans-serif';
+    ctx.fillText(y+'%', 2, yPos+4);
+  });
+
+  // Line
+  if (data.length > 1) {
+    ctx.strokeStyle = '#00d4b8'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    data.forEach((d,i) => {
+      const x = pad.left + i*xStep;
+      const y = pad.top + chartH - (d.y-minY)/(maxY-minY)*chartH;
+      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  }
+
+  // Points
+  data.forEach((d,i) => {
+    const x = pad.left + i*xStep;
+    const y = pad.top + chartH - (d.y-minY)/(maxY-minY)*chartH;
+    ctx.fillStyle = '#00d4b8';
+    ctx.beginPath(); ctx.arc(x,y,4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif';
+    ctx.fillText(d.x, x-8, H-8);
+  });
+
+  ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif';
+  ctx.fillText(label, pad.left, 14);
+}
+
+function drawBarChart(canvasId, data, label) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 360, H = 180;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0,0,W,H);
+  
+  const pad = { top:20, right:20, bottom:30, left:40 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const barW = chartW / data.length * 0.6;
+  const colors = ['#10b981','#3b82f6','#f59e0b','#ef4444'];
+
+  // Grid
+  ctx.strokeStyle = '#1e2d4a'; ctx.lineWidth = 1;
+  [0,25,50,75,100].forEach(y => {
+    const yPos = pad.top + chartH - y/100*chartH;
+    ctx.beginPath(); ctx.moveTo(pad.left, yPos); ctx.lineTo(pad.left+chartW, yPos); ctx.stroke();
+    ctx.fillStyle = '#4a5568'; ctx.font = '10px sans-serif';
+    ctx.fillText(y, 2, yPos+4);
+  });
+
+  data.forEach((d,i) => {
+    const x = pad.left + (i + 0.5) * (chartW/data.length) - barW/2;
+    const barH = d.y/100 * chartH;
+    const y = pad.top + chartH - barH;
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillRect(x, y, barW, barH);
+    ctx.fillStyle = '#94a3b8'; ctx.font = '10px sans-serif';
+    ctx.fillText(d.x, x + barW/2 - 8, H-8);
+    ctx.fillStyle = '#f0f6ff'; ctx.font = '11px sans-serif';
+    if (barH > 15) ctx.fillText(d.y+'%', x+barW/2-10, y+14);
+  });
+  ctx.fillStyle = '#94a3b8'; ctx.font = '11px sans-serif';
+  ctx.fillText(label, pad.left, 14);
+}
+
+// ============================================================
+// TEACHER MODE
+// ============================================================
+function renderTeacherMode() {
+  const prog = loadData(KEYS.progress, {});
+  const topics = Object.keys(QUESTION_BANK);
+
+  // Mastery distribution (simulated from local data)
+  const dist = { mastered:0, inProgress:0, notStarted:0 };
+  topics.forEach(t => {
+    [1,2,3,4].forEach(l => {
+      const k = t + '_L' + l;
+      const v = prog[k];
+      if (!v || v.attempts === 0) dist.notStarted++;
+      else if (v.correct/v.attempts >= 0.8) dist.mastered++;
+      else dist.inProgress++;
+    });
+  });
+  const total = dist.mastered + dist.inProgress + dist.notStarted;
+
+  const distEl = document.getElementById('teacher-mastery-dist');
+  distEl.innerHTML = `
+    <div class="grid-3">
+      <div class="stat-card"><div class="stat-value" style="color:var(--accent-green)">${Math.round(dist.mastered/total*100)}%</div><div class="stat-label">Mastered</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:var(--accent-gold)">${Math.round(dist.inProgress/total*100)}%</div><div class="stat-label">In Progress</div></div>
+      <div class="stat-card"><div class="stat-value" style="color:var(--text-muted)">${Math.round(dist.notStarted/total*100)}%</div><div class="stat-label">Not Started</div></div>
+    </div>
+    <div class="progress-bar" style="margin-top:12px;height:12px;">
+      <div style="display:flex;height:100%;">
+        <div style="width:${dist.mastered/total*100}%;background:var(--accent-green);border-radius:6px 0 0 6px;"></div>
+        <div style="width:${dist.inProgress/total*100}%;background:var(--accent-gold);"></div>
+        <div style="width:${dist.notStarted/total*100}%;background:var(--text-muted);border-radius:0 6px 6px 0;"></div>
+      </div>
+    </div>
+  `;
+
+  // Weak competencies
+  const weakList = document.getElementById('teacher-weak-list');
+  const weakItems = Object.entries(prog)
+    .filter(([k,v]) => v.attempts >= 2 && v.correct/v.attempts < 0.6)
+    .slice(0,5);
+  
+  weakList.innerHTML = weakItems.length ? weakItems.map(([k,v]) => `
+    <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
+      <div>
+        <div style="font-weight:600;">${k.split('_L')[0]} - Level ${k.split('_L')[1]}</div>
+        <div style="font-size:12px;color:var(--text-secondary);">${v.attempts} attempts, ${Math.round(v.correct/v.attempts*100)}% accuracy</div>
+      </div>
+      <span class="badge badge-red">${Math.round(v.correct/v.attempts*100)}%</span>
+    </div>
+  `).join('') : '<div class="alert alert-success">No significant weak areas detected.</div>';
+}
+
+function generateFocusedSet() {
+  const topic = document.getElementById('teacher-weak-topic').value;
+  const level = parseInt(document.getElementById('teacher-diff').value);
+  const bank = QUESTION_BANK[topic] || [];
+  const qs = bank.filter(q => q.level === level).slice(0,5);
+  
+  const container = document.getElementById('teacher-focused-set');
+  container.innerHTML = `
+    <div class="card">
+      <div style="font-weight:700;color:var(--accent-teal);margin-bottom:12px;">📋 Focused Practice Set: ${topic} — Level ${level}</div>
+      ${qs.map((q,i) => `
+        <div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);">
+          <div style="font-weight:600;margin-bottom:6px;">Q${i+1}: ${q.q}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">
+            ${q.opts.map((o,j)=>`${String.fromCharCode(65+j)}. ${o}`).join(' | ')}
+          </div>
+          <div style="font-size:12px;color:var(--accent-green);margin-top:4px;">Ans: ${String.fromCharCode(65+q.ans)}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  showToast('Practice set generated!');
+}
+
+function exportProgress() {
+  const data = {
+    profile: loadData(KEYS.profile),
+    progress: loadData(KEYS.progress, {}),
+    sessions: loadData(KEYS.sessions, []),
+    diagnostic: loadData(KEYS.diagnostic, []),
+    revision: loadData(KEYS.revision, []),
+    exported: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'adaptlearn_progress_' + Date.now() + '.json';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('Progress exported!');
+}
+
+// ============================================================
+// POLICY PAGE
+// ============================================================
+let currentPolicyPage = 0;
+
+function renderPolicyPage() {
+  const tabBar = document.getElementById('policy-tabs');
+  tabBar.innerHTML = POLICY_PAGES.map((p,i) => `
+    <button class="tab-btn ${i===currentPolicyPage?'active':''}" onclick="showPolicyPage(${i})">${p.icon} ${i+1}</button>
+  `).join('');
+  showPolicyPageContent();
+}
+
+function showPolicyPage(idx) {
+  currentPolicyPage = idx;
+  document.querySelectorAll('#policy-tabs .tab-btn').forEach((b,i) => {
+    b.classList.toggle('active', i===idx);
+  });
+  showPolicyPageContent();
+  window.scrollTo(0,0);
+}
+
+function showPolicyPageContent() {
+  const p = POLICY_PAGES[currentPolicyPage];
+  const container = document.getElementById('policy-content-area');
+  container.innerHTML = `
+    <div style="margin-bottom:16px;">
+      <span class="badge badge-gold">Chapter ${currentPolicyPage+1} of ${POLICY_PAGES.length}</span>
+    </div>
+    <h2 style="font-family:var(--font-display);font-size:21px;margin-bottom:16px;line-height:1.3;">${p.icon} ${p.title}</h2>
+    <div class="policy-content">${p.content}</div>
+    <div style="display:flex;gap:10px;margin-top:16px;">
+      ${currentPolicyPage > 0 ? `<button class="btn btn-secondary" onclick="showPolicyPage(${currentPolicyPage-1})">← Prev</button>` : ''}
+      ${currentPolicyPage < POLICY_PAGES.length-1 ? `<button class="btn btn-primary" onclick="showPolicyPage(${currentPolicyPage+1})">Next →</button>` : ''}
+    </div>
+  `;
+}
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function diffBadge(level) {
+  const labels = ['','Basic','Conceptual','Application','Analytical'];
+  const icons = ['','🟢','🔵','🟡','🔴'];
+  return `<span class="diff-badge diff-${level}">${icons[level]} ${labels[level]}</span>`;
+}
+
+function diffLabel(level) {
+  return ['','Level 1 – Basic','Level 2 – Conceptual','Level 3 – Application','Level 4 – Analytical'][level] || '';
+}
+
+// ============================================================
+// INITIALIZATION
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  updateHomeStats();
+  showDiagStep(1);
+  showAdaptSetup();
+
+  // Service Worker — only on real local/hosted environments
+  if ('serviceWorker' in navigator && !location.hostname.includes('claudeusercontent') && location.protocol !== 'blob:') {
+    navigator.serviceWorker.register('./service-worker.js').catch(()=>{});
+  }
+
+  // Install prompt
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBanner = document.createElement('div');
+    installBanner.className = 'alert alert-info';
+    installBanner.style.cssText = 'position:fixed;bottom:60px;left:16px;right:16px;z-index:500;cursor:pointer;';
+    installBanner.innerHTML = '📲 <strong>Install App</strong> — Add to home screen for offline use';
+    installBanner.onclick = () => { deferredPrompt.prompt(); installBanner.remove(); };
+    document.body.appendChild(installBanner);
+    setTimeout(() => installBanner.remove(), 8000);
+  });
+
+  // Redraw charts on resize
+  window.addEventListener('resize', () => {
+    if (currentPage === 'dashboard') renderDashboard();
+    if (currentPage === 'progress') renderProgress();
+  });
+});
+
+// Handle teacher mode navigation from home
+document.addEventListener('DOMContentLoaded', () => {
+  // Add teacher mode link to home page
+  const homeSection = document.querySelector('#page-home .section');
+  if (homeSection) {
+    const teacherLink = document.createElement('div');
+    teacherLink.style.textAlign = 'center';
+    teacherLink.innerHTML = `<button class="btn btn-sm" style="color:var(--text-muted);border-color:var(--text-muted);" onclick="navigate('teacher')">👩‍🏫 Teacher Mode</button>`;
+    homeSection.appendChild(teacherLink);
+  }
+});
+</script>
+</body>
+</html>

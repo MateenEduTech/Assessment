@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a1f0a">
+<meta name="description" content="Home Learning Environment Mapper & Parent Micro-Guidance App by Mateen Yousuf – NEP 2020 Aligned Offline PWA">
+<title>GharShala – Home Learning Mapper</title>
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN DIRECTION: Warm earthy tones, organic/natural, community-rooted ===== */
+:root {
+  --bg:        #0f1a0f;
+  --bg2:       #162016;
+  --bg3:       #1e2d1e;
+  --card:      #1a2a1a;
+  --card2:     #223022;
+  --accent:    #7ecb35;
+  --accent2:   #f0a500;
+  --warm:      #e8694a;
+  --blue:      #5bbfde;
+  --purple:    #c57be5;
+  --text:      #eef5e8;
+  --muted:     #7a9a6a;
+  --border:    rgba(126,203,53,0.18);
+  --radius:    20px;
+  --font-head: 'Nunito', sans-serif;
+  --font-hand: 'Caveat', cursive;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* === BACKGROUND TEXTURE === */
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(126,203,53,0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(240,165,0,0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* === SPLASH === */
+#splash {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 20px;
+  transition: opacity 0.7s ease;
+}
+#splash.fade { opacity: 0; pointer-events: none; }
+
+.splash-house {
+  font-size: 5rem;
+  animation: bounce 1s ease infinite alternate;
+}
+@keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+
+.splash-title {
+  font-family: var(--font-head);
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+}
+.splash-sub {
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  color: var(--accent2);
+}
+.splash-dots { display: flex; gap: 8px; }
+.splash-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: dotPulse 1.2s ease infinite;
+}
+.splash-dot:nth-child(2) { animation-delay: 0.2s; background: var(--accent2); }
+.splash-dot:nth-child(3) { animation-delay: 0.4s; background: var(--warm); }
+@keyframes dotPulse { 0%,100% { transform: scale(1); opacity:1; } 50% { transform: scale(0.5); opacity:0.3; } }
+
+/* === HEADER === */
+header {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(15,26,15,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 100;
+}
+.logo {
+  font-family: var(--font-head);
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--accent);
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-sub {
+  font-family: var(--font-hand);
+  font-size: 0.9rem;
+  color: var(--accent2);
+  font-weight: 600;
+}
+.header-right { display: flex; align-items: center; gap: 10px; }
+
+.mode-pill {
+  display: flex;
+  background: var(--card);
+  border-radius: 30px;
+  padding: 3px;
+  border: 1px solid var(--border);
+}
+.mpill {
+  padding: 5px 12px;
+  border-radius: 24px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  transition: all 0.3s;
+}
+.mpill.active { background: var(--accent); color: var(--bg); }
+
+/* === BOTTOM NAV === */
+.bnav {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(15,26,15,0.97);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding: 6px 0 14px;
+}
+.bnav-btn {
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 3px;
+  cursor: pointer;
+  padding: 6px 2px;
+  border: none; background: transparent;
+  color: var(--muted);
+  font-size: 0.6rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.3s;
+}
+.bnav-btn .bicon { font-size: 1.3rem; transition: transform 0.3s; }
+.bnav-btn.active { color: var(--accent); }
+.bnav-btn.active .bicon { transform: translateY(-3px); }
+
+/* === MAIN === */
+main { padding: 16px 16px 90px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+
+/* === PAGES === */
+.pg { display: none; animation: pgIn 0.35s ease; }
+.pg.active { display: block; }
+@keyframes pgIn { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform:translateY(0); } }
+
+/* === CARD === */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 18px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.card-accent::after {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:3px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+}
+.card-title {
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hand-label {
+  font-family: var(--font-hand);
+  font-size: 1.1rem;
+  color: var(--accent2);
+}
+
+/* === HOME PAGE === */
+.hero-banner {
+  background: linear-gradient(135deg, #162016, #1e3010);
+  border-radius: var(--radius);
+  padding: 24px 18px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(126,203,53,0.25);
+  position: relative;
+  overflow: hidden;
+}
+.hero-banner::before {
+  content:'🌿';
+  position:absolute; right:-10px; top:-10px;
+  font-size: 6rem; opacity: 0.07;
+  transform: rotate(20deg);
+}
+.hero-banner h1 {
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.hero-banner .subtitle {
+  font-family: var(--font-hand);
+  font-size: 1.05rem;
+  color: var(--accent2);
+  margin-bottom: 10px;
+}
+.hero-banner p { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.tag {
+  background: rgba(126,203,53,0.1);
+  border: 1px solid rgba(126,203,53,0.25);
+  color: var(--accent);
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* HLI Score Ring */
+.hli-wrap {
+  display: flex; align-items: center; gap: 18px;
+  padding: 16px;
+  background: var(--card2);
+  border-radius: 14px;
+  margin-bottom: 14px;
+  border: 1px solid var(--border);
+}
+.hli-ring-wrap { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
+.hli-ring { transform: rotate(-90deg); }
+.hli-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+.hli-ring .bg { stroke: var(--bg3); }
+.hli-ring .fill { stroke: var(--accent2); transition: stroke-dashoffset 2s ease; }
+.hli-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.hli-score { font-family: var(--font-head); font-size: 1.5rem; font-weight: 900; color: var(--accent2); }
+.hli-label { font-size: 0.6rem; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+.hli-info h3 { font-family: var(--font-head); font-size: 1rem; font-weight: 800; margin-bottom: 4px; color: var(--accent2); }
+.hli-info p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+.hli-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.hli-badge.poor { background: rgba(232,105,74,0.2); color: var(--warm); border: 1px solid rgba(232,105,74,0.3); }
+.hli-badge.basic { background: rgba(240,165,0,0.15); color: var(--accent2); border: 1px solid rgba(240,165,0,0.3); }
+.hli-badge.supportive { background: rgba(91,191,222,0.15); color: var(--blue); border: 1px solid rgba(91,191,222,0.3); }
+.hli-badge.enriched { background: rgba(126,203,53,0.15); color: var(--accent); border: 1px solid rgba(126,203,53,0.3); }
+
+/* Quick modules */
+.mod-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mod-tile {
+  background: var(--card2);
+  border-radius: 14px;
+  padding: 16px 12px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+  text-align: center;
+}
+.mod-tile:hover { border-color: var(--accent); transform: translateY(-2px); }
+.mod-tile .mi { font-size: 1.8rem; margin-bottom: 6px; }
+.mod-tile .mn { font-family: var(--font-head); font-size: 0.85rem; font-weight: 800; }
+.mod-tile .md { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
+
+/* === SURVEY PAGE === */
+.survey-progress {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.survey-bar-wrap { flex: 1; height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+.survey-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width 0.5s ease; }
+.survey-step { font-size: 0.78rem; color: var(--muted); font-weight: 700; white-space: nowrap; }
+
+.question-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 22px 18px;
+  margin-bottom: 14px;
+  animation: pgIn 0.3s ease;
+}
+.q-number {
+  font-family: var(--font-hand);
+  font-size: 0.95rem;
+  color: var(--accent2);
+  margin-bottom: 6px;
+}
+.q-text {
+  font-family: var(--font-head);
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+.q-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+
+.options-grid { display: grid; gap: 8px; }
+.option-btn {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px;
+  background: var(--card2);
+  border: 2px solid transparent;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  transition: all 0.25s;
+  text-align: left;
+}
+.option-btn:hover { border-color: var(--accent); background: rgba(126,203,53,0.08); }
+.option-btn.selected { border-color: var(--accent); background: rgba(126,203,53,0.15); color: var(--accent); }
+.option-emoji { font-size: 1.3rem; flex-shrink: 0; }
+
+.nav-btns { display: flex; gap: 10px; margin-top: 10px; }
+.nbtn {
+  flex: 1; padding: 13px;
+  border-radius: 12px;
+  border: none;
+  font-family: var(--font-head);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.nbtn-back { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+.nbtn-next { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: var(--bg); }
+.nbtn:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.3); }
+.nbtn:active { transform: translateY(0); }
+
+/* === GUIDANCE PAGE === */
+.daily-guidance-hero {
+  background: linear-gradient(135deg, #1e2d10, #2a3010);
+  border-radius: var(--radius);
+  padding: 22px 18px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(126,203,53,0.25);
+  position: relative;
+  overflow: hidden;
+}
+.daily-guidance-hero::before {
+  content:'💡';
+  position: absolute; right: 12px; top: 12px;
+  font-size: 3rem; opacity: 0.15;
+}
+.dg-date {
+  font-family: var(--font-hand);
+  font-size: 0.9rem;
+  color: var(--accent2);
+  margin-bottom: 4px;
+}
+.dg-title {
+  font-family: var(--font-head);
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.guidance-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--accent);
+  display: flex; gap: 12px; align-items: flex-start;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.guidance-card:hover { transform: translateX(4px); }
+.guidance-card.done { opacity: 0.6; border-left-color: var(--muted); }
+.guidance-card.done .gc-title { text-decoration: line-through; }
+.gc-icon { font-size: 1.6rem; flex-shrink: 0; }
+.gc-title { font-family: var(--font-head); font-size: 0.9rem; font-weight: 800; margin-bottom: 4px; }
+.gc-detail { font-size: 0.76rem; color: var(--muted); line-height: 1.5; }
+.gc-check { margin-left: auto; font-size: 1.2rem; flex-shrink: 0; }
+.guidance-card.warm { border-left-color: var(--warm); }
+.guidance-card.blue { border-left-color: var(--blue); }
+.guidance-card.purple { border-left-color: var(--purple); }
+
+.audio-guidance-btn {
+  display: flex; align-items: center; gap: 10px;
+  padding: 14px 16px;
+  background: rgba(240,165,0,0.1);
+  border: 1px solid rgba(240,165,0,0.3);
+  border-radius: 14px;
+  cursor: pointer;
+  margin-bottom: 14px;
+  transition: all 0.3s;
+}
+.audio-guidance-btn:hover { background: rgba(240,165,0,0.18); }
+.agb-icon { font-size: 1.5rem; }
+.agb-text { font-family: var(--font-head); font-size: 0.9rem; font-weight: 800; color: var(--accent2); }
+.agb-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+/* === DASHBOARD PAGE (Teacher) === */
+.student-list { }
+.student-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px;
+  background: var(--card);
+  border-radius: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.3s;
+}
+.student-row:hover { border-color: var(--accent); }
+.stu-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  background: var(--bg3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+}
+.stu-name { font-family: var(--font-head); font-size: 0.92rem; font-weight: 800; }
+.stu-meta { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+.stu-hli {
+  margin-left: auto;
+  font-family: var(--font-head);
+  font-size: 0.85rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.hli-p { background: rgba(232,105,74,0.2); color: var(--warm); }
+.hli-b { background: rgba(240,165,0,0.15); color: var(--accent2); }
+.hli-s { background: rgba(91,191,222,0.15); color: var(--blue); }
+.hli-e { background: rgba(126,203,53,0.15); color: var(--accent); }
+
+.filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.fpill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  color: var(--muted);
+  background: var(--card);
+}
+.fpill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+
+.analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.analytics-card {
+  background: var(--card2);
+  border-radius: 14px;
+  padding: 14px 12px;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+.analytics-val { font-family: var(--font-head); font-size: 1.6rem; font-weight: 900; }
+.analytics-label { font-size: 0.7rem; color: var(--muted); margin-top: 4px; }
+
+/* Risk indicator */
+.risk-bar { margin-top: 6px; }
+.risk-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.risk-label { font-size: 0.75rem; color: var(--muted); width: 80px; flex-shrink: 0; }
+.risk-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+.risk-fill { height: 100%; border-radius: 4px; }
+.risk-pct { font-size: 0.75rem; font-weight: 700; width: 32px; text-align: right; }
+
+/* === COMMUNITY PAGE === */
+.community-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  display: flex; gap: 12px; align-items: flex-start;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.community-card:hover { border-color: var(--accent2); transform: translateX(2px); }
+.cc-icon { font-size: 2rem; flex-shrink: 0; }
+.cc-name { font-family: var(--font-head); font-size: 0.92rem; font-weight: 800; margin-bottom: 3px; }
+.cc-role { font-size: 0.72rem; color: var(--muted); margin-bottom: 6px; }
+.cc-action {
+  display: inline-block;
+  padding: 4px 10px;
+  background: rgba(240,165,0,0.12);
+  border: 1px solid rgba(240,165,0,0.25);
+  color: var(--accent2);
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* === PROFILE PAGE === */
+.profile-top {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.avatar-ring {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  border: 3px solid var(--accent);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 0 0 6px rgba(126,203,53,0.12);
+}
+.avatar-ring img { width:100%; height:100%; object-fit:cover; object-position:top; }
+.avatar-overlay {
+  position:absolute; inset:0;
+  background: rgba(0,0,0,0.5);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transition:0.3s;
+  font-size:1.4rem;
+}
+.avatar-ring:hover .avatar-overlay { opacity:1; }
+
+.profile-name { font-family:var(--font-head); font-size:1.3rem; font-weight:900; color:var(--accent); }
+.profile-role { font-size:0.82rem; color:var(--muted); margin-top:4px; }
+
+.env-checklist { }
+.env-item {
+  display:flex; align-items:center; gap:10px;
+  padding:12px;
+  background:var(--card2);
+  border-radius:10px;
+  margin-bottom:8px;
+  font-size:0.85rem;
+  cursor:pointer;
+  transition: all 0.3s;
+  border:1px solid transparent;
+}
+.env-item.checked { border-color:rgba(126,203,53,0.3); background:rgba(126,203,53,0.08); }
+.env-check { font-size:1rem; }
+.env-label { flex:1; font-weight:500; }
+
+/* === TOAST === */
+#toast {
+  position:fixed; bottom:88px; left:50%; transform:translateX(-50%);
+  background:var(--card);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px 18px;
+  border-radius:30px;
+  font-size:0.83rem;
+  font-weight:600;
+  z-index:9999;
+  opacity:0; transition:opacity 0.3s;
+  pointer-events:none;
+  white-space:nowrap;
+  font-family:var(--font-body);
+}
+#toast.show { opacity:1; }
+
+/* === OFFLINE PILL === */
+.offline-pill {
+  display:inline-flex; align-items:center; gap:5px;
+  background:rgba(126,203,53,0.1);
+  border:1px solid rgba(126,203,53,0.25);
+  color:var(--accent);
+  border-radius:20px;
+  padding:3px 10px;
+  font-size:0.7rem;
+  font-weight:700;
+}
+.op-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+/* === BUTTONS === */
+.btn {
+  padding:12px 18px;
+  border-radius:12px;
+  border:none;
+  font-family:var(--font-head);
+  font-size:0.9rem;
+  font-weight:800;
+  cursor:pointer;
+  transition:all 0.3s;
+  display:block; width:100%;
+  text-align:center;
+}
+.btn-green { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:var(--bg); }
+.btn-outline { background:var(--card); color:var(--text); border:1px solid var(--border); }
+.btn:hover { transform:translateY(-2px); box-shadow:0 4px 16px rgba(0,0,0,0.3); }
+
+textarea.notes {
+  width:100%;
+  background:var(--card2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:0.88rem;
+  padding:12px 14px;
+  resize:vertical;
+  min-height:100px;
+  outline:none;
+  margin-bottom:10px;
+}
+textarea.notes:focus { border-color:var(--accent); }
+
+/* Result screen */
+#surveyResult { display:none; }
+#surveyResult.show { display:block; }
+.result-card {
+  background:linear-gradient(135deg,#1a2a10,#2a3a18);
+  border-radius:var(--radius);
+  padding:28px 20px;
+  text-align:center;
+  border:1px solid rgba(126,203,53,0.3);
+  margin-bottom:14px;
+}
+.result-icon { font-size:3.5rem; margin-bottom:12px; }
+.result-title { font-family:var(--font-head); font-size:1.4rem; font-weight:900; color:var(--accent); margin-bottom:6px; }
+.result-score { font-family:var(--font-head); font-size:3rem; font-weight:900; color:var(--accent2); }
+.result-label { font-size:0.82rem; color:var(--muted); margin-top:4px; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-house">🏠</div>
+  <div class="splash-title">GharShala</div>
+  <div class="splash-sub">घर से स्कूल तक · Ghar se School Tak</div>
+  <div class="splash-dots">
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+  </div>
+  <div class="offline-pill"><span class="op-dot"></span> Fully Offline</div>
+</div>
+
+<div id="toast"></div>
+
+<!-- HEADER -->
+<header>
+  <div>
+    <div class="logo">🌿 GharShala</div>
+    <div class="logo-sub">Home Learning Mapper</div>
+  </div>
+  <div class="header-right">
+    <div class="offline-pill"><span class="op-dot"></span> Offline</div>
+    <div class="mode-pill">
+      <button class="mpill active" onclick="setMode('parent')">👨‍👩‍👧 Parent</button>
+      <button class="mpill" onclick="setMode('teacher')">👩‍🏫 Teacher</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- HOME PAGE -->
+  <div class="pg active" id="pg-home">
+    <div class="hero-banner">
+      <h1>Map Your Home<br>Learning Space</h1>
+      <div class="subtitle">घर का माहौल · Ghar ka Maahol</div>
+      <p>Understand your child's home learning environment and get personalized daily guidance to support their education.</p>
+      <div class="tag-row">
+        <span class="tag">NEP 2020</span>
+        <span class="tag">NCF 2023</span>
+        <span class="tag">FLN Mission</span>
+        <span class="tag">PARAKH</span>
+        <span class="tag">Samagra Shiksha</span>
+      </div>
+    </div>
+
+    <!-- HLI Score -->
+    <div class="hli-wrap">
+      <div class="hli-ring-wrap">
+        <svg class="hli-ring" width="90" height="90" viewBox="0 0 90 90">
+          <circle class="bg" cx="45" cy="45" r="36" stroke-dasharray="226" stroke-dashoffset="0"/>
+          <circle class="fill" cx="45" cy="45" r="36" stroke-dasharray="226" stroke-dashoffset="136" id="hliRingFill"/>
+        </svg>
+        <div class="hli-center">
+          <div class="hli-score" id="hliScore">40</div>
+          <div class="hli-label">HLI Score</div>
+        </div>
+      </div>
+      <div class="hli-info">
+        <h3>Home Learning Index</h3>
+        <p>Your current home environment score. Complete the survey to get your score!</p>
+        <span class="hli-badge basic" id="hliBadge">Basic Level</span>
+      </div>
+    </div>
+
+    <!-- Modules -->
+    <div class="card card-accent">
+      <div class="card-title">📋 Quick Actions</div>
+      <div class="mod-grid">
+        <div class="mod-tile" onclick="goPage('survey')">
+          <div class="mi">📝</div>
+          <div class="mn">Map My Home</div>
+          <div class="md">Take the survey</div>
+        </div>
+        <div class="mod-tile" onclick="goPage('guidance')">
+          <div class="mi">💡</div>
+          <div class="mn">Daily Guidance</div>
+          <div class="md">Today's tips</div>
+        </div>
+        <div class="mod-tile" onclick="goPage('dashboard')">
+          <div class="mi">📊</div>
+          <div class="mn">Teacher View</div>
+          <div class="md">Class dashboard</div>
+        </div>
+        <div class="mod-tile" onclick="goPage('community')">
+          <div class="mi">🤝</div>
+          <div class="mn">Community</div>
+          <div class="md">SMC & Volunteers</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Home factors -->
+    <div class="card">
+      <div class="card-title">🏡 HLI Scoring Factors</div>
+      <div class="risk-bar">
+        <div class="risk-row">
+          <div class="risk-label">📚 Resources</div>
+          <div class="risk-track"><div class="risk-fill" style="width:45%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div>
+          <div class="risk-pct" style="color:var(--accent)">30%</div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label">🏠 Study Space</div>
+          <div class="risk-track"><div class="risk-fill" style="width:60%;background:linear-gradient(90deg,var(--blue),var(--purple))"></div></div>
+          <div class="risk-pct" style="color:var(--blue)">25%</div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label">👨‍👩‍👧 Parent Support</div>
+          <div class="risk-track"><div class="risk-fill" style="width:55%;background:linear-gradient(90deg,var(--warm),var(--accent2))"></div></div>
+          <div class="risk-pct" style="color:var(--warm)">25%</div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label">⏰ Study Time</div>
+          <div class="risk-track"><div class="risk-fill" style="width:70%;background:linear-gradient(90deg,var(--accent2),var(--accent))"></div></div>
+          <div class="risk-pct" style="color:var(--accent2)">20%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SURVEY PAGE -->
+  <div class="pg" id="pg-survey">
+    <div id="surveyForm">
+      <div class="card card-accent">
+        <div class="card-title">📝 Home Environment Survey</div>
+        <p style="font-size:0.82rem;color:var(--muted)">Answer honestly – this helps generate better guidance for your child's learning.</p>
+      </div>
+      <div class="survey-progress">
+        <div class="survey-bar-wrap"><div class="survey-bar-fill" id="surveyBar" style="width:0%"></div></div>
+        <div class="survey-step" id="surveyStep">1 / 8</div>
+      </div>
+      <div id="questionArea"></div>
+      <div class="nav-btns">
+        <button class="nbtn nbtn-back" onclick="prevQ()">← Back</button>
+        <button class="nbtn nbtn-next" onclick="nextQ()">Next →</button>
+      </div>
+    </div>
+
+    <div id="surveyResult">
+      <div class="result-card">
+        <div class="result-icon" id="resultIcon">🌿</div>
+        <div class="result-title">Home Learning Index</div>
+        <div class="result-score" id="resultScore">68</div>
+        <div class="result-label" id="resultLevelText">Supportive Level</div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Your Home Profile</div>
+        <div id="profileSummary"></div>
+      </div>
+      <button class="btn btn-green" onclick="viewGuidance()" style="margin-bottom:10px">💡 View My Daily Guidance</button>
+      <button class="btn btn-outline" onclick="retakeSurvey()">🔄 Retake Survey</button>
+    </div>
+  </div>
+
+  <!-- GUIDANCE PAGE -->
+  <div class="pg" id="pg-guidance">
+    <div class="daily-guidance-hero">
+      <div class="dg-date" id="guidanceDate">Today's Micro-Guidance</div>
+      <div class="dg-title">💡 Daily Action Tips for Parents</div>
+      <p style="font-size:0.8rem;color:var(--muted)">Simple actions that make a big difference in your child's learning!</p>
+    </div>
+
+    <div class="audio-guidance-btn" onclick="speakGuidance()">
+      <div class="agb-icon">🔊</div>
+      <div>
+        <div class="agb-text">Listen to Today's Guidance</div>
+        <div class="agb-sub">Audio in your language • No reading needed</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📋 Today's Actions <span class="hand-label" id="doneCount">0/5 done</span></div>
+      <div id="guidanceList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📅 Weekly Guidance Plan</div>
+      <div id="weeklyPlan"></div>
+    </div>
+  </div>
+
+  <!-- TEACHER DASHBOARD PAGE -->
+  <div class="pg" id="pg-dashboard">
+    <div class="card card-accent">
+      <div class="card-title">📊 Class Home Environment Dashboard</div>
+      <p style="font-size:0.78rem;color:var(--muted)">Overview of all students' home learning environments</p>
+    </div>
+
+    <div class="analytics-grid">
+      <div class="analytics-card">
+        <div class="analytics-val" style="color:var(--accent)">24</div>
+        <div class="analytics-label">Total Students</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-val" style="color:var(--accent2)">58</div>
+        <div class="analytics-label">Avg HLI Score</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-val" style="color:var(--warm)">6</div>
+        <div class="analytics-label">At Risk (Poor HLI)</div>
+      </div>
+      <div class="analytics-card">
+        <div class="analytics-val" style="color:var(--blue)">18</div>
+        <div class="analytics-label">Surveys Complete</div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="fpill active" onclick="filterStudents('all',this)">All</div>
+      <div class="fpill" onclick="filterStudents('poor',this)">🔴 Poor</div>
+      <div class="fpill" onclick="filterStudents('basic',this)">🟡 Basic</div>
+      <div class="fpill" onclick="filterStudents('supportive',this)">🔵 Supportive</div>
+      <div class="fpill" onclick="filterStudents('enriched',this)">🟢 Enriched</div>
+    </div>
+
+    <div id="studentList"></div>
+
+    <div class="card">
+      <div class="card-title">📈 Risk Indicators</div>
+      <div class="risk-bar">
+        <div class="risk-row">
+          <div class="risk-label">🏠 No Study Space</div>
+          <div class="risk-track"><div class="risk-fill" style="width:42%;background:var(--warm)"></div></div>
+          <div class="risk-pct" style="color:var(--warm)">42%</div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label">💡 Poor Lighting</div>
+          <div class="risk-track"><div class="risk-fill" style="width:28%;background:var(--accent2)"></div></div>
+          <div class="risk-pct" style="color:var(--accent2)">28%</div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label">📱 No Device</div>
+          <div class="risk-track"><div class="risk-fill" style="width:55%;background:var(--purple)"></div></div>
+          <div class="risk-pct" style="color:var(--purple)">55%</div>
+        </div>
+        <div class="risk-row">
+          <div class="risk-label">👨‍👩‍👧 Parent Absent</div>
+          <div class="risk-track"><div class="risk-fill" style="width:22%;background:var(--blue)"></div></div>
+          <div class="risk-pct" style="color:var(--blue)">22%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY PAGE -->
+  <div class="pg" id="pg-community">
+    <div class="card card-accent">
+      <div class="card-title">🤝 Community Linkage</div>
+      <p style="font-size:0.78rem;color:var(--muted)">Connect with community partners to strengthen home learning support</p>
+    </div>
+
+    <div class="community-card" onclick="showToast('📞 Connecting to SMC...')">
+      <div class="cc-icon">🏛️</div>
+      <div>
+        <div class="cc-name">School Management Committee (SMC)</div>
+        <div class="cc-role">Community governance & resource support</div>
+        <div class="cc-action">Connect →</div>
+      </div>
+    </div>
+
+    <div class="community-card" onclick="showToast('📞 Connecting to Anganwadi...')">
+      <div class="cc-icon">👶</div>
+      <div>
+        <div class="cc-name">Anganwadi Centre</div>
+        <div class="cc-role">Early childhood & nutrition support</div>
+        <div class="cc-action">Connect →</div>
+      </div>
+    </div>
+
+    <div class="community-card" onclick="showToast('📞 Finding volunteers...')">
+      <div class="cc-icon">🙋</div>
+      <div>
+        <div class="cc-name">Local Volunteers</div>
+        <div class="cc-role">Home tutoring & reading support</div>
+        <div class="cc-action">Find Volunteer →</div>
+      </div>
+    </div>
+
+    <div class="community-card" onclick="showToast('📞 Connecting to library...')">
+      <div class="cc-icon">📚</div>
+      <div>
+        <div class="cc-name">Community Library</div>
+        <div class="cc-role">Books & reading material access</div>
+        <div class="cc-action">Access →</div>
+      </div>
+    </div>
+
+    <div class="community-card" onclick="showToast('📞 Reaching health worker...')">
+      <div class="cc-icon">🏥</div>
+      <div>
+        <div class="cc-name">ASHA Health Worker</div>
+        <div class="cc-role">Child health & nutrition monitoring</div>
+        <div class="cc-action">Contact →</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📌 Community Notice Board</div>
+      <div style="font-size:0.82rem;color:var(--muted);line-height:1.8">
+        📢 Parent-Teacher Meeting: <strong style="color:var(--accent)">Every Friday, 4 PM</strong><br>
+        📢 SMC Meeting: <strong style="color:var(--accent2)">1st Saturday Monthly</strong><br>
+        📢 Home Visit Drive: <strong style="color:var(--blue)">Next Week</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFILE PAGE -->
+  <div class="pg" id="pg-profile">
+    <div class="profile-top">
+      <div class="avatar-ring" onclick="document.getElementById('photoUp').click()">
+        <img id="authImg" src="author.jpg" alt="Mateen Yousuf"
+          onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'96\' height=\'96\'><rect fill=\'%231a2a1a\' width=\'96\' height=\'96\'/><text y=\'58\' x=\'48\' text-anchor=\'middle\' font-size=\'38\'>👤</text></svg>'">
+        <div class="avatar-overlay">📷</div>
+      </div>
+      <input type="file" id="photoUp" accept="image/*" style="display:none" onchange="uploadPhoto(event)">
+      <div class="profile-name">Mateen Yousuf</div>
+      <div class="profile-role">Teacher – School Education Department, J&K</div>
+      <br>
+      <div class="offline-pill"><span class="op-dot"></span> NEP 2020 Champion · Samagra Shiksha</div>
+    </div>
+
+    <div class="card card-accent">
+      <div class="card-title">🏠 Home Environment Checklist</div>
+      <p style="font-size:0.78rem;color:var(--muted);margin-bottom:12px">Tap items to mark as available in your home</p>
+      <div class="env-checklist" id="envChecklist"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📝 Teacher Notes</div>
+      <textarea class="notes" id="teacherNotes" placeholder="Write notes about student home environments..." oninput="saveNotes()"></textarea>
+      <button class="btn btn-green" onclick="saveNotes();showToast('Notes saved! ✅')">💾 Save Notes</button>
+    </div>
+  </div>
+
+</main>
+
+<!-- BOTTOM NAV -->
+<nav class="bnav">
+  <button class="bnav-btn active" onclick="goPage('home')"><span class="bicon">🏠</span>Home</button>
+  <button class="bnav-btn" onclick="goPage('survey')"><span class="bicon">📝</span>Survey</button>
+  <button class="bnav-btn" onclick="goPage('guidance')"><span class="bicon">💡</span>Guidance</button>
+  <button class="bnav-btn" onclick="goPage('dashboard')"><span class="bicon">📊</span>Dashboard</button>
+  <button class="bnav-btn" onclick="goPage('community')"><span class="bicon">🤝</span>Community</button>
+  <button class="bnav-btn" onclick="goPage('profile')"><span class="bicon">👤</span>Profile</button>
+</nav>
+
+<script>
+// ===== DATA =====
+const questions = [
+  { id:'space', text:'Does your child have a dedicated study space at home?', icon:'🏠', cat:'Study Space', weight:25, options:[
+    {text:'Yes, a separate room or desk', emoji:'✅', score:100},
+    {text:'A shared table', emoji:'🪑', score:60},
+    {text:'Only the floor or bed', emoji:'😔', score:25},
+    {text:'No fixed place', emoji:'❌', score:0},
+  ]},
+  { id:'lighting', text:'How is the lighting in your child\'s study area?', icon:'💡', cat:'Study Space', weight:10, options:[
+    {text:'Good natural + artificial light', emoji:'☀️', score:100},
+    {text:'Natural light only (daytime)', emoji:'🌤️', score:65},
+    {text:'Dim or flickering light', emoji:'🕯️', score:30},
+    {text:'Very poor lighting', emoji:'🌑', score:0},
+  ]},
+  { id:'noise', text:'How is the noise level during your child\'s study time?', icon:'🔊', cat:'Study Space', weight:15, options:[
+    {text:'Quiet most of the time', emoji:'🤫', score:100},
+    {text:'Occasionally noisy', emoji:'😌', score:65},
+    {text:'Often noisy', emoji:'😕', score:30},
+    {text:'Always very noisy', emoji:'😫', score:0},
+  ]},
+  { id:'time', text:'Does your child follow a fixed daily study routine?', icon:'⏰', cat:'Study Time', weight:20, options:[
+    {text:'Yes, fixed time every day', emoji:'✅', score:100},
+    {text:'Sometimes regular', emoji:'📅', score:60},
+    {text:'Rarely regular', emoji:'😟', score:25},
+    {text:'No fixed routine', emoji:'❌', score:0},
+  ]},
+  { id:'parent', text:'How available are you to support your child\'s learning at home?', icon:'👨‍👩‍👧', cat:'Parent Support', weight:25, options:[
+    {text:'Always available & actively help', emoji:'🌟', score:100},
+    {text:'Available sometimes', emoji:'😊', score:65},
+    {text:'Rarely available', emoji:'😟', score:30},
+    {text:'Not available at all', emoji:'❌', score:0},
+  ]},
+  { id:'books', text:'Does your child have access to books and learning materials?', icon:'📚', cat:'Resources', weight:15, options:[
+    {text:'Textbooks + extra books + stationery', emoji:'📖', score:100},
+    {text:'Only textbooks', emoji:'📗', score:60},
+    {text:'Textbooks sometimes available', emoji:'📄', score:30},
+    {text:'No materials at home', emoji:'❌', score:0},
+  ]},
+  { id:'device', text:'Does your child have access to a digital device for learning?', icon:'📱', cat:'Resources', weight:15, options:[
+    {text:'Smartphone + internet access', emoji:'📱', score:100},
+    {text:'Smartphone, no internet', emoji:'📵', score:60},
+    {text:'Shared device, limited access', emoji:'🔗', score:30},
+    {text:'No device at all', emoji:'❌', score:0},
+  ]},
+  { id:'meals', text:'Does your child get proper meals before studying?', icon:'🍽️', cat:'Wellbeing', weight:0, options:[
+    {text:'Always nutritious meals', emoji:'✅', score:100},
+    {text:'Usually get meals', emoji:'😊', score:70},
+    {text:'Sometimes skip meals', emoji:'😟', score:35},
+    {text:'Often goes hungry', emoji:'😢', score:0},
+  ]},
+];
+
+const guidanceItems = [
+  { icon:'📖', title:'Read together for 10 minutes', detail:'Sit with your child and read any book or newspaper together. Ask them what it means.', color:'', done:false },
+  { icon:'🗣️', title:'Ask: What did you learn today?', detail:'Every evening, ask your child to explain one thing they learned in school today.', color:'blue', done:false },
+  { icon:'🕯️', title:'Create a quiet study time', detail:'Turn off the TV or radio for at least 30 minutes while your child does homework.', color:'warm', done:false },
+  { icon:'✏️', title:'Check the homework book', detail:'Look at your child\'s notebook today. Praise their work — even small efforts!', color:'purple', done:false },
+  { icon:'🌙', title:'Ensure 8 hours of sleep', detail:'Make sure your child sleeps by 9:30 PM. Good sleep improves memory and focus.', color:'', done:false },
+];
+
+const weeklyPlan = [
+  { day:'Mon', tip:'Read together for 10 min', done:true },
+  { day:'Tue', tip:'Practice writing 5 words', done:true },
+  { day:'Wed', tip:'Count objects around the house', done:false },
+  { day:'Thu', tip:'Tell a story before bedtime', done:false },
+  { day:'Fri', tip:'Draw & label something from nature', done:false },
+  { day:'Sat', tip:'Visit library or read outdoors', done:false },
+  { day:'Sun', tip:'Rest + review the week together', done:false },
+];
+
+const students = [
+  { name:'Aamir Hussain', grade:'Class 5', hli:28, level:'poor', emoji:'👦' },
+  { name:'Zara Malik', grade:'Class 5', hli:72, level:'enriched', emoji:'👧' },
+  { name:'Bilal Ahmed', grade:'Class 5', hli:45, level:'basic', emoji:'👦' },
+  { name:'Rukhsar Jan', grade:'Class 5', hli:61, level:'supportive', emoji:'👧' },
+  { name:'Tariq Dar', grade:'Class 5', hli:35, level:'poor', emoji:'👦' },
+  { name:'Naseema Bano', grade:'Class 5', hli:78, level:'enriched', emoji:'👩' },
+  { name:'Umar Rashid', grade:'Class 5', hli:53, level:'supportive', emoji:'👦' },
+  { name:'Hina Qadri', grade:'Class 5', hli:42, level:'basic', emoji:'👧' },
+];
+
+const envItems = [
+  'Dedicated study table', 'Good lighting', 'Quiet environment',
+  'Textbooks & stationery', 'Dictionary or reference books',
+  'Smartphone/tablet', 'Internet access', 'Fixed study schedule',
+  'Nutritious meals daily', 'Parent/guardian available for help'
+];
+
+// ===== STATE =====
+let currentPage = 'home';
+let currentQ = 0;
+let answers = {};
+let guidanceDone = new Array(guidanceItems.length).fill(false);
+let envChecked = JSON.parse(localStorage.getItem('gs_env') || '[]');
+let currentFilter = 'all';
+
+// ===== INIT =====
+window.onload = () => {
+  setTimeout(() => { document.getElementById('splash').classList.add('fade'); setTimeout(()=>document.getElementById('splash').remove(), 700); }, 2600);
+  renderQuestion();
+  renderGuidance();
+  renderWeekly();
+  renderStudents(students);
+  renderEnvChecklist();
+  loadStorage();
+  updateDate();
+};
+
+// ===== NAVIGATION =====
+function goPage(page) {
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bnav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('pg-'+page).classList.add('active');
+  const idx = {home:0,survey:1,guidance:2,dashboard:3,community:4,profile:5};
+  if (idx[page]!==undefined) document.querySelectorAll('.bnav-btn')[idx[page]].classList.add('active');
+  currentPage = page;
+}
+
+function setMode(mode) {
+  document.querySelectorAll('.mpill').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  showToast(mode==='parent' ? '👨‍👩‍👧 Parent Mode' : '👩‍🏫 Teacher Mode');
+}
+
+// ===== SURVEY =====
+function renderQuestion() {
+  if (currentQ >= questions.length) return;
+  const q = questions[currentQ];
+  const pct = Math.round((currentQ/questions.length)*100);
+  document.getElementById('surveyBar').style.width = pct+'%';
+  document.getElementById('surveyStep').textContent = `${currentQ+1} / ${questions.length}`;
+  document.getElementById('questionArea').innerHTML = `
+    <div class="question-card">
+      <div class="q-number">Question ${currentQ+1} of ${questions.length} · ${q.cat}</div>
+      <span class="q-icon">${q.icon}</span>
+      <div class="q-text">${q.text}</div>
+      <div class="options-grid">
+        ${q.options.map((o,i)=>`
+          <button class="option-btn ${answers[q.id]===i?'selected':''}" onclick="selectOption('${q.id}',${i},this)">
+            <span class="option-emoji">${o.emoji}</span>
+            ${o.text}
+          </button>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function selectOption(qid, idx, btn) {
+  answers[qid] = idx;
+  document.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+function nextQ() {
+  const q = questions[currentQ];
+  if (answers[q.id] === undefined) { showToast('⚠️ Please select an answer'); return; }
+  if (currentQ < questions.length-1) { currentQ++; renderQuestion(); }
+  else { showResult(); }
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQuestion(); }
+}
+
+function showResult() {
+  // Calculate HLI score
+  let total = 0, wSum = 0;
+  questions.forEach(q => {
+    const ans = answers[q.id];
+    if (ans!==undefined && q.weight>0) {
+      total += (q.options[ans].score * q.weight);
+      wSum += q.weight * 100;
+    }
+  });
+  const score = Math.round((total/wSum)*100);
+  let level='poor', icon='😔', levelText='Poor Level', badgeClass='poor';
+  if (score>=75) { level='enriched'; icon='🌟'; levelText='Enriched Level'; badgeClass='enriched'; }
+  else if (score>=55) { level='supportive'; icon='🌿'; levelText='Supportive Level'; badgeClass='supportive'; }
+  else if (score>=35) { level='basic'; icon='🌱'; levelText='Basic Level'; badgeClass='basic'; }
+
+  document.getElementById('resultIcon').textContent = icon;
+  document.getElementById('resultScore').textContent = score;
+  document.getElementById('resultLevelText').textContent = levelText;
+  document.getElementById('hliScore').textContent = score;
+  document.getElementById('hliBadge').textContent = levelText;
+  document.getElementById('hliBadge').className = 'hli-badge '+badgeClass;
+
+  // Update ring
+  const c = 2*Math.PI*36;
+  document.getElementById('hliRingFill').style.strokeDashoffset = c-(score/100)*c;
+
+  // Profile summary
+  document.getElementById('profileSummary').innerHTML = questions.map(q=>{
+    const ans = answers[q.id];
+    if (ans===undefined) return '';
+    return `<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.82rem">
+      <span>${q.icon}</span>
+      <span style="flex:1;color:var(--muted)">${q.cat}</span>
+      <span style="font-weight:700;color:var(--accent2)">${q.options[ans].emoji} ${q.options[ans].text}</span>
+    </div>`;
+  }).join('');
+
+  localStorage.setItem('gs_hli', JSON.stringify({score, level}));
+  document.getElementById('surveyForm').style.display='none';
+  document.getElementById('surveyResult').classList.add('show');
+}
+
+function retakeSurvey() {
+  answers = {}; currentQ = 0;
+  document.getElementById('surveyForm').style.display='block';
+  document.getElementById('surveyResult').classList.remove('show');
+  renderQuestion();
+}
+
+function viewGuidance() { goPage('guidance'); }
+
+// ===== GUIDANCE =====
+function renderGuidance() {
+  document.getElementById('guidanceList').innerHTML = guidanceItems.map((g,i)=>`
+    <div class="guidance-card ${g.color} ${guidanceDone[i]?'done':''}" onclick="toggleGuidance(${i})">
+      <div class="gc-icon">${g.icon}</div>
+      <div style="flex:1">
+        <div class="gc-title">${g.title}</div>
+        <div class="gc-detail">${g.detail}</div>
+      </div>
+      <div class="gc-check">${guidanceDone[i]?'✅':'⭕'}</div>
+    </div>
+  `).join('');
+  const done = guidanceDone.filter(Boolean).length;
+  document.getElementById('doneCount').textContent = `${done}/${guidanceItems.length} done`;
+}
+
+function toggleGuidance(i) {
+  guidanceDone[i] = !guidanceDone[i];
+  localStorage.setItem('gs_guidance', JSON.stringify(guidanceDone));
+  renderGuidance();
+  if (guidanceDone[i]) showToast('✅ Great job! Task marked done!');
+}
+
+function renderWeekly() {
+  document.getElementById('weeklyPlan').innerHTML = weeklyPlan.map(w=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:36px;height:36px;border-radius:50%;background:${w.done?'rgba(126,203,53,0.2)':'var(--bg3)'};border:2px solid ${w.done?'var(--accent)':'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:800;color:${w.done?'var(--accent)':'var(--muted)'};">${w.day}</div>
+      <div style="flex:1;font-size:0.82rem;color:${w.done?'var(--muted)':'var(--text)'};${w.done?'text-decoration:line-through':''}">${w.tip}</div>
+      <div>${w.done?'✅':'○'}</div>
+    </div>
+  `).join('');
+}
+
+function speakGuidance() {
+  if ('speechSynthesis' in window) {
+    const texts = guidanceItems.map(g => g.title+'. '+g.detail).join('. Next tip: ');
+    const u = new SpeechSynthesisUtterance('Here are your daily guidance tips. ' + texts);
+    u.lang = 'en-US'; u.rate = 0.85;
+    speechSynthesis.speak(u);
+    showToast('🔊 Playing audio guidance...');
+  } else { showToast('Audio not supported on this device'); }
+}
+
+function updateDate() {
+  const d = new Date();
+  document.getElementById('guidanceDate').textContent = d.toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+}
+
+// ===== DASHBOARD =====
+function renderStudents(list) {
+  const levelMap = {poor:'hli-p', basic:'hli-b', supportive:'hli-s', enriched:'hli-e'};
+  document.getElementById('studentList').innerHTML = list.map(s=>`
+    <div class="student-row" onclick="showToast('📋 Opening ${s.name}\'s profile...')">
+      <div class="stu-avatar">${s.emoji}</div>
+      <div>
+        <div class="stu-name">${s.name}</div>
+        <div class="stu-meta">${s.grade} · ${s.level.charAt(0).toUpperCase()+s.level.slice(1)} HLI</div>
+      </div>
+      <div class="stu-hli ${levelMap[s.level]}">${s.hli}</div>
+    </div>
+  `).join('');
+}
+
+function filterStudents(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = filter==='all' ? students : students.filter(s=>s.level===filter);
+  renderStudents(filtered);
+}
+
+// ===== ENV CHECKLIST =====
+function renderEnvChecklist() {
+  document.getElementById('envChecklist').innerHTML = envItems.map((item,i)=>`
+    <div class="env-item ${envChecked.includes(i)?'checked':''}" onclick="toggleEnv(${i})">
+      <span class="env-check">${envChecked.includes(i)?'✅':'⬜'}</span>
+      <span class="env-label">${item}</span>
+    </div>
+  `).join('');
+}
+
+function toggleEnv(i) {
+  if (envChecked.includes(i)) envChecked = envChecked.filter(x=>x!==i);
+  else envChecked.push(i);
+  localStorage.setItem('gs_env', JSON.stringify(envChecked));
+  renderEnvChecklist();
+}
+
+// ===== PHOTO UPLOAD =====
+function uploadPhoto(e) {
+  const f = e.target.files[0]; if (!f) return;
+  const r = new FileReader();
+  r.onload = ev => { localStorage.setItem('gs_photo', ev.target.result); document.getElementById('authImg').src = ev.target.result; showToast('📷 Photo updated!'); };
+  r.readAsDataURL(f);
+}
+
+function saveNotes() { localStorage.setItem('gs_notes', document.getElementById('teacherNotes').value); }
+
+function loadStorage() {
+  const p = localStorage.getItem('gs_photo'); if (p) document.getElementById('authImg').src = p;
+  const n = localStorage.getItem('gs_notes'); if (n) document.getElementById('teacherNotes').value = n;
+  const g = localStorage.getItem('gs_guidance'); if (g) { Object.assign(guidanceDone, JSON.parse(g)); renderGuidance(); }
+  const h = localStorage.getItem('gs_hli');
+  if (h) { const d=JSON.parse(h); document.getElementById('hliScore').textContent=d.score; }
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// ===== SERVICE WORKER =====
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
